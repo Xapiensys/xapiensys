@@ -1365,3 +1365,13 @@ h1 {
     transition-duration: .01ms;
   }
 }
+
+@media (width < 900px) {
+  html.js #main-nav {
+    display: none;
+  }
+
+  html.js .menu-toggle[aria-expanded="true"] + #main-nav {
+    display: grid;
+  }
+}
