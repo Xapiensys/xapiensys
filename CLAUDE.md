@@ -10,18 +10,19 @@ Lee antes de cualquier tarea:
 - **Astro** (última versión estable; `output: 'static'`, adaptador `@astrojs/netlify`). Las páginas se prerenderizan; solo `src/pages/api/*` corre en servidor (`export const prerender = false`).
 - **TypeScript estricto** en todo el proyecto.
 - **Islas** (único JS en el cliente): escena 3D, chat IA, cotizador, menú móvil. Preact o JS vanilla; **no React** (peso).
-- **Three.js** importado por módulos (`import { Scene, ... } from 'three'`), nunca el bundle completo.
+- **Escena 3D en WebGL nativo** (`src/components/islands/Scene3D.ts`). Three.js se descartó por peso (ver ARCHITECTURE §12); si se reintroduce, debe respetar el presupuesto de 250 KB.
 - **Backend:** endpoints Astro en Netlify Functions. **Zod** para validar toda entrada. **Drizzle ORM** + **Postgres** (Neon/Supabase). **Resend** para emails.
 - Hosting: **Netlify** (ya conectado al repo y al dominio).
 
-## Comandos (los scripts se crean en F1–F2)
+## Comandos
 ```bash
 npm run dev        # servidor local (astro dev)
 npm run build      # build de producción
 npm run preview    # previsualizar build
 npm run check      # astro check + tsc
 npm run lint       # eslint + prettier --check
-npm run db:push    # aplicar esquema Drizzle
+npm run db:push    # aplicar esquema Drizzle (requiere DATABASE_URL)
+npm run db:generate # generar migración SQL en drizzle/
 npx lighthouse http://localhost:4321 --preset=desktop   # y sin preset para móvil
 ```
 

@@ -8,26 +8,30 @@ Leyenda: `[ ]` pendiente · `[x]` hecho · 🧑 requiere acción humana (cuentas
 
 ## F0 — Higiene del sitio actual (antes de migrar, ~1 h)
 Objetivo: dejar el sitio en producción sin errores mientras se construye la v2.
-- [ ] Eliminar el texto suelto `así va ps` después de `</html>` en `index.html`.
-- [ ] Eliminar `app.py` vacío del repo.
+- [x] Eliminar el texto suelto `así va ps` después de `</html>` en `index.html`.
+- [x] Eliminar `app.py` vacío del repo.
 - [ ] 🧑 Crear correo de dominio (ej. `contacto@xapiensys.com`) y reemplazar `xapiensys@gmail.com` en web y JSON-LD.
 - [ ] Verificar que `sameAs` apunte a perfiles que existen y enlazan al sitio.
 
 **Aceptación:** HTML válido (validator.w3.org sin errores), deploy en verde.
 
+> Estado (2026-10-30): el sitio viejo se reemplazó por la v2 (F1), así que los dos primeros puntos quedan resueltos. Correo de dominio y `sameAs` siguen pendientes (marcados `TODO(xapiensys)` en `src/lib/site.ts`; el Instagram `jinfaxtech` no coincide con la marca).
+
 ---
 
 ## F1 — Migración a Astro con paridad visual
 Objetivo: misma página que hoy, sobre la nueva arquitectura y más rápida.
-- [ ] Crear proyecto Astro + TypeScript estricto + adaptador Netlify + `@astrojs/sitemap` + Preact.
-- [ ] Mover fuentes, favicon, logo y og-image a `public/`.
-- [ ] Extraer variables de `style.css` a `tokens.css`; resto a `global.css` y CSS por componente.
-- [ ] Crear `site.ts` (NAP único), `Seo.astro`, `SchemaOrg.astro`, `BaseLayout.astro`.
-- [ ] Partir el `index.html` actual en componentes de `sections/` y `layout/`.
-- [ ] Reescribir la escena 3D como `Scene3D.ts` con imports por módulo de `three` (npm), niveles de calidad y pausa fuera de viewport.
-- [ ] `MobileMenu` como isla mínima.
-- [ ] `netlify.toml`: build de Astro, cabeceras de seguridad y caché, redirect `www → apex`.
-- [ ] Borrar `vendor/three.module.min.js`.
+- [x] Crear proyecto Astro + TypeScript estricto + adaptador Netlify + `@astrojs/sitemap` + Preact.
+- [x] Mover fuentes, favicon, logo y og-image a `public/`.
+- [x] Extraer variables de `style.css` a `tokens.css`; resto a `global.css` y CSS por componente.
+- [x] Crear `site.ts` (NAP único), `Seo.astro`, `SchemaOrg.astro`, `BaseLayout.astro`.
+- [x] Partir el `index.html` actual en componentes de `sections/` y `layout/`.
+- [x] Reescribir la escena 3D como `Scene3D.ts` con imports por módulo de `three` (npm), niveles de calidad y pausa fuera de viewport. → Hecho en **WebGL nativo** (ver ARCHITECTURE §12: `three` pesaba ~530 KB).
+- [x] `MobileMenu` como isla mínima.
+- [x] `netlify.toml`: build de Astro, cabeceras de seguridad y caché, redirect `www → apex`.
+- [x] Borrar `vendor/three.module.min.js`.
+
+> Verificado (2026-10-30, build local con compresión): Lighthouse móvil 99–100 / 100 / 100 / 100 en todas las plantillas; home LCP 1.7 s, CLS 0, TBT 0; JS inicial ≈ 3 KB gzip; escena 3D 6 KB (2.5 KB gzip). Revisión visual con Playwright en 360/768/1440. Pendiente: Rich Results Test sobre la URL pública.
 
 **Aceptación:**
 - Diferencias visuales mínimas frente al sitio actual en 360/768/1440 px.
@@ -40,15 +44,17 @@ Objetivo: misma página que hoy, sobre la nueva arquitectura y más rápida.
 ## F2 — Backend base: leads + cotizador
 Objetivo: que cada interesado quede registrado y medido.
 - [ ] 🧑 Crear BD Postgres (Neon o Supabase), cuenta Resend con dominio verificado y Turnstile. Cargar variables en Netlify.
-- [ ] Drizzle: `schema.ts` (`leads`, `quotes`, `rate_limits`) + migración.
-- [ ] `lib/server/`: `db.ts`, `rateLimit.ts`, `turnstile.ts`, `email.ts`.
-- [ ] `lib/pricing.ts` con las reglas de ARCHITECTURE §7.4 (valores con `TODO(xapiensys)`).
-- [ ] `POST /api/lead` y `POST /api/quote` según ARCHITECTURE §7.1–7.2.
-- [ ] Isla `Quoter.tsx` (5 pasos) embebida en home + página `/cotizar`.
-- [ ] Hero: segundo CTA → "Cotiza tu proyecto en 1 minuto".
-- [ ] `lib/whatsapp.ts` con código de lead en el mensaje prellenado.
-- [ ] `/contacto` con formulario, `/gracias` (noindex), `/privacidad`.
+- [x] Drizzle: `schema.ts` (`leads`, `quotes`, `rate_limits`) + migración.
+- [x] `lib/server/`: `db.ts`, `rateLimit.ts`, `turnstile.ts`, `email.ts`.
+- [x] `lib/pricing.ts` con las reglas de ARCHITECTURE §7.4 (valores con `TODO(xapiensys)`).
+- [x] `POST /api/lead` y `POST /api/quote` según ARCHITECTURE §7.1–7.2.
+- [x] Isla `Quoter.tsx` (5 pasos) embebida en home + página `/cotizar`.
+- [x] Hero: segundo CTA → "Cotiza tu proyecto en 1 minuto".
+- [x] `lib/whatsapp.ts` con código de lead en el mensaje prellenado.
+- [x] `/contacto` con formulario, `/gracias` (noindex), `/privacidad`.
 - [ ] 🧑 Revisar y aprobar texto de `/privacidad` y precios del cotizador.
+
+> Verificado contra Postgres local: lead guardado con UTM; honeypot descartado; sin consentimiento → 422; 6.º envío/hora → 429; Turnstile rechaza sin token o con token inválido (falla cerrado); precio enviado por el cliente se ignora (el servidor recalcula). Pendiente con cuentas reales: email de Resend y Turnstile con clave real.
 
 **Aceptación:**
 - Un lead de prueba aparece en la BD y llega por email en < 10 s.
@@ -61,11 +67,13 @@ Objetivo: que cada interesado quede registrado y medido.
 ## F3 — Chat IA real
 Objetivo: la demo en vivo que vende.
 - [ ] 🧑 Elegir proveedor/modelo LLM, crear API key con límite de gasto en el panel del proveedor (doble protección).
-- [ ] Tablas `chat_sessions`, `chat_messages`, `usage_monthly`.
-- [ ] `lib/server/llm.ts` (streaming) y `chatPrompt.ts` (base de conocimiento desde `src/content`).
-- [ ] `POST /api/chat` con SSE y todos los límites de ARCHITECTURE §7.3.
-- [ ] Isla `ChatDemo.tsx`: streaming, sugerencias, mini-formulario de lead, modo guiado de respaldo.
+- [x] Tablas `chat_sessions`, `chat_messages`, `usage_monthly`.
+- [x] `lib/server/llm.ts` (streaming) y `chatPrompt.ts` (base de conocimiento desde `src/content`).
+- [x] `POST /api/chat` con SSE y todos los límites de ARCHITECTURE §7.3.
+- [x] Isla `ChatDemo.tsx`: streaming, sugerencias, mini-formulario de lead, modo guiado de respaldo.
 - [ ] Set de 20 preguntas de prueba (comerciales, fuera de tema, intentos de cambiar instrucciones) y revisar respuestas.
+
+> Verificado con un servidor que simula la API de Anthropic: streaming SSE, historial de 10 turnos, señal de formulario (herramienta `mostrar_formulario_contacto`), lead con `source: "chat"` vinculado a la sesión, y los límites (12 mensajes/sesión, 5 sesiones/IP/día, tope mensual, sin LLM → modo guiado). Pendiente con API key real: latencia del primer token y el set de 20 preguntas.
 
 **Aceptación:**
 - Primer token visible en < 1.5 s.
@@ -77,14 +85,16 @@ Objetivo: la demo en vivo que vende.
 
 ## F4 — Estructura silo y contenido SEO
 Objetivo: páginas que rankean para búsquedas de compra.
-- [ ] Colecciones `servicios`, `soluciones`, `proyectos`, `faq` con esquemas Zod.
-- [ ] 4 páginas de servicio y 3 de sector con las plantillas de ARCHITECTURE §4.
-- [ ] Hubs `/servicios`, `/soluciones`, `/proyectos`; página `/empresa`.
-- [ ] Breadcrumbs + `BreadcrumbList`; `Service` en servicios.
-- [ ] OG image por página generada en build.
-- [ ] Menú y footer con la nueva navegación; enlazado interno según reglas.
-- [ ] Home reorganizado según ARCHITECTURE §5 (sectores, laboratorio, inversión, FAQ).
+- [x] Colecciones `servicios`, `soluciones`, `proyectos`, `faq` con esquemas Zod.
+- [x] 4 páginas de servicio y 3 de sector con las plantillas de ARCHITECTURE §4.
+- [x] Hubs `/servicios`, `/soluciones`, `/proyectos`; página `/empresa`.
+- [x] Breadcrumbs + `BreadcrumbList`; `Service` en servicios.
+- [x] OG image por página generada en build.
+- [x] Menú y footer con la nueva navegación; enlazado interno según reglas.
+- [x] Home reorganizado según ARCHITECTURE §5 (sectores, laboratorio, inversión, FAQ).
 - [ ] 🧑 Revisar textos: 1 palabra clave principal por página, sin canibalizar (dos páginas no apuntan al mismo término).
+
+> Verificado: un H1 por página, jerarquía sin saltos, títulos ≤ 60 y descripciones únicas, canonical correcto, JSON-LD parseable en todas; rastreo interno sin enlaces rotos; sitemap con 18 URLs indexables.
 
 **Aceptación:**
 - Todas las páginas: un H1, title/description únicos, canonical correcto, JSON-LD válido.
@@ -94,8 +104,8 @@ Objetivo: páginas que rankean para búsquedas de compra.
 ---
 
 ## F5 — Medición y presencia local
-- [ ] `lib/analytics.ts` + GA4 diferido + todos los eventos de ARCHITECTURE §9.
-- [ ] Captura de UTM y `landing_path` enviada con cada lead.
+- [x] `lib/analytics.ts` + GA4 diferido + todos los eventos de ARCHITECTURE §9.
+- [x] Captura de UTM y `landing_path` enviada con cada lead.
 - [ ] 🧑 Search Console: enviar sitemap, revisar cobertura.
 - [ ] 🧑 Google Business Profile: crear/verificar con el mismo NAP de `site.ts`, categoría "Diseñador de sitios web" / "Consultor de software", enlace al sitio.
 - [ ] 🧑 Configurar conversiones en GA4 (`lead_submit`, `cta_whatsapp_click`).

@@ -197,6 +197,8 @@ Igual estructura, centrada en dolores del sector (ej. clínicas: agenda de citas
 - Animaciones: CSS (`@keyframes`, `view-timeline` donde haya soporte) con `prefers-reduced-motion` respetado. Sin librerías de animación.
 
 ### 6.2 Escena 3D (`Scene3D.ts`)
+> Implementada en WebGL nativo, no con Three.js (ver §12). El resto de este apartado se cumple tal cual, con una precisión: en móvil la escena carga tras la primera interacción (scroll o toque), no por `requestIdleCallback`.
+
 - Concepto: campo de partículas / red geométrica de nodos conectados (metáfora de sistemas e IA) en cian y violeta, reaccionando suave al puntero y al scroll. Sin modelos `.glb`.
 - Carga: `<canvas>` fijo detrás del contenido, `aria-hidden`. El módulo se importa dinámicamente tras `requestIdleCallback` (timeout 2 s) **solo si** el dispositivo es apto.
 - Niveles de calidad según dispositivo (`hardwareConcurrency`, `deviceMemory`, ancho): alto (~3,000 partículas), medio (~1,200), bajo → SVG estático.
@@ -300,7 +302,8 @@ RESEND_API_KEY=
 LEAD_NOTIFY_EMAIL=
 TURNSTILE_SITE_KEY=
 TURNSTILE_SECRET_KEY=
-LLM_PROVIDER=
+EMAIL_FROM=
+LLM_PROVIDER=anthropic
 LLM_MODEL=
 LLM_API_KEY=
 CHAT_MONTHLY_TOKEN_CAP=
@@ -370,3 +373,12 @@ Sugerencia comercial (fuera del código): ofrecer a los 2–3 primeros clientes 
 | Simulador del hero | Cotizador + diagnóstico | Calculadora ROI | Califica y captura el lead con datos útiles para vender |
 | Showcase | Demos propias etiquetadas | Casos inventados | Honestidad y riesgo legal; arquitectura lista para casos reales |
 | Islas | Preact | React | ~4 KB vs ~45 KB |
+| Escena 3D (2026-10-30) | WebGL nativo (`Scene3D.ts`, ~6 KB) | Three.js r186 por módulos | `three` tree-shakeado pesaba ~530 KB minificado (WebGLRenderer arrastra toda la librería de shaders), más del doble del presupuesto de 250 KB. Mismo efecto (nodos + conexiones, shaders propios). Si en el futuro hace falta Three.js (modelos, post-procesado), evaluar de nuevo el presupuesto |
+| Modelo del chat (2026-10-30) | `claude-haiku-5-5` vía SDK oficial `@anthropic-ai/sdk`, `effort: low`, sin thinking, `max_tokens` 350 | Modelos más grandes | §7.3 pide modelo rápido y económico. Cambiable con `LLM_MODEL`. `LLM_PROVIDER` hoy solo acepta `anthropic`; `lib/server/llm.ts` define la interfaz `ChatProvider` para agregar otro |
+| Señal de captura de lead | Herramienta `mostrar_formulario_contacto` (tool use) | Marcador en texto | No hay que filtrar marcadores del stream; el historial guarda solo el texto |
+| Driver de Postgres | `postgres` (postgres-js) + Drizzle | `@neondatabase/serverless` | Funciona igual con Neon o Supabase (URL del pooler, `prepare: false`) |
+| Degradación sin claves | Todas las variables son opcionales | Fallar el build | Sin BD: límites en memoria; sin Resend: solo BD; sin ambos: `/api/lead` responde 503 y el front ofrece WhatsApp; sin LLM: modo guiado; sin `TURNSTILE_SECRET_KEY`: se omite Turnstile (honeypot y rate limit siguen) |
+| CSS | Incrustado en cada página (`inlineStylesheets: 'always'`) | Hojas externas | Eliminó 12 peticiones que bloqueaban el render; LCP móvil del home bajó de 2.3 s a 1.7 s |
+| CSP | `security.csp` de Astro (meta con hashes) + cabeceras en `netlify.toml` | `unsafe-inline` | Ningún `style=""` ni script en línea sin hash |
+| Envío sin JS | `/api/lead` acepta `application/x-www-form-urlencoded` y redirige a `/gracias` | Solo JSON | El formulario de `/contacto` funciona sin JavaScript |
+| URLs | `trailingSlash: 'never'`, `build.format: 'file'` | Carpetas con `/` final | Coincide con los canonicals sin barra |
