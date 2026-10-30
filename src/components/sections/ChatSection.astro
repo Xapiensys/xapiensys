@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import SectionLabel from '../ui/SectionLabel.astro';
+import ChatDemo, { type GuidedTopic } from '../islands/ChatDemo';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
+import { formatSoles } from '@/lib/quoteOptions';
+
+interface Props {
+  index?: string;
+}
+const { index = '03' } = Astro.props;
+
+const servicios = (await getCollection('servicios')).sort((a, b) => a.data.order - b.data.order);
+
+// Modo guiado: respuestas fijas tomadas del contenido (no del modelo).
+const guided: GuidedTopic[] = [
+  {
+    label: 'Ver servicios',
+    answer: servicios.map((s) => `• ${s.data.title}: ${s.data.summary}`).join('\n'),
+    links: servicios.map((s) => ({ label: s.data.title, href: `/servicios/${s.id}` })),
+  },
+  {
+    label: '¿Cuánto cuesta?',
+    answer: servicios
+      .map(
+        (s) =>
+          `• ${s.data.title}: ${s.data.priceFrom ? `desde ${formatSoles(s.data.priceFrom)}` : 'requiere diagnóstico'}`,
+      )
+      .join('\n'),
+    links: [{ label: 'Calcular mi rango', href: '/cotizar' }],
+  },
+  {
+    label: 'Hablar con el equipo',
+    answer: 'Te atiende una persona del equipo por WhatsApp.',
+    links: [{ label: 'Abrir WhatsApp', href: buildWhatsAppUrl({ intent: 'chat' }) }],
+  },
+];
+
+const suggestions = [
+  '¿Qué servicios ofrecen?',
+  '¿Cuánto cuesta una web con chatbot?',
+  'Quiero automatizar mi atención por WhatsApp',
+];
+---
+
+<section class="section-shell section-pad chat-section" id="demo" aria-labelledby="demo-title">
+  <div class="copy">
+    <SectionLabel index={index}>DEMO EN VIVO</SectionLabel>
+    <h2 id="demo-title" class="display-h2">
+      Atención inteligente.
+      <br />
+      <span class="accent-cyan">Pruébala ahora.</span>
+    </h2>
+    <p>
+      Este asistente usa IA real y conoce nuestros servicios. Pregúntale lo que quieras sobre tu
+      proyecto: es el mismo tipo de asistente que podemos construir para tu negocio.
+    </p>
+    <span class="badge mono">
+      <i aria-hidden="true"></i> IA REAL · CON LÍMITES DE USO
+    </span>
+  </div>
+  <ChatDemo client:visible suggestions={suggestions} guided={guided} />
+</section>
+
+<style>
+  .chat-section {
+    display: grid;
+    align-items: center;
+    gap: 42px;
+  }
+
+  .copy > p {
+    max-width: 430px;
+    margin: 20px 0 22px;
+    color: var(--color-text-dim);
+    line-height: 1.75;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 11px;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-dim);
+  }
+
+  .badge i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--color-violet);
+  }
+
+  @media (min-width: 900px) {
+    .chat-section {
+      grid-template-columns: minmax(0, 0.9fr) minmax(420px, 1.1fr);
+      gap: clamp(48px, 8vw, 110px);
+    }
+  }
+</style>
