@@ -1,0 +1,44 @@
+---
+interface Props {
+  label: string;
+  class?: string;
+}
+const { label, class: className } = Astro.props;
+---
+
+<a class:list={['brand', className]} href="/" aria-label={label}>
+  <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
+    <path d="M7 7 41 41M41 7 7 41" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+    <path
+      d="M24 4v40M4 24h40"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1"
+      opacity=".55"
+    ></path>
+    <circle cx="24" cy="24" r="3" fill="currentColor"></circle>
+  </svg>
+  <span>XAPIENSYS</span>
+</a>
+
+<style>
+  .brand {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 11px;
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    line-height: 1;
+  }
+
+  .brand-mark {
+    display: block;
+    width: 34px;
+    height: 34px;
+    color: var(--color-cyan);
+  }
+</style>

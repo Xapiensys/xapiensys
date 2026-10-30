@@ -1,0 +1,116 @@
+---
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props {
+  href: string;
+  index: string;
+  title: string;
+  text: string;
+  icon?: IconName | undefined;
+  badge?: string | undefined;
+  headingLevel?: 'h2' | 'h3';
+}
+const { href, index, title, text, icon, badge, headingLevel: H = 'h3' } = Astro.props;
+---
+
+<article class="card">
+  {icon && (
+    <span class="card-icon">
+      <Icon name={icon} size={25} />
+    </span>
+  )}
+  <p class="card-index mono">
+    {index}
+    {badge && <span class="badge">{badge}</span>}
+  </p>
+  <H class="card-title">
+    <a href={href}>{title}</a>
+  </H>
+  <p class="card-text">{text}</p>
+  <span class="card-more mono" aria-hidden="true">
+    VER MÁS ↗
+  </span>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 250px;
+    flex-direction: column;
+    padding: 25px 23px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    transition:
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .card:hover,
+  .card:focus-within {
+    transform: translateY(-3px);
+    border-color: var(--color-cyan-a42);
+    background: var(--color-surface-raised);
+  }
+
+  .card-icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    margin-bottom: 25px;
+    border: 1px solid var(--color-cyan-a25);
+    color: var(--color-cyan);
+  }
+
+  .card-index {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: var(--color-muted);
+  }
+
+  .badge {
+    padding: 1px 6px;
+    border: 1px solid var(--color-violet-soft);
+    color: var(--color-violet-pale);
+  }
+
+  .card-title {
+    margin-bottom: 9px;
+    font-size: var(--text-h3);
+    line-height: 1.2;
+  }
+
+  /* Toda la tarjeta es clicable a través del enlace del título. */
+  .card-title a::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+  }
+
+  .card-title a:focus-visible {
+    outline: none;
+  }
+
+  .card:has(a:focus-visible) {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 4px;
+  }
+
+  .card-text {
+    margin-bottom: 18px;
+    color: var(--color-text-dim);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  .card-more {
+    margin-top: auto;
+    color: var(--color-cyan);
+  }
+</style>

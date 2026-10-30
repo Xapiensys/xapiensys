@@ -1,0 +1,9 @@
+dist
+.astro
+.netlify
+node_modules
+old
+drizzle
+public
+package-lock.json
+*.md

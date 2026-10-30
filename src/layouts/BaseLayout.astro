@@ -1,0 +1,123 @@
+---
+import '@/styles/tokens.css';
+import '@/styles/global.css';
+import Seo, { type SeoProps } from '@/components/seo/Seo.astro';
+import SchemaOrg, { type SchemaProps, type Crumb } from '@/components/seo/SchemaOrg.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import WhatsAppFloat from '@/components/layout/WhatsAppFloat.astro';
+import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
+import { site } from '@/lib/site';
+import type { WhatsAppIntent } from '@/lib/whatsapp';
+
+interface Props extends SeoProps {
+  breadcrumbs?: Crumb[] | undefined;
+  service?: SchemaProps['service'];
+  creativeWork?: SchemaProps['creativeWork'];
+  waIntent?: WhatsAppIntent;
+  waTopic?: string | undefined;
+}
+
+const { breadcrumbs, service, creativeWork, waIntent, waTopic, ...seo } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es-PE">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+    <meta name="theme-color" content="#0a0a0f" />
+    <link
+      rel="preload"
+      href="/fonts/space-grotesk-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="preload" href="/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <Seo {...seo} />
+    <SchemaOrg
+      path={seo.path}
+      title={seo.title}
+      description={seo.description}
+      breadcrumbs={breadcrumbs}
+      service={service}
+      creativeWork={creativeWork}
+    />
+    <meta name="google-site-verification" content={site.googleSiteVerification} />
+  </head>
+  <body>
+    <a class="skip-link" href="#contenido">
+      Saltar al contenido
+    </a>
+    <canvas id="bg" aria-hidden="true"></canvas>
+    <Header />
+    {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+    <WhatsAppFloat intent={waIntent} topic={waTopic} />
+
+    <script>
+      import { captureAttribution, scheduleGa4, track, type AnalyticsEvent } from '@/lib/analytics';
+      import { PUBLIC_GA4_ID } from 'astro:env/client';
+
+      captureAttribution();
+      scheduleGa4(PUBLIC_GA4_ID);
+
+      // Todo CTA con data-track dispara su evento (sin JS por componente).
+      document.addEventListener('click', (event) => {
+        const el = (event.target as Element | null)?.closest<HTMLElement>('[data-track]');
+        if (!el?.dataset.track) return;
+        track(el.dataset.track as AnalyticsEvent, { location: el.dataset.trackLocation });
+      });
+    </script>
+    <script>
+      import { bootScene } from '@/components/islands/sceneBoot';
+      bootScene();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .skip-link {
+    position: fixed;
+    z-index: var(--z-skip);
+    top: 12px;
+    left: 12px;
+    padding: 10px 16px;
+    transform: translateY(-160%);
+    border: 1px solid var(--color-cyan);
+    border-radius: var(--radius-sm);
+    color: var(--color-bg);
+    background: var(--color-cyan);
+    font-weight: 700;
+    transition: transform 0.18s ease;
+  }
+
+  .skip-link:focus {
+    transform: translateY(0);
+  }
+
+  #bg {
+    position: fixed;
+    z-index: var(--z-canvas);
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  #bg.is-ready {
+    opacity: 1;
+  }
+</style>

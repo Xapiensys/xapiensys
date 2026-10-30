@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /gracias
+
+Sitemap: https://xapiensys.com/sitemap-index.xml

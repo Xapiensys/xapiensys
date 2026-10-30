@@ -1,0 +1,32 @@
+---
+/** Etiqueta mono "02 / DISEÑO PARA CRECER": parte de la identidad visual. */
+interface Props {
+  index?: string;
+  dot?: boolean;
+  class?: string;
+}
+const { index, dot = false, class: className } = Astro.props;
+---
+
+<p class:list={['eyebrow', className]}>
+  {dot && <span class="status-dot" aria-hidden="true" />}
+  {index && <span>{index} /</span>}
+  <slot />
+</p>
+
+<style>
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--color-cyan);
+    animation: status-pulse 2.6s ease-in-out infinite;
+  }
+
+  @keyframes status-pulse {
+    50% {
+      opacity: 0.42;
+    }
+  }
+</style>

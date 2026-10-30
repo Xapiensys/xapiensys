@@ -1,0 +1,135 @@
+---
+import { site, absoluteUrl } from '@/lib/site';
+
+export type Crumb = { name: string; path: string };
+
+export type SchemaProps = {
+  path: string;
+  title: string;
+  description: string;
+  breadcrumbs?: Crumb[] | undefined;
+  service?: { name: string; description: string; priceFrom: number | null } | undefined;
+  creativeWork?: { name: string; description: string } | undefined;
+};
+
+const { path, title, description, breadcrumbs, service, creativeWork } = Astro.props as SchemaProps;
+
+const orgId = `${site.url}/#organization`;
+const websiteId = `${site.url}/#website`;
+const url = absoluteUrl(path);
+
+const graph: Record<string, unknown>[] = [
+  {
+    '@type': ['Organization', 'ProfessionalService'],
+    '@id': orgId,
+    name: site.name,
+    alternateName: site.alternateNames,
+    url: `${site.url}/`,
+    logo: { '@type': 'ImageObject', url: absoluteUrl('/logo.svg') },
+    image: absoluteUrl('/og-image.png'),
+    description: site.description,
+    email: site.email,
+    telephone: site.phone.schema,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: site.address.locality,
+      addressRegion: site.address.region,
+      addressCountry: site.address.country,
+    },
+    areaServed: [
+      { '@type': 'City', name: 'Lima' },
+      { '@type': 'Country', name: 'Perú' },
+      { '@type': 'AdministrativeArea', name: 'Latinoamérica' },
+    ],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'sales',
+      telephone: site.phone.schema,
+      availableLanguage: 'Spanish',
+      url: `https://wa.me/${site.phone.whatsapp}`,
+    },
+    sameAs: site.socials.map((s) => s.url),
+    priceRange: site.priceRange,
+    knowsAbout: site.knowsAbout,
+  },
+  {
+    '@type': 'WebSite',
+    '@id': websiteId,
+    url: `${site.url}/`,
+    name: site.name,
+    inLanguage: site.locale,
+    publisher: { '@id': orgId },
+  },
+  {
+    '@type': 'WebPage',
+    '@id': `${url}#webpage`,
+    url,
+    name: title,
+    description,
+    inLanguage: site.locale,
+    isPartOf: { '@id': websiteId },
+    about: { '@id': orgId },
+    ...(breadcrumbs ? { breadcrumb: { '@id': `${url}#breadcrumb` } } : {}),
+  },
+];
+
+if (breadcrumbs) {
+  graph.push({
+    '@type': 'BreadcrumbList',
+    '@id': `${url}#breadcrumb`,
+    itemListElement: breadcrumbs.map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: c.name,
+      item: absoluteUrl(c.path),
+    })),
+  });
+}
+
+if (service) {
+  graph.push({
+    '@type': 'Service',
+    '@id': `${url}#service`,
+    name: service.name,
+    description: service.description,
+    url,
+    provider: { '@id': orgId },
+    areaServed: [
+      { '@type': 'Country', name: 'Perú' },
+      { '@type': 'AdministrativeArea', name: 'Latinoamérica' },
+    ],
+    ...(service.priceFrom
+      ? {
+          offers: {
+            '@type': 'Offer',
+            priceCurrency: 'PEN',
+            priceSpecification: {
+              '@type': 'PriceSpecification',
+              minPrice: service.priceFrom,
+              priceCurrency: 'PEN',
+            },
+          },
+        }
+      : {}),
+  });
+}
+
+if (creativeWork) {
+  graph.push({
+    '@type': 'CreativeWork',
+    '@id': `${url}#work`,
+    name: creativeWork.name,
+    description: creativeWork.description,
+    url,
+    creator: { '@id': orgId },
+    isPartOf: { '@id': websiteId },
+  });
+}
+
+const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(
+  /</g,
+  '\\u003c',
+);
+---
+
+<script type="application/ld+json" set:html={json} is:inline />
