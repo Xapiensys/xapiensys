@@ -1,0 +1,126 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  index?: string;
+  steps?: { title: string; text: string }[];
+  title?: string;
+}
+
+const defaultSteps = [
+  {
+    title: 'Diagnóstico',
+    text: 'Entendemos tus objetivos, procesos y necesidades antes de proponer una solución.',
+  },
+  {
+    title: 'Diseño',
+    text: 'Definimos estructura, experiencia y alcance con prioridades compartidas.',
+  },
+  {
+    title: 'Desarrollo',
+    text: 'Construimos, integramos y revisamos la solución en ciclos claros.',
+  },
+  {
+    title: 'Lanzamiento y mejora',
+    text: 'Ponemos en marcha, medimos lo acordado y encontramos oportunidades de mejora.',
+  },
+];
+
+const { index = '06', steps = defaultSteps, title } = Astro.props;
+---
+
+<section class="section-shell section-pad" id="proceso" aria-labelledby="process-title">
+  <div class="section-heading">
+    <div>
+      <SectionLabel index={index}>CÓMO TRABAJAMOS</SectionLabel>
+      <h2 id="process-title">
+        {title ?? (
+          <>
+            Del reto al
+            <br />
+            <span class="accent-violet">siguiente nivel.</span>
+          </>
+        )}
+      </h2>
+    </div>
+    <p class="section-intro">
+      Un proceso colaborativo que pone primero el problema, define el rumbo y mejora con evidencia.
+    </p>
+  </div>
+  <ol class="grid">
+    {steps.map((s, i) => (
+      <li>
+        <span class="num mono">{String(i + 1).padStart(2, '0')}</span>
+        <div>
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 38px 1fr;
+    align-items: start;
+    gap: 13px;
+    padding: 23px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .num {
+    padding-top: 3px;
+    color: var(--color-violet-soft);
+    font-size: 12px;
+  }
+
+  h3 {
+    margin-bottom: 7px;
+    font-size: 19px;
+    line-height: 1.35;
+  }
+
+  p {
+    max-width: 530px;
+    margin: 0;
+    color: var(--color-text-dim);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+  }
+
+  @media (min-width: 620px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-left: 1px solid var(--color-border);
+    }
+
+    li {
+      min-height: 155px;
+      padding: 24px 18px;
+      border-right: 1px solid var(--color-border);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    li {
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+      min-height: 205px;
+      padding: 25px 17px;
+    }
+  }
+</style>

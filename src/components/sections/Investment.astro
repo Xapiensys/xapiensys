@@ -1,0 +1,69 @@
+---
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import { formatSoles } from '@/lib/quoteOptions';
+
+interface Props {
+  index: string;
+  priceFrom: number | null;
+  note: string;
+  maintenance: string;
+}
+const { index, priceFrom, note, maintenance } = Astro.props;
+---
+
+<section class="section-shell section-pad" id="inversion" aria-labelledby="inversion-title">
+  <div class="box">
+    <div>
+      <SectionLabel index={index}>INVERSIÓN ORIENTATIVA</SectionLabel>
+      <h2 id="inversion-title" class="visually-hidden">
+        Inversión orientativa
+      </h2>
+      <p class="price">{priceFrom ? `Desde ${formatSoles(priceFrom)}` : 'Requiere diagnóstico'}</p>
+      <p class="note">{note}</p>
+      <p class="maint">{maintenance}</p>
+    </div>
+    <Button href="/cotizar" icon="arrow-right" track="cta_quote_click" trackLocation="investment">
+      Calcula tu rango en 1 minuto
+    </Button>
+  </div>
+</section>
+
+<style>
+  .box {
+    display: grid;
+    gap: var(--space-6);
+    align-items: end;
+    padding: clamp(24px, 5vw, 48px);
+    border: 1px solid var(--color-cyan-a25);
+    background: var(--color-surface);
+  }
+
+  .price {
+    margin: 0 0 var(--space-3);
+    color: var(--color-cyan);
+    font-family: var(--font-heading);
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .note,
+  .maint {
+    max-width: 560px;
+    margin: 0 0 6px;
+    color: var(--color-text-dim);
+    font-size: 15px;
+  }
+
+  .maint {
+    color: var(--color-text-soft);
+  }
+
+  @media (min-width: 900px) {
+    .box {
+      grid-template-columns: 1fr auto;
+    }
+  }
+</style>

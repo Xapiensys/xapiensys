@@ -1,0 +1,136 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+interface Props {
+  index?: string;
+}
+const { index = '08' } = Astro.props;
+---
+
+<section class="section-shell section-pad coverage" id="cobertura" aria-labelledby="coverage-title">
+  <div class="visual" aria-hidden="true">
+    <svg viewBox="0 0 260 260">
+      <circle cx="130" cy="130" r="104"></circle>
+      <circle cx="130" cy="130" r="72"></circle>
+      <circle cx="130" cy="130" r="39"></circle>
+      <path d="M26 130h208M130 26v208"></path>
+      <circle cx="130" cy="130" r="7" class="point"></circle>
+      <circle cx="188" cy="83" r="4" class="point secondary"></circle>
+      <circle cx="80" cy="180" r="4" class="point secondary"></circle>
+    </svg>
+    <span class="mono">LIMA / PERÚ</span>
+  </div>
+  <div>
+    <SectionLabel index={index}>COBERTURA</SectionLabel>
+    <h2 id="coverage-title" class="display-h2">
+      Cerca para empezar.
+      <br />
+      <span class="accent-cyan">Listos para conectar.</span>
+    </h2>
+    <p class="copy">
+      Con base en Lima, trabajamos de forma remota con empresas en todo el Perú y Latinoamérica.
+    </p>
+    <ul>
+      <li>
+        <span class="mono">01</span>Lima — base
+      </li>
+      <li>
+        <span class="mono">02</span>Perú
+      </li>
+      <li>
+        <span class="mono">03</span>Latinoamérica
+      </li>
+      <li>
+        <span class="mono">04</span>Colaboración remota internacional
+      </li>
+    </ul>
+  </div>
+</section>
+
+<style>
+  .coverage {
+    display: grid;
+    align-items: center;
+    gap: 42px;
+  }
+
+  .visual {
+    position: relative;
+    display: grid;
+    width: min(100%, 300px);
+    aspect-ratio: 1;
+    place-items: center;
+    justify-self: center;
+  }
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: var(--color-cyan-a25);
+    stroke-width: 1;
+  }
+
+  .point {
+    fill: var(--color-cyan);
+    stroke: none;
+  }
+
+  .secondary {
+    fill: var(--color-violet);
+  }
+
+  .visual > span {
+    position: absolute;
+    right: 3%;
+    bottom: 14%;
+    color: var(--color-text-soft);
+  }
+
+  .copy {
+    max-width: 490px;
+    margin: 20px 0 24px;
+    color: var(--color-text-dim);
+    line-height: 1.75;
+  }
+
+  ul {
+    display: grid;
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 49px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+  }
+
+  li span {
+    color: var(--color-cyan);
+  }
+
+  @media (min-width: 620px) {
+    ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 16px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .coverage {
+      grid-template-columns: minmax(280px, 0.75fr) minmax(0, 1.25fr);
+      gap: clamp(54px, 10vw, 130px);
+    }
+
+    .visual {
+      width: min(100%, 360px);
+    }
+  }
+</style>

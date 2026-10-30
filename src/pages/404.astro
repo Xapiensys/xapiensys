@@ -1,0 +1,37 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import Button from '@/components/ui/Button.astro';
+---
+
+<BaseLayout
+  title="Página no encontrada | Xapiensys"
+  description="La página que buscas no existe o cambió de dirección."
+  path="/404"
+  noindex
+>
+  <PageHero
+    label="ERROR 404"
+    title="Esta página no existe"
+    lede="Puede que el enlace haya cambiado. Estos caminos sí funcionan:"
+    ctas={false}
+  >
+    <div class="actions">
+      <Button href="/">Ir al inicio</Button>
+      <Button href="/servicios" variant="secondary">
+        Ver servicios
+      </Button>
+      <Button href="/cotizar" variant="secondary">
+        Cotizar
+      </Button>
+    </div>
+  </PageHero>
+</BaseLayout>
+
+<style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

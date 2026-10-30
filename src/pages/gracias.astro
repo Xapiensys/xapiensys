@@ -1,0 +1,71 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import Button from '@/components/ui/Button.astro';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
+---
+
+<BaseLayout
+  title="Gracias por escribirnos | Xapiensys"
+  description="Recibimos tu mensaje. Te contactaremos pronto por WhatsApp o correo."
+  path="/gracias"
+  noindex
+>
+  <PageHero
+    label="MENSAJE RECIBIDO"
+    title="Gracias, ya tenemos tu mensaje"
+    lede="Te escribiremos pronto. Si quieres avanzar ahora, continúa por WhatsApp con tu código."
+    ctas={false}
+  >
+    <p class="code mono" data-code hidden>
+      TU CÓDIGO: <strong></strong>
+    </p>
+    <div class="actions">
+      <Button
+        href={buildWhatsAppUrl({ intent: 'consultoria' })}
+        icon="arrow-up-right"
+        track="cta_whatsapp_click"
+        trackLocation="thanks"
+        data-wa
+      >
+        Continuar por WhatsApp
+      </Button>
+      <Button href="/" variant="secondary">
+        Volver al inicio
+      </Button>
+    </div>
+  </PageHero>
+</BaseLayout>
+
+<script>
+  import { buildWhatsAppUrl } from '@/lib/whatsapp';
+  const code = new URLSearchParams(location.search).get('codigo');
+  if (code && /^XP-\d{4}$/.test(code)) {
+    const box = document.querySelector<HTMLElement>('[data-code]');
+    const strong = box?.querySelector('strong');
+    if (box && strong) {
+      strong.textContent = code;
+      box.hidden = false;
+    }
+    const wa = document.querySelector<HTMLAnchorElement>('[data-wa]');
+    if (wa) wa.href = buildWhatsAppUrl({ intent: 'consultoria', leadCode: code });
+  }
+</script>
+
+<style>
+  .code {
+    margin-bottom: var(--space-6);
+    color: var(--color-text-dim);
+    font-size: 13px;
+  }
+
+  .code strong {
+    color: var(--color-cyan);
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>

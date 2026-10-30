@@ -1,0 +1,75 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, getEntries, getEntry, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import ProblemGrid from '@/components/sections/ProblemGrid.astro';
+import ServicesGrid from '@/components/sections/ServicesGrid.astro';
+import DemoShowcase from '@/components/sections/DemoShowcase.astro';
+import FAQ from '@/components/sections/FAQ.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+import { ogPath } from '@/lib/ogPages';
+
+export const getStaticPaths = (async () =>
+  (await getCollection('soluciones')).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  entry: CollectionEntry<'soluciones'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const services = await getEntries(d.services);
+const demo = d.demo ? await getEntry(d.demo) : undefined;
+const path = `/soluciones/${entry.id}`;
+let n = 1;
+const idx = () => String(n++).padStart(2, '0');
+const topic = d.title.toLowerCase();
+---
+
+<BaseLayout
+  title={d.seoTitle}
+  description={d.description}
+  path={path}
+  ogImage={ogPath(`soluciones-${entry.id}`)}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Soluciones', path: '/soluciones' },
+    { name: d.title, path },
+  ]}
+  waIntent="sector"
+  waTopic={topic}
+>
+  <PageHero
+    label={`SECTOR · ${d.title.toUpperCase()}`}
+    title={d.h1}
+    lede={d.lede}
+    waIntent="sector"
+    waTopic={topic}
+  />
+  <ProblemGrid
+    index={idx()}
+    label="LO QUE VIVES HOY"
+    title="Los dolores más comunes del sector"
+    items={d.pains}
+  />
+  <ProblemGrid
+    index={idx()}
+    id="solucion"
+    label="CÓMO LO RESOLVEMOS"
+    title="La combinación que proponemos"
+    items={d.solution}
+    accent="cyan"
+  />
+  <ServicesGrid
+    index={idx()}
+    only={services.map((s) => s.id)}
+    title="Servicios que usa."
+    intro="Cada pieza tiene su página con alcance, entregables e inversión orientativa."
+  />
+  {demo && <DemoShowcase index={idx()} only={[demo.id]} />}
+  <FAQ page={entry.id} index={idx()} />
+  <FinalCTA index={idx()} waIntent="sector" waTopic={topic} />
+</BaseLayout>

@@ -1,0 +1,111 @@
+---
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import { site } from '@/lib/site';
+import { buildWhatsAppUrl, type WhatsAppIntent } from '@/lib/whatsapp';
+
+interface Props {
+  index?: string;
+  waIntent?: WhatsAppIntent;
+  waTopic?: string | undefined;
+}
+const { index = '10', waIntent = 'consultoria', waTopic } = Astro.props;
+---
+
+<section class="section-shell final" id="contacto" aria-labelledby="final-title">
+  <div class="inner">
+    <SectionLabel index={index}>CONVERSEMOS</SectionLabel>
+    <h2 id="final-title" class="display-h2">
+      El próximo paso
+      <br />
+      <span class="accent-cyan">empieza aquí.</span>
+    </h2>
+    <p>Cuéntanos qué quieres mejorar o calcula un rango de inversión en un minuto.</p>
+    <div class="actions">
+      <Button
+        href={buildWhatsAppUrl({ intent: waIntent, ...(waTopic ? { topic: waTopic } : {}) })}
+        icon="arrow-up-right"
+        track="cta_whatsapp_click"
+        trackLocation="final_cta"
+      >
+        Hablemos por WhatsApp
+      </Button>
+      <Button
+        href="/cotizar"
+        variant="secondary"
+        icon="arrow-right"
+        track="cta_quote_click"
+        trackLocation="final_cta"
+      >
+        Cotiza tu proyecto
+      </Button>
+    </div>
+    <a class="email" href={`mailto:${site.email}`}>
+      {site.email}
+    </a>
+  </div>
+</section>
+
+<style>
+  .final {
+    padding-block: 40px var(--section-space);
+  }
+
+  .inner {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(30px, 7vw, 76px);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .inner::after,
+  .inner::before {
+    position: absolute;
+    aspect-ratio: 1;
+    border: 1px solid var(--color-cyan-a12);
+    border-radius: 50%;
+    content: '';
+    pointer-events: none;
+  }
+
+  .inner::after {
+    top: -130px;
+    right: -100px;
+    width: 330px;
+  }
+
+  .inner::before {
+    top: -86px;
+    right: -56px;
+    width: 242px;
+  }
+
+  h2 {
+    margin-bottom: 17px;
+  }
+
+  p {
+    max-width: 560px;
+    margin-bottom: 24px;
+    color: var(--color-text-dim);
+  }
+
+  .actions {
+    position: relative;
+    z-index: var(--z-base);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .email {
+    display: inline-block;
+    margin-top: 19px;
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+    text-decoration: underline;
+    text-decoration-color: var(--color-cyan-a42);
+    text-underline-offset: 4px;
+  }
+</style>

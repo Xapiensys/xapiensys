@@ -1,0 +1,188 @@
+---
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
+---
+
+<section class="hero section-shell" id="inicio" aria-labelledby="hero-title" data-scene-anchor>
+  <div class="hero-copy">
+    <SectionLabel dot>INGENIERÍA DIGITAL · LIMA / REMOTO</SectionLabel>
+    <h1 id="hero-title">Páginas web inteligentes, automatización e IA para empresas</h1>
+    <p class="hero-lede">
+      Ahorra tiempo en tareas repetitivas y convierte más oportunidades con tecnología diseñada
+      alrededor de tu negocio.
+    </p>
+    <div class="hero-actions">
+      <Button
+        href={buildWhatsAppUrl({ intent: 'general' })}
+        icon="arrow-up-right"
+        track="cta_whatsapp_click"
+        trackLocation="hero"
+      >
+        Hablemos por WhatsApp
+      </Button>
+      <Button
+        href="#cotizador"
+        variant="secondary"
+        icon="arrow-down"
+        track="cta_quote_click"
+        trackLocation="hero"
+      >
+        Cotiza tu proyecto en 1 minuto
+      </Button>
+    </div>
+    <p class="hero-footnote mono">ESTRATEGIA · DISEÑO · DESARROLLO</p>
+  </div>
+  <div class="hero-visual" aria-hidden="true">
+    <div class="hero-orbit orbit-a"></div>
+    <div class="hero-orbit orbit-b"></div>
+    <div class="hero-orbit orbit-c"></div>
+    <svg viewBox="0 0 120 120">
+      <path d="M24 24 96 96M96 24 24 96"></path>
+      <path d="M60 8v104M8 60h104" class="thin"></path>
+      <circle cx="60" cy="60" r="8"></circle>
+    </svg>
+    <span class="visual-label mono">X / SYSTEMS</span>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    min-height: min(720px, calc(100svh - var(--header-height)));
+    align-items: center;
+    gap: var(--space-6);
+    padding-block: clamp(58px, 9vw, 106px) clamp(52px, 8vw, 96px);
+  }
+
+  .hero-copy {
+    position: relative;
+    z-index: var(--z-base);
+    max-width: 800px;
+  }
+
+  .hero-lede {
+    max-width: 620px;
+    margin-bottom: 30px;
+    color: var(--color-text-soft);
+    font-size: var(--text-lede);
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .hero-footnote {
+    margin: var(--space-8) 0 0;
+    color: var(--color-muted);
+  }
+
+  .hero-visual {
+    position: relative;
+    display: grid;
+    width: min(100%, 310px);
+    aspect-ratio: 1;
+    place-items: center;
+    justify-self: center;
+    color: var(--color-cyan);
+  }
+
+  .hero-visual > svg {
+    position: relative;
+    z-index: var(--z-base);
+    width: 29%;
+    height: 29%;
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+  }
+
+  .hero-visual > svg .thin {
+    stroke-width: 0.6;
+    opacity: 0.55;
+  }
+
+  .hero-visual > svg circle {
+    fill: currentColor;
+    stroke: none;
+  }
+
+  .hero-orbit {
+    position: absolute;
+    width: 68%;
+    aspect-ratio: 1;
+    border: 1px solid var(--color-cyan-a25);
+    border-radius: 50%;
+  }
+
+  .orbit-a {
+    animation: orbit-rotate 34s linear infinite;
+  }
+
+  .orbit-a::before,
+  .orbit-b::after {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-cyan);
+    content: '';
+  }
+
+  .orbit-a::before {
+    top: 18%;
+    left: 9%;
+  }
+
+  .orbit-b {
+    width: 88%;
+    border-color: var(--color-violet-a25);
+    animation: orbit-rotate 46s linear infinite reverse;
+  }
+
+  .orbit-b::after {
+    right: 14%;
+    bottom: 9%;
+    background: var(--color-violet);
+  }
+
+  .orbit-c {
+    width: 100%;
+    border-color: var(--color-border);
+  }
+
+  .visual-label {
+    position: absolute;
+    right: 2%;
+    bottom: 11%;
+    color: var(--color-muted);
+  }
+
+  @keyframes orbit-rotate {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.75fr);
+    }
+
+    .hero-visual {
+      width: min(100%, 390px);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .hero {
+      grid-template-columns: minmax(0, 1.65fr) minmax(330px, 0.7fr);
+    }
+  }
+</style>

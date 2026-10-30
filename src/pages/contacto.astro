@@ -1,0 +1,86 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import ContactForm from '@/components/sections/ContactForm.astro';
+import Button from '@/components/ui/Button.astro';
+import { site } from '@/lib/site';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
+import { ogPath } from '@/lib/ogPages';
+---
+
+<BaseLayout
+  title="Contacto | Xapiensys"
+  description="Escríbenos por WhatsApp, correo o formulario. Te respondemos con una propuesta clara para tu web, chatbot con IA o automatización."
+  path="/contacto"
+  ogImage={ogPath('contacto')}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Contacto', path: '/contacto' },
+  ]}
+>
+  <PageHero
+    label="CONTACTO"
+    title="Conversemos sobre tu proyecto"
+    lede="Elige el canal que prefieras. Por WhatsApp suele ser lo más rápido."
+    ctas={false}
+  />
+  <section class="section-shell section-pad layout" aria-label="Canales de contacto">
+    <div class="channels">
+      <h2>Canales directos</h2>
+      <Button
+        href={buildWhatsAppUrl({ intent: 'consultoria' })}
+        icon="arrow-up-right"
+        track="cta_whatsapp_click"
+        trackLocation="contact_page"
+      >
+        WhatsApp {site.phone.display}
+      </Button>
+      <p>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
+      <p class="mono">LIMA, PERÚ · ATENCIÓN REMOTA EN PERÚ Y LATAM</p>
+      <p class="hint">
+        ¿Prefieres un número de referencia? <a href="/cotizar">Usa el cotizador</a>.
+      </p>
+    </div>
+    <div>
+      <h2 class="form-title">O déjanos un mensaje</h2>
+      <ContactForm />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .layout {
+    display: grid;
+    gap: var(--space-10);
+    align-items: start;
+  }
+
+  h2 {
+    margin-bottom: var(--space-5);
+    font-size: 1.6rem;
+  }
+
+  .channels p {
+    margin: var(--space-4) 0 0;
+    color: var(--color-text-dim);
+  }
+
+  .channels a:not(.button),
+  .hint a {
+    color: var(--color-cyan);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .channels .mono {
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 900px) {
+    .layout {
+      grid-template-columns: 0.7fr 1.3fr;
+    }
+  }
+</style>

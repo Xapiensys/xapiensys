@@ -1,0 +1,130 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+
+const rows = [
+  [
+    'Captación de clientes',
+    'Formulario genérico que llega a un correo',
+    'Cotizador y asistente que registran cada interesado con sus datos',
+  ],
+  [
+    'Atención fuera de horario',
+    'Mensajes sin responder hasta el día siguiente',
+    'Asistente con IA que responde y deriva a WhatsApp',
+  ],
+  [
+    'Seguimiento de leads',
+    'Conversaciones sueltas, sin registro',
+    'Código de seguimiento por cliente y aviso inmediato al equipo',
+  ],
+  [
+    'Velocidad',
+    'Rendimiento variable, sobre todo en celular',
+    'Optimización desde el diseño y presupuesto de rendimiento',
+  ],
+  [
+    'SEO',
+    'Configuración básica',
+    'Estructura semántica, datos estructurados y páginas por servicio',
+  ],
+  ['Mantenimiento', 'Correcciones cuando algo se rompe', 'Mejora continua planificada y medida'],
+];
+---
+
+<section class="section-shell section-pad" id="ventaja" aria-labelledby="advantage-title">
+  <div class="section-heading">
+    <div>
+      <SectionLabel index="02">DISEÑO PARA CRECER</SectionLabel>
+      <h2 id="advantage-title">
+        Una presencia.
+        <br />
+        <span class="accent-violet">Un sistema completo.</span>
+      </h2>
+    </div>
+    <p class="section-intro">
+      Compara un sitio enfocado solo en publicar información con una solución diseñada para captar,
+      atender y medir.
+    </p>
+  </div>
+  <div
+    class="wrap"
+    role="region"
+    aria-label="Comparación: web tradicional frente a sistema Xapiensys"
+    tabindex="0"
+  >
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">CRITERIO</th>
+          <th scope="col">WEB TRADICIONAL</th>
+          <th scope="col">SISTEMA XAPIENSYS</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map(([criterio, tradicional, xapiensys]) => (
+          <tr>
+            <th scope="row">{criterio}</th>
+            <td>{tradicional}</td>
+            <td>{xapiensys}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<style>
+  .wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+
+  table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+    text-align: left;
+  }
+
+  th,
+  td {
+    padding: 17px 20px;
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+    line-height: 1.55;
+  }
+
+  thead th {
+    color: var(--color-muted);
+    background: var(--color-surface-a90);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  thead th:last-child {
+    color: var(--color-violet-pale);
+  }
+
+  tbody th {
+    width: 24%;
+    color: var(--color-text);
+    font-weight: 650;
+  }
+
+  tbody td {
+    color: var(--color-text-dim);
+  }
+
+  tbody td:last-child {
+    color: var(--color-violet-ghost);
+  }
+
+  tbody tr:last-child > * {
+    border-bottom: 0;
+  }
+</style>

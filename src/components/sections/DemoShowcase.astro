@@ -1,0 +1,59 @@
+---
+import { getCollection } from 'astro:content';
+import LinkCard from '../ui/LinkCard.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  index?: string;
+  only?: string[] | undefined;
+}
+const { index = '05', only } = Astro.props;
+const proyectos = (await getCollection('proyectos'))
+  .filter((p) => !only || only.includes(p.id))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<section class="section-shell section-pad" id="laboratorio" aria-labelledby="lab-title">
+  <div class="section-heading">
+    <div>
+      <SectionLabel index={index}>LABORATORIO</SectionLabel>
+      <h2 id="lab-title">
+        Demos propias.
+        <br />
+        <span class="accent-cyan">Capacidad verificable.</span>
+      </h2>
+    </div>
+    <p class="section-intro">
+      Proyectos que construimos para mostrar cómo resolvemos problemas reales de cada sector. Son
+      demos, no clientes, y solo mostramos métricas que medimos.
+    </p>
+  </div>
+  <div class="grid">
+    {proyectos.map((p) => (
+      <LinkCard
+        href={`/proyectos/${p.id}`}
+        index={p.data.status === 'en-construccion' ? 'EN CONSTRUCCIÓN' : 'PUBLICADA'}
+        badge={p.data.type === 'demo' ? 'Demo' : 'Caso'}
+        title={p.data.title}
+        text={p.data.summary}
+      />
+    ))}
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .grid > :global(.card) {
+    min-height: 220px;
+  }
+
+  @media (min-width: 760px) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import { buildWhatsAppUrl, type WhatsAppIntent } from '@/lib/whatsapp';
+
+interface Props {
+  label: string;
+  title: string;
+  lede: string;
+  /** Muestra el CTA doble (WhatsApp + cotizador). */
+  ctas?: boolean;
+  waIntent?: WhatsAppIntent;
+  waTopic?: string | undefined;
+  trackLocation?: string;
+}
+
+const {
+  label,
+  title,
+  lede,
+  ctas = true,
+  waIntent = 'general',
+  waTopic,
+  trackLocation = 'page_hero',
+} = Astro.props;
+---
+
+<section class="page-hero section-shell" aria-labelledby="page-title" data-scene-anchor>
+  <SectionLabel dot>{label}</SectionLabel>
+  <h1 id="page-title">{title}</h1>
+  <p class="lede">{lede}</p>
+  {ctas && (
+    <div class="actions">
+      <Button
+        href={buildWhatsAppUrl({ intent: waIntent, ...(waTopic ? { topic: waTopic } : {}) })}
+        icon="arrow-up-right"
+        track="cta_whatsapp_click"
+        trackLocation={trackLocation}
+      >
+        Escríbenos por WhatsApp
+      </Button>
+      <Button
+        href="/cotizar"
+        variant="secondary"
+        icon="arrow-right"
+        track="cta_quote_click"
+        trackLocation={trackLocation}
+      >
+        Cotiza en 1 minuto
+      </Button>
+    </div>
+  )}
+  <slot />
+</section>
+
+<style>
+  .page-hero {
+    padding-block: clamp(40px, 7vw, 88px) clamp(40px, 6vw, 72px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  h1 {
+    font-size: var(--text-h1-page);
+    line-height: 1.02;
+  }
+
+  .lede {
+    max-width: 640px;
+    margin-bottom: 28px;
+    color: var(--color-text-soft);
+    font-size: var(--text-lede);
+    line-height: 1.7;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+</style>
