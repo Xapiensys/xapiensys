@@ -21,14 +21,14 @@ Objetivo: dejar el sitio en producción sin errores mientras se construye la v2.
 
 ## F1 — Migración a Astro con paridad visual
 Objetivo: misma página que hoy, sobre la nueva arquitectura y más rápida.
-- [x] Crear proyecto Astro + TypeScript estricto + adaptador Netlify + `@astrojs/sitemap` + Preact.
+- [x] Crear proyecto Astro + TypeScript estricto + adaptador Vercel (antes Netlify) + `@astrojs/sitemap` + Preact.
 - [x] Mover fuentes, favicon, logo y og-image a `public/`.
 - [x] Extraer variables de `style.css` a `tokens.css`; resto a `global.css` y CSS por componente.
 - [x] Crear `site.ts` (NAP único), `Seo.astro`, `SchemaOrg.astro`, `BaseLayout.astro`.
 - [x] Partir el `index.html` actual en componentes de `sections/` y `layout/`.
 - [x] Reescribir la escena 3D como `Scene3D.ts` con imports por módulo de `three` (npm), niveles de calidad y pausa fuera de viewport. → Hecho en **WebGL nativo** (ver ARCHITECTURE §12: `three` pesaba ~530 KB).
 - [x] `MobileMenu` como isla mínima.
-- [x] `netlify.toml`: build de Astro, cabeceras de seguridad y caché, redirect `www → apex`.
+- [x] `vercel.json` (antes `netlify.toml`): cabeceras de seguridad y caché, redirect `www → apex`.
 - [x] Borrar `vendor/three.module.min.js`.
 
 > Verificado (2026-10-30, build local con compresión): Lighthouse móvil 99–100 / 100 / 100 / 100 en todas las plantillas; home LCP 1.7 s, CLS 0, TBT 0; JS inicial ≈ 3 KB gzip; escena 3D 6 KB (2.5 KB gzip). Revisión visual con Playwright en 360/768/1440. Pendiente: Rich Results Test sobre la URL pública.
@@ -43,7 +43,7 @@ Objetivo: misma página que hoy, sobre la nueva arquitectura y más rápida.
 
 ## F2 — Backend base: leads + cotizador
 Objetivo: que cada interesado quede registrado y medido.
-- [ ] 🧑 Crear BD Postgres (Neon o Supabase), cuenta Resend con dominio verificado y Turnstile. Cargar variables en Netlify.
+- [ ] 🧑 Crear BD Postgres (Neon o Supabase), cuenta Resend con dominio verificado y Turnstile. Cargar variables en Vercel.
 - [x] Drizzle: `schema.ts` (`leads`, `quotes`, `rate_limits`) + migración.
 - [x] `lib/server/`: `db.ts`, `rateLimit.ts`, `turnstile.ts`, `email.ts`.
 - [x] `lib/pricing.ts` con las reglas de ARCHITECTURE §7.4 (valores con `TODO(xapiensys)`).
@@ -116,7 +116,7 @@ Objetivo: páginas que rankean para búsquedas de compra.
 
 ## F6 — Laboratorio de demos y panel (opcional, después de tener tráfico)
 - [ ] 3 demos propias (Clínica, Constructora, Comercio) como páginas en `/proyectos/[slug]`, cada una etiquetada "Demo" y con métricas técnicas medidas.
-- [ ] Panel `/admin` protegido (Netlify Identity o auth simple) para ver leads, cambiar estado y notas.
+- [ ] Panel `/admin` protegido (auth simple o proveedor externo) para ver leads, cambiar estado y notas.
 - [ ] Cuando exista el primer cliente con permiso: primer `proyectos` con `type: "caso"`.
 
 ---

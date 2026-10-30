@@ -27,12 +27,12 @@ El sitio existe para **generar consultas calificadas** que terminen en proyectos
 ## 2. Visión general del sistema
 
 ```
-                    ┌──────────────────────────── Netlify ────────────────────────────┐
+                    ┌──────────────────────────── Vercel ─────────────────────────────┐
  Navegador          │                                                                 │
  ─────────          │  CDN (HTML estático prerenderizado por Astro)                    │
  HTML + CSS  ◄──────┤    /  /servicios/*  /soluciones/*  /proyectos/*  /empresa ...    │
  (instantáneo)      │                                                                 │
-                    │  Netlify Functions (endpoints Astro, prerender = false)         │
+                    │  Vercel Functions (endpoints Astro, prerender = false)          │
  Islas JS ─────────►│    POST /api/lead     → valida → BD → email → código XP-####    │
   · Scene3D (lazy)  │    POST /api/quote    → reglas de precios (servidor) → BD       │
   · ChatIA          │    POST /api/chat     → límites → LLM (streaming) → BD          │
@@ -45,7 +45,7 @@ El sitio existe para **generar consultas calificadas** que terminen en proyectos
 
 Principios:
 1. **Estático por defecto.** Cada página es HTML completo servido desde CDN. El JS solo agrega interactividad; si falla, la página sigue vendiendo (CTA a WhatsApp siempre visible).
-2. **Un solo repositorio, un solo deploy.** Frontend y backend viven juntos en Astro + Netlify. Nada de servidores aparte que mantener.
+2. **Un solo repositorio, un solo deploy.** Frontend y backend viven juntos en Astro + Vercel. Nada de servidores aparte que mantener.
 3. **El servidor decide.** Precios, límites del chat y validación se ejecutan en el backend.
 4. **Degradación elegante.** Sin JS → página completa. Sin GPU → SVG. Límite del chat agotado → modo guiado + WhatsApp. BD caída → el email de notificación igual sale (y viceversa).
 
@@ -59,8 +59,8 @@ xapiensys/
 ├── docs/
 │   ├── ARCHITECTURE.md
 │   └── ROADMAP.md
-├── astro.config.mjs            # site: https://xapiensys.com, adapter netlify, sitemap
-├── netlify.toml                # headers de seguridad y caché, redirects
+├── astro.config.mjs            # site: https://xapiensys.com, adapter vercel, sitemap
+├── vercel.json                 # headers de seguridad y caché, redirects
 ├── drizzle.config.ts
 ├── .env.example
 ├── public/
@@ -326,7 +326,7 @@ PUBLIC_SITE_URL=https://xapiensys.com
 - **Sitemap** automático, `robots.txt` apuntando a él, `lastmod` real.
 - **OG images:** una base `og-image.png` + variantes por página generadas en build (SVG → PNG con `satori`/`sharp`) con el título de la página, manteniendo la estética.
 - **Rendimiento = SEO:** HTML estático, fuentes con preload, CSS crítico inline (Astro lo hace por página), 3D diferido.
-- **Redirects** (`netlify.toml`): `www → apex`, rutas antiguas `/#servicios` no aplican (son anclas), `/index.html → /`.
+- **Redirects** (`vercel.json`): `www → apex`, rutas antiguas `/#servicios` no aplican (son anclas), `/index.html → /`.
 - **Fuera del código, pero imprescindible:** Google Business Profile verificado con el mismo NAP, Search Console con sitemap enviado, perfiles sociales con el link al sitio.
 
 ---
@@ -341,7 +341,7 @@ PUBLIC_SITE_URL=https://xapiensys.com
 
 ---
 
-## 10. Seguridad y cabeceras (`netlify.toml`)
+## 10. Seguridad y cabeceras (`vercel.json`)
 - `Content-Security-Policy` estricta (self + Turnstile + GA4 + dominio del LLM solo desde servidor, no cliente).
 - `Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` mínima.
 - Caché: assets con hash `immutable, max-age=31536000`; HTML `max-age=0, must-revalidate`.
@@ -368,7 +368,8 @@ Sugerencia comercial (fuera del código): ofrecer a los 2–3 primeros clientes 
 | Decisión | Elegido | Alternativas descartadas | Motivo |
 |----------|---------|--------------------------|--------|
 | Framework | Astro | Next.js, HTML puro | HTML estático + islas = máximo SEO y CWV; escala a multipágina sin duplicar código |
-| Backend | Endpoints Astro en Netlify Functions | FastAPI aparte | Un repo, un deploy, sin servidor que mantener; ya se usa Netlify |
+| Backend | Endpoints Astro en Vercel Functions | FastAPI aparte | Un repo, un deploy, sin servidor que mantener |
+| Hosting (2026-10-30) | Vercel (`@astrojs/vercel`, `maxDuration: 30`) | Netlify | Netlify bloqueó los deploys por falta de créditos. Funciones Node 22 con streaming (necesario para el chat SSE); IP del cliente desde `x-real-ip` |
 | Chat | IA real con límites | Simulado | Una agencia de IA necesita una demo real; los límites controlan el costo |
 | Simulador del hero | Cotizador + diagnóstico | Calculadora ROI | Califica y captura el lead con datos útiles para vender |
 | Showcase | Demos propias etiquetadas | Casos inventados | Honestidad y riesgo legal; arquitectura lista para casos reales |
@@ -379,6 +380,6 @@ Sugerencia comercial (fuera del código): ofrecer a los 2–3 primeros clientes 
 | Driver de Postgres | `postgres` (postgres-js) + Drizzle | `@neondatabase/serverless` | Funciona igual con Neon o Supabase (URL del pooler, `prepare: false`) |
 | Degradación sin claves | Todas las variables son opcionales | Fallar el build | Sin BD: límites en memoria; sin Resend: solo BD; sin ambos: `/api/lead` responde 503 y el front ofrece WhatsApp; sin LLM: modo guiado; sin `TURNSTILE_SECRET_KEY`: se omite Turnstile (honeypot y rate limit siguen) |
 | CSS | Incrustado en cada página (`inlineStylesheets: 'always'`) | Hojas externas | Eliminó 12 peticiones que bloqueaban el render; LCP móvil del home bajó de 2.3 s a 1.7 s |
-| CSP | `security.csp` de Astro (meta con hashes) + cabeceras en `netlify.toml` | `unsafe-inline` | Ningún `style=""` ni script en línea sin hash |
+| CSP | `security.csp` de Astro (meta con hashes) + cabeceras en `vercel.json` | `unsafe-inline` | Ningún `style=""` ni script en línea sin hash |
 | Envío sin JS | `/api/lead` acepta `application/x-www-form-urlencoded` y redirige a `/gracias` | Solo JSON | El formulario de `/contacto` funciona sin JavaScript |
-| URLs | `trailingSlash: 'never'`, `build.format: 'file'` | Carpetas con `/` final | Coincide con los canonicals sin barra |
+| URLs | `trailingSlash: 'never'` (el adaptador de Vercel redirige `/ruta/` → `/ruta` con 308) | Barra final | Coincide con los canonicals sin barra |

@@ -1,6 +1,6 @@
 // @ts-check
 import { defineConfig, envField } from 'astro/config';
-import netlify from '@astrojs/netlify';
+import vercel from '@astrojs/vercel';
 import preact from '@astrojs/preact';
 import sitemap from '@astrojs/sitemap';
 
@@ -8,8 +8,8 @@ export default defineConfig({
   site: 'https://xapiensys.com',
   output: 'static',
   trailingSlash: 'never',
-  build: { format: 'file', inlineStylesheets: 'always' },
-  adapter: netlify(),
+  build: { inlineStylesheets: 'always' },
+  adapter: vercel({ maxDuration: 30 }),
   integrations: [
     preact(),
     sitemap({

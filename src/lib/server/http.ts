@@ -14,11 +14,12 @@ export const json = (body: unknown, status = 200, headers: Record<string, string
 export const fail = (error: string, status = 400, headers: Record<string, string> = {}): Response =>
   json({ ok: false, error }, status, headers);
 
-export function clientIp(request: Request, fallback?: string): string {
+/** IP del cliente desde cabeceras (`Astro.clientAddress` no existe en el adaptador de Vercel). */
+export function clientIp(request: Request): string {
   return (
-    request.headers.get('x-nf-client-connection-ip') ??
+    // Vercel fija x-real-ip con la IP del cliente (no la puede falsear quien hace la petición).
+    request.headers.get('x-real-ip') ??
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    fallback ??
     '0.0.0.0'
   );
 }

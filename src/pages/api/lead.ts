@@ -43,10 +43,7 @@ export const POST: APIRoute = async (context) => {
   return context.redirect(to, 303);
 };
 
-const handle = async (
-  { request, clientAddress }: Parameters<APIRoute>[0],
-  isForm: boolean,
-): Promise<Response> => {
+const handle = async ({ request }: Parameters<APIRoute>[0], isForm: boolean): Promise<Response> => {
   let body: unknown;
   try {
     body = isForm ? await readForm(request) : await readJson(request);
@@ -60,7 +57,7 @@ const handle = async (
   // Honeypot: respondemos como éxito para no dar pistas al bot.
   if (input.website) return json({ ok: true, leadCode: 'XP-0000' });
 
-  const ip = clientIp(request, clientAddress);
+  const ip = clientIp(request);
   const ipHash = await hashIp(ip);
   if (!(await rateLimit(`${ipHash}:lead`, 5, 60 * 60 * 1000))) return fail('rate_limited', 429);
 

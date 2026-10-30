@@ -1,6 +1,6 @@
 dist
 .astro
-.netlify
+.vercel
 node_modules
 old
 drizzle

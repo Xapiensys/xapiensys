@@ -28,7 +28,7 @@ const single = (event: Outgoing) =>
     headers: { 'content-type': 'text/event-stream; charset=utf-8', 'cache-control': 'no-store' },
   });
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+export const POST: APIRoute = async ({ request }) => {
   let parsed;
   try {
     parsed = bodySchema.safeParse(await readJson(request, 4096));
@@ -41,7 +41,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   const provider = getProvider();
   if (!provider) return single({ type: 'limit', reason: 'unavailable' });
 
-  const ipHash = await hashIp(clientIp(request, clientAddress));
+  const ipHash = await hashIp(clientIp(request));
   if (!(await rateLimit(`${ipHash}:chat`, 40, 60 * 60 * 1000)))
     return single({ type: 'limit', reason: 'rate' });
 

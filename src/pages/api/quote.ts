@@ -15,7 +15,7 @@ import { clientIp, fail, hashIp, json, log, readJson, summarizeUserAgent } from 
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ request, clientAddress }) => {
+export const POST: APIRoute = async ({ request }) => {
   let body: unknown;
   try {
     body = await readJson(request);
@@ -27,7 +27,7 @@ export const POST: APIRoute = async ({ request, clientAddress }) => {
   if (!parsed.success) return fail('invalid_input', 422);
   const input = parsed.data;
 
-  const ip = clientIp(request, clientAddress);
+  const ip = clientIp(request);
   const ipHash = await hashIp(ip);
   if (input.website) return fail('invalid_input', 422);
   if (!(await rateLimit(`${ipHash}:quote`, 10, 60 * 60 * 1000))) return fail('rate_limited', 429);

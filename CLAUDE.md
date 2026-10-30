@@ -7,12 +7,12 @@ Lee antes de cualquier tarea:
 - `docs/ROADMAP.md` — fases de trabajo con criterios de aceptación. **Trabaja una fase a la vez** y no avances sin cumplir sus criterios.
 
 ## Stack
-- **Astro** (última versión estable; `output: 'static'`, adaptador `@astrojs/netlify`). Las páginas se prerenderizan; solo `src/pages/api/*` corre en servidor (`export const prerender = false`).
+- **Astro** (última versión estable; `output: 'static'`, adaptador `@astrojs/vercel`). Las páginas se prerenderizan; solo `src/pages/api/*` corre en servidor (`export const prerender = false`).
 - **TypeScript estricto** en todo el proyecto.
 - **Islas** (único JS en el cliente): escena 3D, chat IA, cotizador, menú móvil. Preact o JS vanilla; **no React** (peso).
 - **Escena 3D en WebGL nativo** (`src/components/islands/Scene3D.ts`). Three.js se descartó por peso (ver ARCHITECTURE §12); si se reintroduce, debe respetar el presupuesto de 250 KB.
-- **Backend:** endpoints Astro en Netlify Functions. **Zod** para validar toda entrada. **Drizzle ORM** + **Postgres** (Neon/Supabase). **Resend** para emails.
-- Hosting: **Netlify** (ya conectado al repo y al dominio).
+- **Backend:** endpoints Astro en Vercel Functions. **Zod** para validar toda entrada. **Drizzle ORM** + **Postgres** (Neon/Supabase). **Resend** para emails.
+- Hosting: **Vercel** (conectado al repo de GitHub). Cabeceras y redirects en `vercel.json`.
 
 ## Comandos
 ```bash
