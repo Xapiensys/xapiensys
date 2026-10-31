@@ -328,7 +328,7 @@ PUBLIC_SITE_URL=https://xapiensys.com
 - **Sitemap** automático, `robots.txt` apuntando a él, `lastmod` real.
 - **OG images:** una base `og-image.png` + variantes por página generadas en build (SVG → PNG con `satori`/`sharp`) con el título de la página, manteniendo la estética.
 - **Rendimiento = SEO:** HTML estático, fuentes con preload, CSS crítico inline (Astro lo hace por página), 3D diferido.
-- **Redirects** (`vercel.json`): `www → apex`, rutas antiguas `/#servicios` no aplican (son anclas), `/index.html → /`.
+- **Redirects**: `www ↔ apex` se configura en Vercel → *Settings → Domains* (no en `vercel.json`, para no crear un bucle con la redirección del dominio), rutas antiguas `/#servicios` no aplican (son anclas), `/index.html → /`.
 - **Fuera del código, pero imprescindible:** Google Business Profile verificado con el mismo NAP, Search Console con sitemap enviado, perfiles sociales con el link al sitio.
 
 ---
