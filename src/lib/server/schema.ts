@@ -14,8 +14,9 @@ import {
 
 export const leadStatus = ['nuevo', 'contactado', 'propuesta', 'ganado', 'perdido'] as const;
 
+/** Contactos (leads) de todos los formularios: contacto, diagnóstico, cotizador y chat. Tabla `contacts`. */
 export const leads = pgTable(
-  'leads',
+  'contacts',
   {
     id: serial('id').primaryKey(),
     code: varchar('code', { length: 12 }).notNull().unique(),
@@ -41,7 +42,7 @@ export const leads = pgTable(
     status: varchar('status', { length: 16, enum: leadStatus }).notNull().default('nuevo'),
     notes: text('notes'),
   },
-  (t) => [index('leads_created_at_idx').on(t.createdAt)],
+  (t) => [index('contacts_created_at_idx').on(t.createdAt)],
 );
 
 export const quotes = pgTable('quotes', {

@@ -2,8 +2,7 @@
 /**
  * Landing de prospección: el destino de los enlaces que se envían en mensajes y campañas.
  * Ej.: /diagnostico?utm_source=whatsapp&utm_campaign=clinicas-lima&sector=clinicas&empresa=Clinica%20Sol
- * TODO(xapiensys): confirmar si el diagnóstico es gratuito y su formato (duración, entregable)
- * antes de mencionarlo en el texto. Hoy solo se promete "sin compromiso de contratación".
+ * Confirmado por Xapiensys (2026-10-31): el diagnóstico es gratuito y dura 15 minutos.
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
@@ -43,17 +42,20 @@ const steps = [
     title: 'Revisamos tu caso',
     text: 'Miramos tu presencia digital y cómo atiendes hoy a tus clientes.',
   },
-  { title: 'Conversamos', text: 'Te escribimos por WhatsApp con lo que conviene mejorar primero.' },
+  {
+    title: 'Conversamos 15 minutos',
+    text: 'Te contamos qué conviene mejorar primero. Es gratuito.',
+  },
   {
     title: 'Tú decides',
-    text: 'Si quieres avanzar, te enviamos una propuesta por escrito. Sin compromiso.',
+    text: 'Si quieres avanzar, te enviamos una propuesta por escrito.',
   },
 ];
 ---
 
 <BaseLayout
-  title="Diagnóstico digital para empresas en Perú | Xapiensys"
-  description="Revisamos tu web, tu atención por WhatsApp y tus procesos, y te decimos qué mejorar primero para captar más clientes. Sin compromiso de contratación."
+  title="Diagnóstico Digital Gratuito de 15 minutos | Xapiensys"
+  description="Diagnóstico Digital Gratuito de 15 minutos: revisamos tu web, tu atención por WhatsApp y tus procesos, y te decimos qué mejorar primero."
   path="/diagnostico"
   ogImage={ogPath('diagnostico')}
   breadcrumbs={[
@@ -63,9 +65,9 @@ const steps = [
   waIntent="consultoria"
 >
   <PageHero
-    label="DIAGNÓSTICO DIGITAL"
+    label="DIAGNÓSTICO DIGITAL GRATUITO · 15 MIN"
     title="Descubre qué está frenando tus ventas en internet"
-    lede="Revisamos tu web, tu atención por WhatsApp y tus procesos, y te decimos qué mejorar primero. Sin compromiso de contratación."
+    lede="Diagnóstico Digital Gratuito de 15 minutos: revisamos tu web, tu atención por WhatsApp y tus procesos, y te decimos qué mejorar primero."
     ctas={false}
   >
     <a
@@ -74,7 +76,7 @@ const steps = [
       data-track="cta_diagnostic_click"
       data-track-location="diagnostic_hero"
     >
-      Solicitar mi diagnóstico ↓
+      Solicitar mi diagnóstico gratuito ↓
     </a>
   </PageHero>
 

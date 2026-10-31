@@ -23,7 +23,8 @@ npm run build      # build de producción
 npm run preview    # previsualizar build
 npm run check      # astro check + tsc
 npm run lint       # eslint + prettier --check
-npm run db:push    # aplicar esquema Drizzle (requiere DATABASE_URL)
+npm run db:migrate # crear/actualizar tablas en la BD (requiere DATABASE_URL)
+npm run db:push    # alternativa rápida en desarrollo
 npm run db:generate # generar migración SQL en drizzle/
 npx lighthouse http://localhost:4321 --preset=desktop   # y sin preset para móvil
 ```

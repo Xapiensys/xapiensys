@@ -19,7 +19,7 @@ En Vercel → *Settings → Environment Variables* (y luego *Redeploy*):
 | `PUBLIC_GA4_ID` | Embudo en Google Analytics | Sin analítica externa |
 | `IP_HASH_SALT` | Anonimizar IPs | Usa una sal por defecto (cámbiala) |
 
-Después, una vez: `DATABASE_URL="…" npm run db:push` para crear o actualizar las tablas.
+Después, una vez: `DATABASE_URL="…" npm run db:migrate` para crear o actualizar las tablas.
 
 ## 2. A dónde enviar a cada prospecto
 
@@ -61,7 +61,7 @@ que respondan.
 > Hola {nombre}, soy {tu nombre} de Xapiensys. Vi que {detalle real: "su web tarda en cargar en el
 > celular" / "reciben consultas por WhatsApp a cualquier hora"}. Ayudamos a {sector} en Lima a
 > responder consultas y captar clientes con su web y un asistente con IA. Si te sirve, te hago un
-> diagnóstico sin compromiso: {enlace /diagnostico personalizado}
+> Diagnóstico Digital Gratuito de 15 minutos: {enlace /diagnostico personalizado}
 
 **Seguimiento (3–5 días después, una sola vez)**
 > Hola {nombre}, te escribo por si se perdió mi mensaje. Si prefieres ver números antes de
