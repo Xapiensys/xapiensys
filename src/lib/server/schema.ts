@@ -20,7 +20,7 @@ export const leads = pgTable(
     id: serial('id').primaryKey(),
     code: varchar('code', { length: 12 }).notNull().unique(),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-    source: varchar('source', { length: 10 }).notNull(),
+    source: varchar('source', { length: 16 }).notNull(),
     name: text('name').notNull(),
     company: text('company'),
     phone: varchar('phone', { length: 32 }).notNull(),
@@ -29,6 +29,8 @@ export const leads = pgTable(
     sector: varchar('sector', { length: 32 }),
     timeline: varchar('timeline', { length: 32 }),
     message: text('message'),
+    /** Web actual del prospecto (diagnóstico). */
+    siteUrl: text('site_url'),
     estimateMin: integer('estimate_min'),
     estimateMax: integer('estimate_max'),
     utmSource: text('utm_source'),

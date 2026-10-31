@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { leadRequestSchema } from '@/lib/quote';
+import { leadRequestSchema, labelOf, sectorOptions } from '@/lib/quote';
 import { createLead, attachLeadToChat } from '@/lib/server/leads';
 import { rateLimit } from '@/lib/server/rateLimit';
 import { verifyTurnstile } from '@/lib/server/turnstile';
@@ -16,8 +16,10 @@ async function readForm(request: Request): Promise<unknown> {
     return typeof v === 'string' ? v : undefined;
   };
   return {
-    source: 'form',
+    source: get('source') === 'diagnostico' ? 'diagnostico' : 'form',
     name: get('name'),
+    siteUrl: get('siteUrl'),
+    sector: get('sector') || undefined,
     company: get('company'),
     phone: get('phone'),
     email: get('email'),
@@ -27,6 +29,16 @@ async function readForm(request: Request): Promise<unknown> {
     website: get('website'),
     turnstileToken: get('cf-turnstile-response'),
   };
+}
+
+/** Página del formulario que envió (solo rutas conocidas, para no abrir un redirect arbitrario). */
+function backPath(request: Request): string {
+  try {
+    const path = new URL(request.headers.get('referer') ?? '').pathname;
+    return path === '/diagnostico' ? '/diagnostico' : '/contacto';
+  } catch {
+    return '/contacto';
+  }
 }
 
 export const POST: APIRoute = async (context) => {
@@ -39,7 +51,7 @@ export const POST: APIRoute = async (context) => {
   const data = (await res.json()) as { ok: boolean; leadCode?: string; error?: string };
   const to = data.ok
     ? `/gracias?codigo=${encodeURIComponent(data.leadCode ?? '')}`
-    : `/contacto?error=${data.error ?? 'error'}`;
+    : `${backPath(context.request)}?error=${data.error ?? 'error'}`;
   return context.redirect(to, 303);
 };
 
@@ -77,8 +89,9 @@ const handle = async ({ request }: Parameters<APIRoute>[0], isForm: boolean): Pr
       phone: input.phone,
       email: input.email,
       needs: input.needs,
-      sector: input.sector,
+      sector: input.sector ? labelOf(sectorOptions, input.sector) : undefined,
       message: input.message,
+      siteUrl: input.siteUrl,
       utm: input.utm,
       userAgent: summarizeUserAgent(request.headers.get('user-agent')),
     });

@@ -84,8 +84,17 @@ export const leadRequestSchema = z
     needs: z.array(needSchema).max(5).default([]),
     sector: sectorSchema.optional(),
     message: z.string().trim().max(1500).optional(),
-    source: z.enum(['form', 'chat', 'quote']),
+    source: z.enum(['form', 'chat', 'quote', 'diagnostico']),
     chatSessionId: z.uuid().optional(),
+    /** Web actual del prospecto; acepta "miweb.com" y la normaliza a https://. */
+    siteUrl: z
+      .string()
+      .trim()
+      .max(200)
+      .transform((v) => (v && !/^https?:\/\//i.test(v) ? `https://${v}` : v))
+      .pipe(z.union([z.literal(''), z.url({ protocol: /^https?$/ })]))
+      .transform((v) => v || undefined)
+      .optional(),
     utm: attributionSchema,
   })
   .and(contactSchema)

@@ -1,11 +1,11 @@
 import { eq } from 'drizzle-orm';
 import { getDb, schema } from './db';
-import { sendLeadNotification } from './email';
+import { sendLeadConfirmation, sendLeadNotification } from './email';
 import { log } from './http';
 import type { Attribution } from '../analytics';
 
 export interface NewLead {
-  source: 'form' | 'chat' | 'quote';
+  source: 'form' | 'chat' | 'quote' | 'diagnostico';
   name: string;
   company?: string | undefined;
   phone: string;
@@ -14,6 +14,7 @@ export interface NewLead {
   sector?: string | undefined;
   timeline?: string | undefined;
   message?: string | undefined;
+  siteUrl?: string | undefined;
   estimate?: { min: number; max: number } | undefined;
   utm?: Attribution | undefined;
   userAgent?: string | null;
@@ -48,6 +49,7 @@ export async function createLead(lead: NewLead): Promise<{ code: string; id: num
             sector: lead.sector ?? null,
             timeline: lead.timeline ?? null,
             message: lead.message ?? null,
+            siteUrl: lead.siteUrl ?? null,
             estimateMin: lead.estimate?.min ?? null,
             estimateMax: lead.estimate?.max ?? null,
             utmSource: lead.utm?.utm_source ?? null,
@@ -71,11 +73,11 @@ export async function createLead(lead: NewLead): Promise<{ code: string; id: num
     }
   }
 
-  const emailed = await sendLeadNotification({
-    leadCode: code,
-    ...lead,
-    utm: lead.utm ? { ...lead.utm } : undefined,
-  });
+  const payload = { leadCode: code, ...lead, utm: lead.utm ? { ...lead.utm } : undefined };
+  const [emailed] = await Promise.all([
+    sendLeadNotification(payload),
+    sendLeadConfirmation(payload),
+  ]);
   if (!stored && !emailed) throw new Error('lead_not_persisted');
   return { code, id };
 }

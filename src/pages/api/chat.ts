@@ -56,6 +56,14 @@ export const POST: APIRoute = async ({ request }) => {
 
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
+      // Si el visitante cierra la pestaña, enqueue lanza: lo ignoramos y seguimos para guardar.
+      const push = (event: Outgoing) => {
+        try {
+          controller.enqueue(sse(event));
+        } catch {
+          // Conexión cerrada por el cliente.
+        }
+      };
       let text = '';
       let leadForm = false;
       let tokensIn = 0;
@@ -69,25 +77,25 @@ export const POST: APIRoute = async ({ request }) => {
           }
           if (event.type === 'refused') {
             text = REFUSED_TEXT;
-            controller.enqueue(sse({ type: 'text', text: `\n${REFUSED_TEXT}` }));
+            push({ type: 'text', text: `\n${REFUSED_TEXT}` });
             continue;
           }
           if (event.type === 'text') text += event.text;
           if (event.type === 'lead_form') leadForm = true;
-          controller.enqueue(sse(event));
+          push(event);
         }
         if (leadForm && !text.trim()) {
           text = LEAD_FORM_TEXT;
-          controller.enqueue(sse({ type: 'text', text }));
+          push({ type: 'text', text });
         }
-        controller.enqueue(sse({ type: 'done' }));
+        push({ type: 'done' });
       } catch (error) {
         log('api/chat', error);
-        controller.enqueue(sse({ type: 'limit', reason: 'error' }));
-        controller.enqueue(sse({ type: 'done' }));
+        push({ type: 'limit', reason: 'error' });
+        push({ type: 'done' });
       } finally {
-        controller.close();
-        if (text)
+        // Guardar ANTES de cerrar: en Vercel la función puede congelarse al terminar la respuesta.
+        if (text) {
           await saveExchange(
             sessionId,
             message,
@@ -96,6 +104,12 @@ export const POST: APIRoute = async ({ request }) => {
             tokensOut,
             estimateCost(provider.model, tokensIn, tokensOut),
           );
+        }
+        try {
+          controller.close();
+        } catch {
+          // El cliente ya cerró la conexión.
+        }
       }
     },
     cancel() {
