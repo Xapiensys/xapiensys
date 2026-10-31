@@ -1,0 +1,130 @@
+/* Estilos de formularios compartidos por las islas (prefijo xf-). */
+.xf-fields {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.xf-field {
+  display: grid;
+  gap: 6px;
+}
+
+.xf-field label,
+.xf-legend {
+  color: var(--color-text-soft);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.xf-optional {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.xf-field input,
+.xf-field textarea,
+.xf-field select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 13px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  background: var(--color-bg-a78);
+  font-size: var(--text-base);
+}
+
+.xf-field textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.xf-field input:focus-visible,
+.xf-field textarea:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 1px;
+}
+
+.xf-field input:user-invalid {
+  border-color: var(--color-danger);
+}
+
+.xf-check {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 10px;
+  align-items: start;
+  color: var(--color-text-dim);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.xf-check input {
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--color-cyan);
+}
+
+.xf-check a {
+  color: var(--color-cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.xf-hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.xf-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}
+
+.xf-btn {
+  display: inline-flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: 0 19px;
+  border: 1px solid var(--color-cyan);
+  border-radius: var(--radius-sm);
+  color: var(--color-on-cyan);
+  background: var(--color-cyan);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  transition:
+    background-color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.xf-btn:hover:not(:disabled) {
+  background: var(--color-cyan-bright);
+  transform: translateY(-2px);
+}
+
+.xf-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.xf-btn-secondary {
+  border-color: var(--color-border-cta);
+  color: var(--color-text);
+  background: var(--color-fill-faint);
+}
+
+.xf-btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-cyan-a42);
+  background: var(--color-cyan-a06);
+}
+
+.xf-turnstile:empty {
+  display: none;
+}

@@ -1,0 +1,73 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, getEntries, getEntry, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import ProblemGrid from '@/components/sections/ProblemGrid.astro';
+import Checklist from '@/components/sections/Checklist.astro';
+import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import Investment from '@/components/sections/Investment.astro';
+import DemoShowcase from '@/components/sections/DemoShowcase.astro';
+import FAQ from '@/components/sections/FAQ.astro';
+import SectorsGrid from '@/components/sections/SectorsGrid.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+import { ogPath } from '@/lib/ogPages';
+
+export const getStaticPaths = (async () =>
+  (await getCollection('servicios')).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  entry: CollectionEntry<'servicios'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const sectors = await getEntries(d.sectors);
+const demo = d.demo ? await getEntry(d.demo) : undefined;
+const path = `/servicios/${entry.id}`;
+let n = 1;
+const idx = () => String(n++).padStart(2, '0');
+---
+
+<BaseLayout
+  title={d.seoTitle}
+  description={d.description}
+  path={path}
+  ogImage={ogPath(`servicios-${entry.id}`)}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Servicios', path: '/servicios' },
+    { name: d.title, path },
+  ]}
+  service={{ name: d.title, description: d.description, priceFrom: d.priceFrom }}
+  waIntent="servicio"
+  waTopic={d.title.toLowerCase()}
+>
+  <PageHero
+    label={`SERVICIO · ${d.title.toUpperCase()}`}
+    title={d.h1}
+    lede={d.lede}
+    waIntent="servicio"
+    waTopic={d.title.toLowerCase()}
+  />
+  <ProblemGrid
+    index={idx()}
+    label="EL PROBLEMA"
+    title="Lo que probablemente te está pasando"
+    items={d.problems}
+  />
+  <Checklist index={idx()} label="ENTREGABLES" title="Qué incluye" items={d.includes} />
+  <ProcessSteps index={idx()} steps={d.steps} title="Cómo funciona" />
+  <Investment
+    index={idx()}
+    priceFrom={d.priceFrom}
+    note={d.priceNote}
+    maintenance={d.maintenance}
+  />
+  {demo && <DemoShowcase index={idx()} only={[demo.id]} />}
+  <FAQ page={entry.id} index={idx()} />
+  <SectorsGrid index={idx()} only={sectors.map((s) => s.id)} title="Sectores donde aplica" />
+  <FinalCTA index={idx()} waIntent="servicio" waTopic={d.title.toLowerCase()} />
+</BaseLayout>

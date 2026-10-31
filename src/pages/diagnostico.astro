@@ -1,0 +1,151 @@
+---
+/**
+ * Landing de prospección: el destino de los enlaces que se envían en mensajes y campañas.
+ * Ej.: /diagnostico?utm_source=whatsapp&utm_campaign=clinicas-lima&sector=clinicas&empresa=Clinica%20Sol
+ * TODO(xapiensys): confirmar si el diagnóstico es gratuito y su formato (duración, entregable)
+ * antes de mencionarlo en el texto. Hoy solo se promete "sin compromiso de contratación".
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import ProblemGrid from '@/components/sections/ProblemGrid.astro';
+import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import ContactForm from '@/components/sections/ContactForm.astro';
+import FAQ from '@/components/sections/FAQ.astro';
+import SectionLabel from '@/components/ui/SectionLabel.astro';
+import BookingLink from '@/components/ui/BookingLink.astro';
+import { ogPath } from '@/lib/ogPages';
+
+const areas = [
+  {
+    title: 'Tu web y Google',
+    text: 'Velocidad en el celular, si te encuentran por tu nombre y por tu servicio, y si la web lleva a la persona a escribirte.',
+  },
+  {
+    title: 'Cómo atiendes consultas',
+    text: 'Cuánto tardas en responder por WhatsApp, qué preguntas se repiten y qué pasa con los mensajes fuera de horario.',
+  },
+  {
+    title: 'Seguimiento de clientes',
+    text: 'Dónde quedan registrados los interesados y cuántos se pierden por falta de seguimiento.',
+  },
+  {
+    title: 'Tareas repetitivas',
+    text: 'Procesos manuales (reportes, registros, avisos) que podrían hacerse solos.',
+  },
+];
+
+const steps = [
+  {
+    title: 'Déjanos tus datos',
+    text: 'Un minuto: tu negocio, tu web si tienes y qué quieres mejorar.',
+  },
+  {
+    title: 'Revisamos tu caso',
+    text: 'Miramos tu presencia digital y cómo atiendes hoy a tus clientes.',
+  },
+  { title: 'Conversamos', text: 'Te escribimos por WhatsApp con lo que conviene mejorar primero.' },
+  {
+    title: 'Tú decides',
+    text: 'Si quieres avanzar, te enviamos una propuesta por escrito. Sin compromiso.',
+  },
+];
+---
+
+<BaseLayout
+  title="Diagnóstico digital para empresas en Perú | Xapiensys"
+  description="Revisamos tu web, tu atención por WhatsApp y tus procesos, y te decimos qué mejorar primero para captar más clientes. Sin compromiso de contratación."
+  path="/diagnostico"
+  ogImage={ogPath('diagnostico')}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Diagnóstico', path: '/diagnostico' },
+  ]}
+  waIntent="consultoria"
+>
+  <PageHero
+    label="DIAGNÓSTICO DIGITAL"
+    title="Descubre qué está frenando tus ventas en internet"
+    lede="Revisamos tu web, tu atención por WhatsApp y tus procesos, y te decimos qué mejorar primero. Sin compromiso de contratación."
+    ctas={false}
+  >
+    <a
+      class="jump"
+      href="#solicitar"
+      data-track="cta_diagnostic_click"
+      data-track-location="diagnostic_hero"
+    >
+      Solicitar mi diagnóstico ↓
+    </a>
+  </PageHero>
+
+  <ProblemGrid
+    index="01"
+    id="revisamos"
+    label="QUÉ REVISAMOS"
+    title="Cuatro áreas donde se pierden clientes"
+    items={areas}
+    accent="cyan"
+  />
+  <ProcessSteps index="02" steps={steps} title="Cómo funciona" />
+
+  <section
+    class="section-shell section-pad form-block"
+    id="solicitar"
+    aria-labelledby="solicitar-title"
+  >
+    <div>
+      <SectionLabel index="03">SOLICÍTALO</SectionLabel>
+      <h2 id="solicitar-title" class="display-h2">
+        Empecemos por
+        <br />
+        <span class="accent-cyan">tu negocio.</span>
+      </h2>
+      <p class="copy">
+        Con estos datos preparamos la conversación. Si prefieres, escríbenos directo por WhatsApp.
+      </p>
+      <BookingLink location="diagnostic" />
+    </div>
+    <ContactForm variant="diagnostico" />
+  </section>
+
+  <FAQ page="diagnostico" index="04" />
+</BaseLayout>
+
+<style>
+  .jump {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    padding: 0 19px;
+    border: 1px solid var(--color-cyan);
+    border-radius: var(--radius-sm);
+    color: var(--color-on-cyan);
+    background: var(--color-cyan);
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+
+  .jump:hover {
+    background: var(--color-cyan-bright);
+  }
+
+  .form-block {
+    display: grid;
+    gap: var(--space-10);
+    align-items: start;
+  }
+
+  .copy {
+    max-width: 420px;
+    margin: 20px 0 24px;
+    color: var(--color-text-dim);
+    line-height: 1.75;
+  }
+
+  @media (min-width: 900px) {
+    .form-block {
+      grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+      gap: clamp(40px, 6vw, 90px);
+    }
+  }
+</style>

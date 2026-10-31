@@ -1,0 +1,120 @@
+---
+import { getCollection, render } from 'astro:content';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  page: string;
+  index?: string;
+  title?: string;
+}
+const { page, index = '09', title = 'Preguntas frecuentes' } = Astro.props;
+const entries = (await getCollection('faq', (e) => e.data.pages.includes(page))).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const rendered = await Promise.all(
+  entries.map(async (e) => ({ e, Content: (await render(e)).Content })),
+);
+---
+
+{rendered.length > 0 && (
+  <section class="section-shell section-pad" id="faq" aria-labelledby="faq-title">
+    <div class="section-heading">
+      <div>
+        <SectionLabel index={index}>RESPUESTAS CLARAS</SectionLabel>
+        <h2 id="faq-title">{title}</h2>
+      </div>
+      <p class="section-intro">
+        ¿Tienes otra duda? Escríbenos por WhatsApp o pregúntale al asistente.
+      </p>
+    </div>
+    <div class="list">
+      {rendered.map(({ e, Content }) => (
+        <details>
+          <summary>
+            <h3>{e.data.question}</h3>
+            <span class="toggle" aria-hidden="true" />
+          </summary>
+          <div class="answer">
+            <Content />
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+)}
+
+<style>
+  .list {
+    border-top: 1px solid var(--color-border);
+  }
+
+  details {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  summary {
+    display: flex;
+    min-height: 64px;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-4);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: clamp(17px, 2vw, 20px);
+    line-height: 1.35;
+  }
+
+  .toggle {
+    position: relative;
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+  }
+
+  .toggle::before,
+  .toggle::after {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 14px;
+    height: 1px;
+    background: var(--color-cyan);
+    content: '';
+    transition: transform 0.2s ease;
+  }
+
+  .toggle::after {
+    transform: rotate(90deg);
+  }
+
+  details[open] .toggle::after {
+    transform: rotate(0);
+  }
+
+  .answer {
+    max-width: 760px;
+    padding-bottom: var(--space-6);
+    color: var(--color-text-dim);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .answer :global(p) {
+    margin: 0;
+  }
+
+  .answer :global(a) {
+    color: var(--color-cyan);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

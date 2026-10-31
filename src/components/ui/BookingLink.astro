@@ -1,0 +1,23 @@
+---
+/** "Agendar llamada": solo aparece si existe PUBLIC_BOOKING_URL (Cal.com, Calendly…). */
+import { PUBLIC_BOOKING_URL } from 'astro:env/client';
+import Button from './Button.astro';
+
+interface Props {
+  location: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+}
+const { location, variant = 'secondary' } = Astro.props;
+---
+
+{PUBLIC_BOOKING_URL && (
+  <Button
+    href={PUBLIC_BOOKING_URL}
+    variant={variant}
+    icon="arrow-up-right"
+    track="cta_booking_click"
+    trackLocation={location}
+  >
+    Agendar una llamada
+  </Button>
+)}

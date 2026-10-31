@@ -1,0 +1,136 @@
+---
+import { siteMetrics, stack } from '@/lib/metrics';
+
+const measured = siteMetrics.measuredAt
+  ? new Date(siteMetrics.measuredAt).toLocaleDateString('es-PE', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    })
+  : null;
+---
+
+<section class="proof section-shell" aria-labelledby="proof-title">
+  <div class="label mono">
+    <span>PRUEBA TÉCNICA</span>
+    <span>ESTE SITIO / 00</span>
+  </div>
+  <h2 id="proof-title">Este sitio es la demo: rápido, medible y construido con lo que vendemos.</h2>
+  {siteMetrics.items.length > 0 && (
+    <>
+      <dl class="metrics">
+        {siteMetrics.items.map((m) => (
+          <div>
+            <dt class="mono">{m.label}</dt>
+            <dd>{m.value}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="source mono">
+        MEDIDO CON {siteMetrics.tool.toUpperCase()} · {measured?.toUpperCase()}
+      </p>
+    </>
+  )}
+  <ul class="chips" aria-label="Tecnologías">
+    {stack.map((t) => (
+      <li>
+        <i aria-hidden="true"></i>
+        {t}
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .proof {
+    padding-block: 26px 64px;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .label {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    color: var(--color-muted);
+  }
+
+  h2 {
+    max-width: 760px;
+    margin: 28px 0 26px;
+    font-size: var(--text-h2-sm);
+    line-height: 1.25;
+    letter-spacing: -0.03em;
+  }
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+    margin: 0 0 var(--space-3);
+    border: 1px solid var(--color-border);
+    background: var(--color-border);
+  }
+
+  .metrics div {
+    padding: var(--space-4);
+    background: var(--color-bg);
+  }
+
+  dt {
+    color: var(--color-muted);
+  }
+
+  dd {
+    margin: 4px 0 0;
+    color: var(--color-cyan);
+    font-family: var(--font-heading);
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .source {
+    margin: 0 0 var(--space-6);
+    color: var(--color-muted);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .chips li {
+    display: inline-flex;
+    min-height: 38px;
+    align-items: center;
+    gap: 9px;
+    padding: 0 13px;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-soft);
+    background: var(--color-surface-a90);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .chips i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-cyan);
+  }
+
+  .chips li:nth-child(even) i {
+    background: var(--color-violet);
+  }
+
+  @media (min-width: 760px) {
+    .metrics {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

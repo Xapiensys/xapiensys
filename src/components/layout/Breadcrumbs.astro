@@ -1,0 +1,67 @@
+---
+import type { Crumb } from '../seo/SchemaOrg.astro';
+
+interface Props {
+  items: Crumb[];
+}
+const { items } = Astro.props;
+---
+
+<nav class="breadcrumbs section-shell" aria-label="Ruta de navegación">
+  <ol>
+    {items.map((c, i) => (
+      <li>
+        {i < items.length - 1 ? (
+          <a href={c.path}>{c.name}</a>
+        ) : (
+          <span aria-current="page">{c.name}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    padding-top: var(--space-6);
+  }
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.06em;
+  }
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-muted);
+  }
+
+  li + li::before {
+    margin-right: 4px;
+    content: '/';
+    opacity: 0.6;
+  }
+
+  a {
+    display: inline-flex;
+    min-height: 24px;
+    align-items: center;
+    color: var(--color-text-dim);
+  }
+
+  a:hover {
+    color: var(--color-cyan);
+  }
+
+  [aria-current='page'] {
+    color: var(--color-text);
+  }
+</style>

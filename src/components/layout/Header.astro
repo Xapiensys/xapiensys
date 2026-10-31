@@ -1,0 +1,145 @@
+---
+import { mainNav } from '@/lib/site';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
+import Logo from './Logo.astro';
+import MobileMenu from './MobileMenu.astro';
+
+const current = Astro.url.pathname;
+const isActive = (href: string) => current === href || current.startsWith(`${href}/`);
+---
+
+<header class="site-header">
+  <Logo label="Xapiensys, inicio" />
+  <MobileMenu />
+  <nav id="main-nav" aria-label="Navegación principal">
+    {mainNav.map((item) => (
+      <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+        {item.label}
+      </a>
+    ))}
+    <a
+      class="nav-whatsapp"
+      href={buildWhatsAppUrl({ intent: 'consultoria' })}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-track="cta_whatsapp_click"
+      data-track-location="header"
+    >
+      WhatsApp <span aria-hidden="true">↗</span>
+    </a>
+    <a
+      class="nav-cta"
+      href="/cotizar"
+      aria-current={isActive('/cotizar') ? 'page' : undefined}
+      data-track="cta_quote_click"
+      data-track-location="header"
+    >
+      Cotizar
+    </a>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    z-index: var(--z-header);
+    top: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0 24px;
+    min-height: var(--header-height);
+    padding: 0 var(--page-gutter);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-a96);
+  }
+
+  @supports (backdrop-filter: blur(1px)) {
+    .site-header {
+      background: var(--color-bg-a78);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+    }
+  }
+
+  #main-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 0 14px;
+  }
+
+  #main-nav > a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    color: var(--color-muted);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: color 0.18s ease;
+  }
+
+  #main-nav > a:hover,
+  #main-nav > a:focus-visible,
+  #main-nav > a[aria-current='page'] {
+    color: var(--color-text);
+  }
+
+  #main-nav .nav-whatsapp span {
+    margin-left: 6px;
+  }
+
+  #main-nav .nav-cta {
+    border: 1px solid var(--color-cyan-a42);
+    color: var(--color-cyan);
+  }
+
+  #main-nav .nav-cta:hover,
+  #main-nav .nav-cta:focus-visible {
+    color: var(--color-on-cyan);
+    background: var(--color-cyan);
+  }
+
+  @media (width < 900px) {
+    :global(html.js) #main-nav {
+      display: none;
+    }
+
+    :global(html.js) :global(.menu-toggle[aria-expanded='true']) ~ #main-nav {
+      display: grid;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .site-header {
+      flex-wrap: nowrap;
+      padding-inline: max(var(--page-gutter), calc((100vw - var(--content-width)) / 2));
+    }
+
+    .site-header > :global(.brand) {
+      margin-right: auto;
+    }
+
+    #main-nav {
+      display: flex;
+      width: auto;
+      justify-content: flex-end;
+      padding: 0;
+    }
+
+    #main-nav > a {
+      padding-inline: 12px;
+    }
+
+    #main-nav .nav-cta {
+      margin-left: 10px;
+      padding-inline: 18px;
+    }
+  }
+</style>

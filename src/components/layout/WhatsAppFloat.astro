@@ -1,0 +1,52 @@
+---
+import Icon from '../ui/Icon.astro';
+import { buildWhatsAppUrl, type WhatsAppIntent } from '@/lib/whatsapp';
+
+interface Props {
+  intent?: WhatsAppIntent | undefined;
+  topic?: string | undefined;
+}
+const { intent = 'general', topic } = Astro.props;
+---
+
+<a
+  class="wa-float"
+  href={buildWhatsAppUrl({ intent, ...(topic ? { topic } : {}) })}
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Escríbenos por WhatsApp"
+  data-track="cta_whatsapp_click"
+  data-track-location="float"
+>
+  <Icon name="whatsapp" size={26} />
+</a>
+
+<style>
+  .wa-float {
+    position: fixed;
+    z-index: var(--z-float);
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    display: grid;
+    width: 56px;
+    height: 56px;
+    place-items: center;
+    border: 1px solid var(--color-cyan-a42);
+    border-radius: var(--radius-full);
+    color: var(--color-on-cyan);
+    background: var(--color-cyan);
+    box-shadow: var(--glow-cyan);
+    transition: transform 0.18s ease;
+  }
+
+  .wa-float:hover,
+  .wa-float:focus-visible {
+    transform: translateY(-3px);
+  }
+
+  @media print {
+    .wa-float {
+      display: none;
+    }
+  }
+</style>

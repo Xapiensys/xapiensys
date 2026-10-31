@@ -1,0 +1,34 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/sections/Hero.astro';
+import TechProof from '@/components/sections/TechProof.astro';
+import ServicesGrid from '@/components/sections/ServicesGrid.astro';
+import ValueMatrix from '@/components/sections/ValueMatrix.astro';
+import ChatSection from '@/components/sections/ChatSection.astro';
+import SectorsGrid from '@/components/sections/SectorsGrid.astro';
+import DemoShowcase from '@/components/sections/DemoShowcase.astro';
+import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import PricingHint from '@/components/sections/PricingHint.astro';
+import Coverage from '@/components/sections/Coverage.astro';
+import FAQ from '@/components/sections/FAQ.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+---
+
+<BaseLayout
+  title="Xapiensys | Web, Automatización e IA para Empresas"
+  description="Xapiensys crea páginas web rápidas, chatbots con IA y automatización de procesos para empresas en Lima, Perú y Latinoamérica. Cotiza en 1 minuto."
+  path="/"
+>
+  <Hero />
+  <TechProof />
+  <ServicesGrid index="01" />
+  <ValueMatrix />
+  <ChatSection index="03" />
+  <SectorsGrid index="04" />
+  <DemoShowcase index="05" />
+  <ProcessSteps index="06" />
+  <PricingHint index="07" />
+  <Coverage index="08" />
+  <FAQ page="home" index="09" />
+  <FinalCTA index="10" />
+</BaseLayout>

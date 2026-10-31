@@ -1,0 +1,36 @@
+---
+/** Imagen optimizada de un proyecto (AVIF/WebP responsive, sin CLS). */
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  /** Ancho máximo en el que se mostrará, para elegir tamaños. */
+  sizes?: string;
+  /** La primera imagen visible de la página se carga sin diferir. */
+  priority?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  alt,
+  sizes = '(min-width: 1200px) 1200px, 100vw',
+  priority = false,
+  class: className,
+} = Astro.props;
+const widths = [480, 800, 1200, 1600].filter((w) => w <= src.width);
+---
+
+<Picture
+  src={src}
+  alt={alt}
+  formats={['avif', 'webp']}
+  widths={widths.length ? widths : [src.width]}
+  sizes={sizes}
+  loading={priority ? 'eager' : 'lazy'}
+  fetchpriority={priority ? 'high' : 'auto'}
+  decoding="async"
+  class={className}
+/>

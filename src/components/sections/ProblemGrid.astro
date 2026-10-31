@@ -1,0 +1,81 @@
+---
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  index: string;
+  label: string;
+  title: string;
+  items: { title: string; text: string }[];
+  id?: string;
+  accent?: 'cyan' | 'violet';
+}
+const { index, label, title, items, id = 'problema', accent = 'violet' } = Astro.props;
+---
+
+<section class="section-shell section-pad" id={id} aria-labelledby={`${id}-title`}>
+  <SectionLabel index={index}>{label}</SectionLabel>
+  <h2 id={`${id}-title`} class="title">
+    {title}
+  </h2>
+  <ul class:list={['grid', accent]}>
+    {items.map((item, i) => (
+      <li>
+        <span class="num mono">{String(i + 1).padStart(2, '0')}</span>
+        <h3>{item.title}</h3>
+        <p>{item.text}</p>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .title {
+    max-width: 760px;
+    margin-bottom: 36px;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    line-height: 1.08;
+  }
+
+  .grid {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  li {
+    padding: 24px 22px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .num {
+    display: block;
+    margin-bottom: 14px;
+    color: var(--color-violet-soft);
+  }
+
+  .cyan .num {
+    color: var(--color-cyan);
+  }
+
+  h3 {
+    margin-bottom: 8px;
+    font-size: 19px;
+    line-height: 1.3;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-dim);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  @media (min-width: 760px) {
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    }
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+/** Panel con glassmorphism. Úsalo con moderación (backdrop-filter es caro en móvil). */
+interface Props {
+  as?: 'div' | 'section' | 'aside' | 'article';
+  class?: string;
+  glass?: boolean;
+}
+const { as: Tag = 'div', class: className, glass = true } = Astro.props;
+---
+
+<Tag class:list={['panel', { glass }, className]}>
+  <slot />
+</Tag>
+
+<style>
+  .panel {
+    border: 1px solid var(--glass-border);
+    background: var(--color-surface);
+  }
+
+  @supports (backdrop-filter: blur(1px)) {
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+    }
+  }
+</style>

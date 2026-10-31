@@ -1,0 +1,30 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import ServicesGrid from '@/components/sections/ServicesGrid.astro';
+import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import SectorsGrid from '@/components/sections/SectorsGrid.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+import { ogPath } from '@/lib/ogPages';
+---
+
+<BaseLayout
+  title="Servicios: web, chatbots con IA y automatización | Xapiensys"
+  description="Páginas web, chatbots con IA, automatización de procesos y sistemas a medida para empresas en Lima, Perú y Latinoamérica. Rangos de inversión claros."
+  path="/servicios"
+  ogImage={ogPath('servicios')}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Servicios', path: '/servicios' },
+  ]}
+>
+  <PageHero
+    label="SERVICIOS"
+    title="Servicios de desarrollo web, IA y automatización"
+    lede="Cuatro líneas de trabajo que se combinan según lo que tu negocio necesita: captar clientes, atenderlos mejor y operar con menos trabajo manual."
+  />
+  <ServicesGrid index="01" title="Lo que construimos." />
+  <ProcessSteps index="02" />
+  <SectorsGrid index="03" />
+  <FinalCTA index="04" />
+</BaseLayout>

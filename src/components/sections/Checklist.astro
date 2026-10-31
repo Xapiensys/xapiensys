@@ -1,0 +1,73 @@
+---
+import Icon from '../ui/Icon.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  index: string;
+  label: string;
+  title: string;
+  items: string[];
+  id?: string;
+}
+const { index, label, title, items, id = 'incluye' } = Astro.props;
+---
+
+<section class="section-shell section-pad block" id={id} aria-labelledby={`${id}-title`}>
+  <div>
+    <SectionLabel index={index}>{label}</SectionLabel>
+    <h2 id={`${id}-title`} class="title">
+      {title}
+    </h2>
+  </div>
+  <ul>
+    {items.map((item) => (
+      <li>
+        <Icon name="check" size={18} />
+        <span>{item}</span>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .block {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .title {
+    margin: 0;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    line-height: 1.08;
+  }
+
+  ul {
+    padding: 0;
+    margin: 0;
+    border-top: 1px solid var(--color-border);
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    min-height: 56px;
+    align-items: center;
+    gap: var(--space-3);
+    padding-block: 10px;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-soft);
+    font-size: 15px;
+  }
+
+  li :global(.icon) {
+    flex: 0 0 auto;
+    color: var(--color-cyan);
+  }
+
+  @media (min-width: 900px) {
+    .block {
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: clamp(40px, 6vw, 90px);
+    }
+  }
+</style>

@@ -1,0 +1,255 @@
+---
+/**
+ * Formulario de contacto con mejora progresiva: sin JS hace POST clásico a /api/lead
+ * (redirige a /gracias); con JS envía JSON, monta Turnstile y adjunta UTM.
+ * La variante "diagnostico" pide además la web actual y el sector, y acepta
+ * ?empresa=…&sector=… en la URL para prellenar enlaces de prospección.
+ */
+import { needOptions, sectorOptions } from '@/lib/quoteOptions';
+import '@/components/islands/styles/forms.css';
+
+interface Props {
+  variant?: 'contacto' | 'diagnostico';
+}
+const { variant = 'contacto' } = Astro.props;
+const isDiag = variant === 'diagnostico';
+---
+
+<form class="contact-form" method="post" action="/api/lead" data-contact-form novalidate>
+  <input type="hidden" name="source" value={isDiag ? 'diagnostico' : 'form'} />
+  <div class="xf-fields">
+    <div class="xf-field">
+      <label for="c-name">Nombre</label>
+      <input id="c-name" name="name" autocomplete="name" required minlength="2" maxlength="80" />
+    </div>
+    <div class="xf-field">
+      <label for="c-company">
+        Empresa <span class="xf-optional">(opcional)</span>
+      </label>
+      <input id="c-company" name="company" autocomplete="organization" maxlength="120" />
+    </div>
+    <div class="xf-field">
+      <label for="c-phone">WhatsApp</label>
+      <input
+        id="c-phone"
+        name="phone"
+        type="tel"
+        inputmode="tel"
+        autocomplete="tel"
+        required
+        pattern="\+?[\d\s()\-]{7,20}"
+        placeholder="+51 9XX XXX XXX"
+      />
+    </div>
+    <div class="xf-field">
+      <label for="c-email">
+        Email <span class="xf-optional">(opcional)</span>
+      </label>
+      <input id="c-email" name="email" type="email" autocomplete="email" maxlength="160" />
+    </div>
+    {isDiag && (
+      <>
+        <div class="xf-field">
+          <label for="c-site">
+            Web actual <span class="xf-optional">(si tienes)</span>
+          </label>
+          <input
+            id="c-site"
+            name="siteUrl"
+            inputmode="url"
+            autocomplete="url"
+            maxlength="200"
+            placeholder="miempresa.com"
+          />
+        </div>
+        <div class="xf-field">
+          <label for="c-sector">Sector</label>
+          <select id="c-sector" name="sector">
+            <option value="">Elige una opción</option>
+            {sectorOptions.map((o) => (
+              <option value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+      </>
+    )}
+    <fieldset class="needs">
+      <legend class="xf-legend">
+        {isDiag ? '¿Qué quieres mejorar primero?' : '¿Qué te interesa?'}
+      </legend>
+      {needOptions.map((o) => (
+        <label class="need">
+          <input type="checkbox" name="needs" value={o.value} />
+          <span>{o.label}</span>
+        </label>
+      ))}
+    </fieldset>
+    <div class="xf-field full">
+      <label for="c-message">
+        {isDiag ? 'Cuéntanos tu situación actual' : 'Cuéntanos tu proyecto'}{' '}
+        <span class="xf-optional">(opcional)</span>
+      </label>
+      <textarea id="c-message" name="message" maxlength="1500" rows="5"></textarea>
+    </div>
+    <div class="xf-hp" aria-hidden="true">
+      <label for="c-website">Sitio web</label>
+      <input id="c-website" name="website" tabindex="-1" autocomplete="off" />
+    </div>
+    <div class="xf-check full">
+      <input id="c-consent" name="consent" type="checkbox" required />
+      <label for="c-consent">
+        Acepto que Xapiensys use mis datos para responder mi consulta, según la{' '}
+        <a href="/privacidad">política de privacidad</a> (Ley 29733).
+      </label>
+    </div>
+    <div class="xf-turnstile full" data-turnstile></div>
+  </div>
+  <p class="xf-error" role="alert" data-error hidden>
+    No pudimos enviar tu mensaje ahora. Escríbenos por WhatsApp y te respondemos de inmediato.
+  </p>
+  <button class="xf-btn" type="submit">
+    {isDiag ? 'Solicitar diagnóstico' : 'Enviar mensaje'}
+  </button>
+</form>
+
+<script>
+  import { getAttribution, track } from '@/lib/analytics';
+  import { mountTurnstile, resetTurnstile } from '@/lib/turnstileClient';
+
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  if (form) {
+    let token: string | undefined;
+    const slot = form.querySelector<HTMLElement>('[data-turnstile]');
+    if (slot) mountTurnstile(slot, (t) => (token = t));
+    const errorEl = form.querySelector<HTMLElement>('[data-error]');
+    const button = form.querySelector<HTMLButtonElement>('button[type=submit]');
+    const params = new URLSearchParams(location.search);
+    // Vuelta desde un envío sin JS que falló.
+    if (params.has('error')) errorEl?.removeAttribute('hidden');
+    // Enlaces de prospección: ?empresa=Clínica%20Sol&sector=clinicas prellenan el formulario.
+    const company = form.querySelector<HTMLInputElement>('[name=company]');
+    const empresa = params.get('empresa');
+    if (company && empresa && !company.value) company.value = empresa.slice(0, 120);
+    const sectorSelect = form.querySelector<HTMLSelectElement>('[name=sector]');
+    const sectorAlias: Record<string, string> = {
+      clinicas: 'salud',
+      constructoras: 'construccion',
+      comercios: 'comercio',
+    };
+    const sector = params.get('sector');
+    if (sectorSelect && sector) {
+      const value = sectorAlias[sector] ?? sector;
+      if ([...sectorSelect.options].some((o) => o.value === value)) sectorSelect.value = value;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+      const fd = new FormData(form);
+      const get = (k: string) => String(fd.get(k) ?? '');
+      if (button) button.disabled = true;
+      errorEl?.setAttribute('hidden', '');
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            source: get('source') === 'diagnostico' ? 'diagnostico' : 'form',
+            name: get('name'),
+            siteUrl: get('siteUrl') || undefined,
+            sector: get('sector') || undefined,
+            company: get('company'),
+            phone: get('phone'),
+            email: get('email'),
+            needs: fd.getAll('needs'),
+            message: get('message'),
+            consent: fd.get('consent') === 'on',
+            website: get('website'),
+            turnstileToken: token,
+            utm: getAttribution(),
+          }),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        const data = (await res.json()) as { leadCode: string };
+        track('lead_submit', { source: get('source') || 'form' });
+        location.href = `/gracias?codigo=${encodeURIComponent(data.leadCode)}`;
+      } catch {
+        errorEl?.removeAttribute('hidden');
+        resetTurnstile();
+        if (button) button.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .contact-form {
+    display: grid;
+    gap: var(--space-5);
+    padding: clamp(20px, 4vw, 36px);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+  }
+
+  .needs {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+
+  .needs legend {
+    margin-bottom: var(--space-2);
+  }
+
+  .need {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text-soft);
+    font-size: 15px;
+  }
+
+  .need input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-cyan);
+  }
+
+  .xf-field select {
+    appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--color-cyan) 50%),
+      linear-gradient(135deg, var(--color-cyan) 50%, transparent 50%);
+    background-position:
+      calc(100% - 18px) 50%,
+      calc(100% - 13px) 50%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+  }
+
+  .contact-form button {
+    justify-self: start;
+  }
+
+  @media (min-width: 720px) {
+    .contact-form .xf-fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .needs,
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .needs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .needs legend {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

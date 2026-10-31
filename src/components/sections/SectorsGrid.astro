@@ -1,0 +1,61 @@
+---
+import { getCollection } from 'astro:content';
+import LinkCard from '../ui/LinkCard.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  index?: string;
+  only?: string[] | undefined;
+  title?: string;
+  headingId?: string;
+}
+
+const {
+  index = '04',
+  only,
+  title = 'Soluciones por sector',
+  headingId = 'sectors-title',
+} = Astro.props;
+const soluciones = (await getCollection('soluciones'))
+  .filter((s) => !only || only.includes(s.id))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<section class="section-shell section-pad" id="soluciones" aria-labelledby={headingId}>
+  <div class="section-heading">
+    <div>
+      <SectionLabel index={index}>PARA TU RUBRO</SectionLabel>
+      <h2 id={headingId}>{title}</h2>
+    </div>
+    <p class="section-intro">
+      Cada sector tiene dolores distintos. Combinamos los servicios que resuelven los tuyos.
+    </p>
+  </div>
+  <div class="grid">
+    {soluciones.map((s) => (
+      <LinkCard
+        href={`/soluciones/${s.id}`}
+        index={s.data.cardIndex}
+        title={s.data.title}
+        text={s.data.summary}
+      />
+    ))}
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .grid > :global(.card) {
+    min-height: 200px;
+  }
+
+  @media (min-width: 760px) {
+    .grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

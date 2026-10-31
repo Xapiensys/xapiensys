@@ -1,0 +1,99 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+import Icon, { type IconName } from './Icon.astro';
+
+interface Props extends Omit<HTMLAttributes<'a'>, 'class'> {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  icon?: IconName;
+  external?: boolean;
+  /** Evento de analítica (ver lib/analytics.ts). */
+  track?: string;
+  trackLocation?: string;
+  class?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  icon,
+  external = /^https?:/.test(href),
+  track,
+  trackLocation,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={['button', `button-${variant}`, className]}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+  data-track={track}
+  data-track-location={trackLocation}
+  {...rest}
+>
+  <slot />
+  {icon && <Icon name={icon} size={16} />}
+</a>
+
+<style>
+  .button {
+    display: inline-flex;
+    min-height: 50px;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: 0 19px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    line-height: 1.35;
+    transition:
+      transform 0.18s ease,
+      color 0.18s ease,
+      border-color 0.18s ease,
+      background-color 0.18s ease;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+  }
+
+  .button-primary {
+    border-color: var(--color-cyan);
+    color: var(--color-on-cyan);
+    background: var(--color-cyan);
+  }
+
+  .button-primary:hover,
+  .button-primary:focus-visible {
+    color: var(--color-bg);
+    background: var(--color-cyan-bright);
+  }
+
+  .button-secondary {
+    border-color: var(--color-border-cta);
+    color: var(--color-text);
+    background: var(--color-fill-faint);
+  }
+
+  .button-secondary:hover,
+  .button-secondary:focus-visible {
+    border-color: var(--color-cyan-a42);
+    background: var(--color-cyan-a06);
+  }
+
+  .button-ghost {
+    min-height: 44px;
+    padding-inline: 4px;
+    color: var(--color-cyan);
+  }
+
+  .button-ghost:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>

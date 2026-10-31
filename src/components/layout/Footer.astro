@@ -1,0 +1,186 @@
+---
+import { getCollection } from 'astro:content';
+import { site } from '@/lib/site';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
+import Logo from './Logo.astro';
+
+const servicios = (await getCollection('servicios')).sort((a, b) => a.data.order - b.data.order);
+const soluciones = (await getCollection('soluciones')).sort((a, b) => a.data.order - b.data.order);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="footer-main section-shell">
+    <div class="footer-brand">
+      <Logo label="Xapiensys, ir al inicio" />
+      <p>{site.tagline}</p>
+      <address>
+        <span class="mono">LIMA, PERÚ · REMOTO LATAM</span>
+        <a
+          href={buildWhatsAppUrl({ intent: 'general' })}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-track="cta_whatsapp_click"
+          data-track-location="footer"
+        >
+          {site.phone.display}
+        </a>
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </address>
+    </div>
+    <nav aria-label="Servicios">
+      <p class="footer-title mono">SERVICIOS</p>
+      <ul>
+        {servicios.map((s) => (
+          <li>
+            <a href={`/servicios/${s.id}`}>{s.data.title}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <nav aria-label="Soluciones por sector">
+      <p class="footer-title mono">SOLUCIONES</p>
+      <ul>
+        {soluciones.map((s) => (
+          <li>
+            <a href={`/soluciones/${s.id}`}>{s.data.title}</a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <nav aria-label="Empresa">
+      <p class="footer-title mono">XAPIENSYS</p>
+      <ul>
+        <li>
+          <a href="/proyectos">Proyectos</a>
+        </li>
+        <li>
+          <a href="/empresa">Empresa</a>
+        </li>
+        <li>
+          <a href="/cotizar">Cotizar</a>
+        </li>
+        <li>
+          <a href="/diagnostico">Diagnóstico digital</a>
+        </li>
+        <li>
+          <a href="/contacto">Contacto</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  <div class="footer-bottom section-shell">
+    <span>
+      © {year} {site.name}
+    </span>
+    <div class="footer-socials">
+      {site.socials.map((s) => (
+        <a href={s.url} target="_blank" rel="noopener noreferrer me">
+          {s.name}
+        </a>
+      ))}
+    </div>
+    <a href="/privacidad">Política de privacidad</a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    background: var(--color-bg-a50);
+  }
+
+  .footer-main {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-8) var(--space-6);
+    padding-block: 44px 32px;
+  }
+
+  .footer-brand {
+    display: grid;
+    grid-column: 1 / -1;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .footer-brand p {
+    max-width: 330px;
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 12px;
+  }
+
+  address {
+    display: grid;
+    gap: 6px;
+    font-style: normal;
+    font-size: 12px;
+  }
+
+  address .mono {
+    color: var(--color-muted);
+  }
+
+  address a {
+    width: fit-content;
+    color: var(--color-text-dim);
+  }
+
+  .footer-title {
+    margin-bottom: var(--space-3);
+    color: var(--color-muted);
+  }
+
+  ul {
+    display: grid;
+    gap: 2px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  ul a,
+  .footer-socials a,
+  .footer-bottom > a {
+    display: inline-flex;
+    min-height: 32px;
+    align-items: center;
+    color: var(--color-text-dim);
+    font-size: 12px;
+    transition: color 0.18s ease;
+  }
+
+  a:hover {
+    color: var(--color-cyan);
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 20px;
+    padding-block: 12px 20px;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+  }
+
+  .footer-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 18px;
+  }
+
+  @media (min-width: 900px) {
+    .footer-main {
+      grid-template-columns: 1.6fr repeat(3, minmax(0, 1fr));
+      padding-block: 56px 40px;
+    }
+
+    .footer-brand {
+      grid-column: auto;
+    }
+  }
+</style>

@@ -1,0 +1,103 @@
+/* Fuente única de diseño. Ningún componente define colores sueltos. */
+:root {
+  color-scheme: dark;
+
+  /* Color base */
+  --color-bg: #0a0a0f;
+  --color-surface: #11111a;
+  --color-surface-raised: #13141e;
+  --color-surface-strong: #1b1b27;
+  --color-cyan: #00f0ff;
+  --color-cyan-bright: #73f7ff;
+  --color-on-cyan: #061014;
+  --color-violet: #7c3aed;
+  --color-violet-soft: #a78bfa;
+  --color-violet-pale: #c4b5fd;
+  --color-violet-ghost: #e2d9ff;
+  --color-text: #e8ecf5;
+  --color-text-soft: #bbc3d1;
+  --color-text-dim: #aeb7c6;
+  --color-muted: #8a94a8;
+  --color-danger: #ff8a8a;
+
+  /* Transparencias derivadas */
+  --color-border: rgb(255 255 255 / 0.08);
+  --color-border-strong: rgb(255 255 255 / 0.14);
+  --color-border-cta: rgb(255 255 255 / 0.2);
+  --color-fill-faint: rgb(255 255 255 / 0.025);
+  --color-cyan-a06: rgb(0 240 255 / 0.06);
+  --color-cyan-a12: rgb(0 240 255 / 0.12);
+  --color-cyan-a25: rgb(0 240 255 / 0.25);
+  --color-cyan-a42: rgb(0 240 255 / 0.42);
+  --color-violet-a12: rgb(124 58 237 / 0.12);
+  --color-violet-a25: rgb(124 58 237 / 0.25);
+  --color-bg-a50: rgb(10 10 15 / 0.5);
+  --color-bg-a78: rgb(10 10 15 / 0.78);
+  --color-bg-a96: rgb(10 10 15 / 0.96);
+  --color-surface-a90: rgb(17 17 26 / 0.9);
+
+  /* Glass y brillos */
+  --glass-bg: var(--color-surface-a90);
+  --glass-border: var(--color-border-strong);
+  --glass-blur: blur(16px);
+  --glow-cyan: 0 0 32px rgb(0 240 255 / 0.18);
+  --glow-violet: 0 0 32px rgb(124 58 237 / 0.2);
+  --bg-ambient:
+    radial-gradient(ellipse at 15% 12%, rgb(0 240 255 / 0.055), transparent 33%),
+    radial-gradient(ellipse at 86% 55%, rgb(124 58 237 / 0.055), transparent 34%);
+
+  /* Tipografía */
+  --font-heading: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  --text-mono: 10px;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 16px;
+  --text-lede: clamp(16px, 2vw, 19px);
+  --text-h3: 21px;
+  --text-h2-sm: clamp(1.35rem, 3vw, 2rem);
+  --text-h2: clamp(2.25rem, 8vw, 4.6rem);
+  --text-h1: clamp(2.65rem, 7.6vw, 5.65rem);
+  --text-h1-page: clamp(2.3rem, 6vw, 4.4rem);
+
+  /* Espaciado (escala de 4 px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --content-width: 1200px;
+  --page-gutter: clamp(20px, 5vw, 40px);
+  --section-space: clamp(76px, 10vw, 132px);
+  --header-height: 76px;
+
+  /* Radios */
+  --radius-sm: 2px;
+  --radius-md: 6px;
+  --radius-full: 999px;
+
+  /* Capas */
+  --z-canvas: -1;
+  --z-base: 1;
+  --z-header: 10;
+  --z-float: 15;
+  --z-skip: 20;
+}
+
+@media (min-width: 620px) {
+  :root {
+    --page-gutter: clamp(30px, 5vw, 56px);
+  }
+}
+
+@media (min-width: 900px) {
+  :root {
+    --header-height: 82px;
+  }
+}

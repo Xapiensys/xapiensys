@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import LinkCard from '../ui/LinkCard.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  index?: string;
+  /** Limita a estos servicios (ids). */
+  only?: string[] | undefined;
+  title?: string;
+  intro?: string;
+}
+
+const {
+  index = '01',
+  only,
+  title = 'Tecnología útil.',
+  intro = 'Soluciones digitales pensadas para reducir fricción y apoyar el crecimiento de tu empresa.',
+} = Astro.props;
+
+const servicios = (await getCollection('servicios'))
+  .filter((s) => !only || only.includes(s.id))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<section class="section-shell section-pad" id="servicios" aria-labelledby="services-title">
+  <div class="section-heading">
+    <div>
+      <SectionLabel index={index}>QUÉ CONSTRUIMOS</SectionLabel>
+      <h2 id="services-title">
+        {title}
+        <br />
+        <span class="accent-cyan">Resultados que importan.</span>
+      </h2>
+    </div>
+    <p class="section-intro">{intro}</p>
+  </div>
+  <div class="grid">
+    {servicios.map((s) => (
+      <LinkCard
+        href={`/servicios/${s.id}`}
+        index={s.data.cardIndex}
+        title={s.data.title}
+        text={s.data.summary}
+        icon={s.data.icon}
+      />
+    ))}
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 620px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid > :global(.card) {
+      min-height: 300px;
+    }
+  }
+</style>

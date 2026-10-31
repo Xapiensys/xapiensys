@@ -1,0 +1,110 @@
+---
+/**
+ * TODO(xapiensys): texto BORRADOR. Debe revisarlo y aprobarlo un responsable (idealmente asesoría legal).
+ * Faltan: razón social, RUC, domicilio fiscal y, si corresponde, el código de inscripción del banco de
+ * datos personales ante la Autoridad Nacional de Protección de Datos Personales (ANPD).
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import { site } from '@/lib/site';
+
+const updated = '30 de octubre de 2026';
+---
+
+<BaseLayout
+  title="Política de privacidad | Xapiensys"
+  description="Cómo Xapiensys recoge, usa y protege tus datos personales conforme a la Ley N.° 29733, Ley de Protección de Datos Personales del Perú."
+  path="/privacidad"
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Privacidad', path: '/privacidad' },
+  ]}
+>
+  <PageHero
+    label="LEGAL"
+    title="Política de privacidad"
+    lede={`Última actualización: ${updated}.`}
+    ctas={false}
+  />
+  <section class="section-shell section-pad">
+    <div class="prose">
+      <h2>1. Responsable</h2>
+      <p>
+        El responsable del tratamiento de tus datos es <strong>{site.legalName}</strong>, con base
+        en Lima, Perú. Puedes contactarnos en <a href={`mailto:${site.email}`}>{site.email}</a> o
+        por WhatsApp al {site.phone.display}.
+      </p>
+
+      <h2>2. Qué datos recogemos</h2>
+      <ul>
+        <li>
+          <strong>Datos que nos das</strong> en el formulario de contacto, el cotizador o el
+          asistente: nombre, empresa, número de WhatsApp, correo (opcional), necesidad y mensaje.
+        </li>
+        <li>
+          <strong>Conversaciones con el asistente con IA</strong>: los mensajes que escribes y las
+          respuestas generadas.
+        </li>
+        <li>
+          <strong>Datos técnicos</strong>: página de llegada, origen de la visita (parámetros UTM),
+          tipo de navegador y dispositivo, y una huella cifrada (hash) de tu dirección IP que usamos
+          para prevenir abusos. No guardamos tu IP en claro.
+        </li>
+        <li>
+          <strong>Analítica</strong>: si está activa, Google Analytics 4 registra eventos de uso de
+          forma agregada.
+        </li>
+      </ul>
+
+      <h2>3. Para qué los usamos</h2>
+      <ul>
+        <li>Responder tu consulta y enviarte la cotización o propuesta que solicitaste.</li>
+        <li>Mejorar las respuestas del asistente y la experiencia del sitio.</li>
+        <li>Prevenir spam y uso abusivo de los formularios y del asistente.</li>
+        <li>Medir qué canales generan consultas para mejorar nuestro servicio.</li>
+      </ul>
+      <p>No vendemos tus datos ni los usamos para fines distintos a los indicados.</p>
+
+      <h2>4. Base legal y consentimiento</h2>
+      <p>
+        Tratamos tus datos con tu consentimiento, que otorgas al marcar la casilla correspondiente
+        en cada formulario, conforme a la Ley N.° 29733 y su reglamento. Puedes retirarlo en
+        cualquier momento.
+      </p>
+
+      <h2>5. Con quién los compartimos</h2>
+      <p>Usamos proveedores que tratan datos por encargo nuestro, solo para prestar el servicio:</p>
+      <ul>
+        <li>Alojamiento del sitio y funciones del servidor (Vercel).</li>
+        <li>Base de datos (proveedor de PostgreSQL gestionado).</li>
+        <li>Envío de correos de notificación (Resend).</li>
+        <li>Protección anti-bots (Cloudflare Turnstile).</li>
+        <li>Modelo de inteligencia artificial del asistente (Anthropic).</li>
+        <li>Analítica web (Google Analytics), si está activa.</li>
+      </ul>
+      <p>
+        Algunos de estos proveedores procesan datos fuera del Perú (flujo transfronterizo). Elegimos
+        proveedores con medidas de seguridad adecuadas.
+      </p>
+
+      <h2>6. Cuánto tiempo los conservamos</h2>
+      <p>
+        Los datos de contacto se conservan mientras exista una relación comercial o hasta que
+        solicites su eliminación. Las conversaciones con el asistente se conservan hasta 12 meses.
+      </p>
+
+      <h2>7. Tus derechos</h2>
+      <p>
+        Puedes ejercer tus derechos de acceso, rectificación, cancelación y oposición (ARCO)
+        escribiendo a <a href={`mailto:${site.email}`}>{site.email}</a>. Responderemos en los plazos
+        que establece la ley. Si consideras que no atendimos tu solicitud, puedes acudir a la
+        Autoridad Nacional de Protección de Datos Personales.
+      </p>
+
+      <h2>8. Cambios</h2>
+      <p>
+        Si actualizamos esta política, publicaremos la nueva versión en esta página con su fecha.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

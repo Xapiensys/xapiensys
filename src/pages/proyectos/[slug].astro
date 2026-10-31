@@ -1,0 +1,217 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, getEntries, getEntry, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import Checklist from '@/components/sections/Checklist.astro';
+import ServicesGrid from '@/components/sections/ServicesGrid.astro';
+import FinalCTA from '@/components/sections/FinalCTA.astro';
+import SectionLabel from '@/components/ui/SectionLabel.astro';
+import Button from '@/components/ui/Button.astro';
+import ProjectImage from '@/components/ui/ProjectImage.astro';
+import { ogPath } from '@/lib/ogPages';
+
+export const getStaticPaths = (async () =>
+  (await getCollection('proyectos')).map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  entry: CollectionEntry<'proyectos'>;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const sector = await getEntry(d.sector);
+const services = await getEntries(d.services);
+const path = `/proyectos/${entry.id}`;
+const isDemo = d.type === 'demo';
+---
+
+<BaseLayout
+  title={d.seoTitle}
+  description={d.description}
+  path={path}
+  ogImage={ogPath(`proyectos-${entry.id}`)}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Proyectos', path: '/proyectos' },
+    { name: d.title, path },
+  ]}
+  creativeWork={{ name: d.title, description: d.description }}
+  waIntent="demo"
+  waTopic={d.title}
+>
+  <PageHero
+    label={isDemo ? 'DEMO PROPIA · NO ES UN CLIENTE' : 'CASO DE CLIENTE'}
+    title={d.title}
+    lede={d.summary}
+  />
+
+  {d.cover && d.coverAlt && (
+    <figure class="section-shell cover">
+      <ProjectImage src={d.cover} alt={d.coverAlt} priority />
+    </figure>
+  )}
+
+  <section
+    class="section-shell section-pad detail"
+    aria-labelledby="detail-title"
+    data-demo={entry.id}
+  >
+    <div>
+      <SectionLabel index="01">QUÉ PROBLEMA RESUELVE</SectionLabel>
+      <h2 id="detail-title" class="title">
+        {d.problem}
+      </h2>
+      {sector && (
+        <p class="sector">
+          Sector: <a href={`/soluciones/${sector.id}`}>{sector.data.title}</a>
+        </p>
+      )}
+    </div>
+    <div class="status">
+      <p class="mono">ESTADO</p>
+      {d.status === 'en-construccion' ? (
+        <p>
+          En construcción. Publicaremos la demo navegable y sus métricas técnicas medidas
+          (Lighthouse, peso, tiempo de carga) cuando esté lista.
+        </p>
+      ) : (
+        d.url && (
+          <Button
+            href={d.url}
+            icon="arrow-up-right"
+            track="cta_demo_click"
+            trackLocation="demo_page"
+          >
+            Abrir la demo
+          </Button>
+        )
+      )}
+      {d.metrics.length > 0 && (
+        <dl>
+          {d.metrics.map((m) => (
+            <div>
+              <dt class="mono">{m.label}</dt>
+              <dd>{m.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </div>
+  </section>
+
+  <Checklist index="02" label="FUNCIONES" title="Qué incluye la demo" items={d.features} />
+  {d.gallery.length > 0 && (
+    <section class="section-shell section-pad" aria-label="Capturas del proyecto">
+      <div class="gallery">
+        {d.gallery.map((g) => (
+          <figure>
+            <ProjectImage src={g.src} alt={g.alt} sizes="(min-width: 900px) 600px, 100vw" />
+            <figcaption>{g.alt}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  )}
+  <ServicesGrid index="03" only={services.map((s) => s.id)} title="Servicios que muestra." />
+  <FinalCTA index="04" waIntent="demo" waTopic={d.title} />
+</BaseLayout>
+
+<script>
+  import { track } from '@/lib/analytics';
+  const el = document.querySelector<HTMLElement>('[data-demo]');
+  if (el?.dataset.demo) track('demo_view', { slug: el.dataset.demo });
+</script>
+
+<style>
+  .cover {
+    margin-block: var(--space-10) 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-strong);
+  }
+
+  .cover :global(img),
+  .gallery :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .gallery {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .gallery figure {
+    margin: 0;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  figcaption {
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 900px) {
+    .gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .detail {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .title {
+    max-width: 640px;
+    margin-bottom: var(--space-4);
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    line-height: 1.15;
+  }
+
+  .sector {
+    color: var(--color-text-dim);
+  }
+
+  .sector a {
+    color: var(--color-cyan);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .status {
+    padding: var(--space-6);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-dim);
+  }
+
+  .status .mono {
+    color: var(--color-violet-soft);
+  }
+
+  dl {
+    display: grid;
+    gap: var(--space-3);
+    margin: var(--space-4) 0 0;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--color-cyan);
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+  }
+
+  @media (min-width: 900px) {
+    .detail {
+      grid-template-columns: 1.3fr 0.7fr;
+    }
+  }
+</style>

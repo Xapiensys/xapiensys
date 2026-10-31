@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import Quoter from '@/components/islands/Quoter';
+import FAQ from '@/components/sections/FAQ.astro';
+import { ogPath } from '@/lib/ogPages';
+---
+
+<BaseLayout
+  title="Cotiza tu página web, chatbot o automatización | Xapiensys"
+  description="Responde 5 preguntas y obtén un rango de inversión orientativo para tu web, chatbot con IA o automatización. Sin compromiso, en 1 minuto."
+  path="/cotizar"
+  ogImage={ogPath('cotizar')}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Cotizar', path: '/cotizar' },
+  ]}
+  waIntent="cotizacion"
+>
+  <PageHero
+    label="COTIZADOR"
+    title="Cotiza tu proyecto en 1 minuto"
+    lede="Cinco preguntas, un rango de inversión orientativo y un código para continuar la conversación por WhatsApp."
+    ctas={false}
+  />
+  <section class="section-shell section-pad" aria-label="Cotizador">
+    <div class="tool">
+      <Quoter client:load variant="page" />
+      <noscript>
+        <p>
+          El cotizador necesita JavaScript. <a href="/contacto">Escríbenos aquí</a> y te enviamos un
+          rango.
+        </p>
+      </noscript>
+    </div>
+  </section>
+  <FAQ page="paginas-web" index="01" title="Dudas sobre precios" />
+</BaseLayout>
+
+<style>
+  .tool {
+    max-width: 820px;
+    min-height: 520px;
+  }
+</style>
