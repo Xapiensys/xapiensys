@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { track, getAttribution } from '@/lib/analytics';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
+import { PUBLIC_BOOKING_URL } from 'astro:env/client';
 import { ContactFields, emptyContact, type ContactValues } from './ContactFields';
 import './styles/forms.css';
 import './styles/chat.css';
@@ -300,6 +301,17 @@ export default function ChatDemo({ suggestions, guided }: Props) {
               >
                 Continuar por WhatsApp ↗
               </a>
+              {PUBLIC_BOOKING_URL && (
+                <a
+                  href={PUBLIC_BOOKING_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-track="cta_booking_click"
+                  data-track-location="chat_lead"
+                >
+                  Agendar una llamada ↗
+                </a>
+              )}
             </span>
           </div>
         )}

@@ -3,6 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
 import ContactForm from '@/components/sections/ContactForm.astro';
 import Button from '@/components/ui/Button.astro';
+import BookingLink from '@/components/ui/BookingLink.astro';
 import { site } from '@/lib/site';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
 import { ogPath } from '@/lib/ogPages';
@@ -35,6 +36,9 @@ import { ogPath } from '@/lib/ogPages';
       >
         WhatsApp {site.phone.display}
       </Button>
+      <div class="booking">
+        <BookingLink location="contact_page" />
+      </div>
       <p>
         <a href={`mailto:${site.email}`}>{site.email}</a>
       </p>
@@ -72,6 +76,10 @@ import { ogPath } from '@/lib/ogPages';
     color: var(--color-cyan);
     text-decoration: underline;
     text-underline-offset: 3px;
+  }
+
+  .booking:not(:empty) {
+    margin-top: var(--space-3);
   }
 
   .channels .mono {

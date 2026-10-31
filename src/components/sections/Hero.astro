@@ -1,7 +1,15 @@
 ---
 import Button from '../ui/Button.astro';
 import SectionLabel from '../ui/SectionLabel.astro';
+import { getCollection } from 'astro:content';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
+import { formatSoles } from '@/lib/quoteOptions';
+
+// Precio de entrada real, tomado del contenido (no se escribe a mano aquí).
+const prices = (await getCollection('servicios'))
+  .map((s) => s.data.priceFrom)
+  .filter((p): p is number => p != null);
+const from = prices.length ? Math.min(...prices) : null;
 ---
 
 <section class="hero section-shell" id="inicio" aria-labelledby="hero-title" data-scene-anchor>
@@ -31,7 +39,17 @@ import { buildWhatsAppUrl } from '@/lib/whatsapp';
         Cotiza tu proyecto en 1 minuto
       </Button>
     </div>
-    <p class="hero-footnote mono">ESTRATEGIA · DISEÑO · DESARROLLO</p>
+    <ul class="hero-facts mono" aria-label="En resumen">
+      {from && <li>PROYECTOS DESDE {formatSoles(from)}</li>}
+      <li>RANGO DE INVERSIÓN AL INSTANTE</li>
+      <li>LIMA · PERÚ · REMOTO LATAM</li>
+    </ul>
+    <p class="hero-diag">
+      ¿No sabes por dónde empezar?
+      <a href="/diagnostico" data-track="cta_diagnostic_click" data-track-location="hero">
+        Pide un diagnóstico de tu negocio →
+      </a>
+    </p>
   </div>
   <div class="hero-visual" aria-hidden="true">
     <div class="hero-orbit orbit-a"></div>
@@ -77,9 +95,44 @@ import { buildWhatsAppUrl } from '@/lib/whatsapp';
     gap: var(--space-3);
   }
 
-  .hero-footnote {
+  .hero-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    padding: 0;
     margin: var(--space-8) 0 0;
     color: var(--color-muted);
+    list-style: none;
+  }
+
+  .hero-facts li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hero-facts li::before {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-cyan);
+    content: '';
+  }
+
+  .hero-diag {
+    margin: var(--space-4) 0 0;
+    color: var(--color-text-dim);
+    font-size: 14px;
+  }
+
+  .hero-diag a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    color: var(--color-cyan);
+    text-decoration: underline;
+    text-decoration-color: var(--color-cyan-a42);
+    text-underline-offset: 4px;
   }
 
   .hero-visual {

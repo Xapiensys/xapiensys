@@ -14,6 +14,7 @@ import {
 } from '@/lib/quoteOptions';
 import { track, getAttribution } from '@/lib/analytics';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
+import { PUBLIC_BOOKING_URL } from 'astro:env/client';
 import { mountTurnstile, resetTurnstile } from '@/lib/turnstileClient';
 import { ContactFields, emptyContact, type ContactValues } from './ContactFields';
 import './styles/forms.css';
@@ -200,6 +201,18 @@ export default function Quoter({ variant = 'embedded' }: Props) {
           >
             Continuar por WhatsApp ↗
           </a>
+          {PUBLIC_BOOKING_URL && (
+            <a
+              class="xf-btn xf-btn-secondary"
+              href={PUBLIC_BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-track="cta_booking_click"
+              data-track-location="quote_result"
+            >
+              Agendar una llamada ↗
+            </a>
+          )}
         </div>
         <p class="q-note">Guarda tu código {result.leadCode}: con él retomamos tu cotización.</p>
       </div>

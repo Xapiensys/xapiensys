@@ -6,6 +6,8 @@ export type AnalyticsEvent =
   | 'cta_whatsapp_click'
   | 'cta_quote_click'
   | 'cta_demo_click'
+  | 'cta_booking_click'
+  | 'cta_diagnostic_click'
   | 'quote_start'
   | 'quote_step'
   | 'quote_complete'

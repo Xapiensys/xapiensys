@@ -1,5 +1,6 @@
 ---
 import Button from '../ui/Button.astro';
+import BookingLink from '../ui/BookingLink.astro';
 import SectionLabel from '../ui/SectionLabel.astro';
 import { site } from '@/lib/site';
 import { buildWhatsAppUrl, type WhatsAppIntent } from '@/lib/whatsapp';
@@ -39,10 +40,15 @@ const { index = '10', waIntent = 'consultoria', waTopic } = Astro.props;
       >
         Cotiza tu proyecto
       </Button>
+      <BookingLink location="final_cta" variant="ghost" />
     </div>
-    <a class="email" href={`mailto:${site.email}`}>
-      {site.email}
-    </a>
+    <p class="extra">
+      ¿Quieres saber qué mejorar primero?
+      <a href="/diagnostico" data-track="cta_diagnostic_click" data-track-location="final_cta">
+        Pide un diagnóstico de tu negocio
+      </a>
+      · <a href={`mailto:${site.email}`}>{site.email}</a>
+    </p>
   </div>
 </section>
 
@@ -99,13 +105,20 @@ const { index = '10', waIntent = 'consultoria', waTopic } = Astro.props;
     gap: var(--space-3);
   }
 
-  .email {
-    display: inline-block;
-    margin-top: 19px;
-    color: var(--color-text-soft);
+  .extra {
+    margin: 22px 0 0;
+    color: var(--color-text-dim);
     font-size: var(--text-sm);
+  }
+
+  .extra a {
+    color: var(--color-text-soft);
     text-decoration: underline;
     text-decoration-color: var(--color-cyan-a42);
     text-underline-offset: 4px;
+  }
+
+  .extra a:hover {
+    color: var(--color-cyan);
   }
 </style>

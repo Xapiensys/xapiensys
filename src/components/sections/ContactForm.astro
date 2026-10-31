@@ -2,12 +2,21 @@
 /**
  * Formulario de contacto con mejora progresiva: sin JS hace POST clásico a /api/lead
  * (redirige a /gracias); con JS envía JSON, monta Turnstile y adjunta UTM.
+ * La variante "diagnostico" pide además la web actual y el sector, y acepta
+ * ?empresa=…&sector=… en la URL para prellenar enlaces de prospección.
  */
-import { needOptions } from '@/lib/quoteOptions';
+import { needOptions, sectorOptions } from '@/lib/quoteOptions';
 import '@/components/islands/styles/forms.css';
+
+interface Props {
+  variant?: 'contacto' | 'diagnostico';
+}
+const { variant = 'contacto' } = Astro.props;
+const isDiag = variant === 'diagnostico';
 ---
 
 <form class="contact-form" method="post" action="/api/lead" data-contact-form novalidate>
+  <input type="hidden" name="source" value={isDiag ? 'diagnostico' : 'form'} />
   <div class="xf-fields">
     <div class="xf-field">
       <label for="c-name">Nombre</label>
@@ -38,8 +47,36 @@ import '@/components/islands/styles/forms.css';
       </label>
       <input id="c-email" name="email" type="email" autocomplete="email" maxlength="160" />
     </div>
+    {isDiag && (
+      <>
+        <div class="xf-field">
+          <label for="c-site">
+            Web actual <span class="xf-optional">(si tienes)</span>
+          </label>
+          <input
+            id="c-site"
+            name="siteUrl"
+            inputmode="url"
+            autocomplete="url"
+            maxlength="200"
+            placeholder="miempresa.com"
+          />
+        </div>
+        <div class="xf-field">
+          <label for="c-sector">Sector</label>
+          <select id="c-sector" name="sector">
+            <option value="">Elige una opción</option>
+            {sectorOptions.map((o) => (
+              <option value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+      </>
+    )}
     <fieldset class="needs">
-      <legend class="xf-legend">¿Qué te interesa?</legend>
+      <legend class="xf-legend">
+        {isDiag ? '¿Qué quieres mejorar primero?' : '¿Qué te interesa?'}
+      </legend>
       {needOptions.map((o) => (
         <label class="need">
           <input type="checkbox" name="needs" value={o.value} />
@@ -49,7 +86,8 @@ import '@/components/islands/styles/forms.css';
     </fieldset>
     <div class="xf-field full">
       <label for="c-message">
-        Cuéntanos tu proyecto <span class="xf-optional">(opcional)</span>
+        {isDiag ? 'Cuéntanos tu situación actual' : 'Cuéntanos tu proyecto'}{' '}
+        <span class="xf-optional">(opcional)</span>
       </label>
       <textarea id="c-message" name="message" maxlength="1500" rows="5"></textarea>
     </div>
@@ -70,7 +108,7 @@ import '@/components/islands/styles/forms.css';
     No pudimos enviar tu mensaje ahora. Escríbenos por WhatsApp y te respondemos de inmediato.
   </p>
   <button class="xf-btn" type="submit">
-    Enviar mensaje
+    {isDiag ? 'Solicitar diagnóstico' : 'Enviar mensaje'}
   </button>
 </form>
 
@@ -85,8 +123,24 @@ import '@/components/islands/styles/forms.css';
     if (slot) mountTurnstile(slot, (t) => (token = t));
     const errorEl = form.querySelector<HTMLElement>('[data-error]');
     const button = form.querySelector<HTMLButtonElement>('button[type=submit]');
+    const params = new URLSearchParams(location.search);
     // Vuelta desde un envío sin JS que falló.
-    if (new URLSearchParams(location.search).has('error')) errorEl?.removeAttribute('hidden');
+    if (params.has('error')) errorEl?.removeAttribute('hidden');
+    // Enlaces de prospección: ?empresa=Clínica%20Sol&sector=clinicas prellenan el formulario.
+    const company = form.querySelector<HTMLInputElement>('[name=company]');
+    const empresa = params.get('empresa');
+    if (company && empresa && !company.value) company.value = empresa.slice(0, 120);
+    const sectorSelect = form.querySelector<HTMLSelectElement>('[name=sector]');
+    const sectorAlias: Record<string, string> = {
+      clinicas: 'salud',
+      constructoras: 'construccion',
+      comercios: 'comercio',
+    };
+    const sector = params.get('sector');
+    if (sectorSelect && sector) {
+      const value = sectorAlias[sector] ?? sector;
+      if ([...sectorSelect.options].some((o) => o.value === value)) sectorSelect.value = value;
+    }
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -100,8 +154,10 @@ import '@/components/islands/styles/forms.css';
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
-            source: 'form',
+            source: get('source') === 'diagnostico' ? 'diagnostico' : 'form',
             name: get('name'),
+            siteUrl: get('siteUrl') || undefined,
+            sector: get('sector') || undefined,
             company: get('company'),
             phone: get('phone'),
             email: get('email'),
@@ -115,7 +171,7 @@ import '@/components/islands/styles/forms.css';
         });
         if (!res.ok) throw new Error(String(res.status));
         const data = (await res.json()) as { leadCode: string };
-        track('lead_submit', { source: 'form' });
+        track('lead_submit', { source: get('source') || 'form' });
         location.href = `/gracias?codigo=${encodeURIComponent(data.leadCode)}`;
       } catch {
         errorEl?.removeAttribute('hidden');
@@ -160,6 +216,18 @@ import '@/components/islands/styles/forms.css';
     width: 18px;
     height: 18px;
     accent-color: var(--color-cyan);
+  }
+
+  .xf-field select {
+    appearance: none;
+    background-image:
+      linear-gradient(45deg, transparent 50%, var(--color-cyan) 50%),
+      linear-gradient(135deg, var(--color-cyan) 50%, transparent 50%);
+    background-position:
+      calc(100% - 18px) 50%,
+      calc(100% - 13px) 50%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
   }
 
   .contact-form button {

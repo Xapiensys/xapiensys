@@ -26,6 +26,11 @@ export async function getOgPages(): Promise<OgPage[]> {
     { slug: 'empresa', title: 'Ingeniería digital con base en Lima', label: 'Empresa' },
     { slug: 'cotizar', title: 'Cotiza tu proyecto en 1 minuto', label: 'Cotizador' },
     { slug: 'contacto', title: 'Conversemos sobre tu proyecto', label: 'Contacto' },
+    {
+      slug: 'diagnostico',
+      title: 'Descubre qué está frenando tus ventas en internet',
+      label: 'Diagnóstico digital',
+    },
     ...servicios.map((s) => ({ slug: `servicios-${s.id}`, title: s.data.h1, label: 'Servicio' })),
     ...soluciones.map((s) => ({
       slug: `soluciones-${s.id}`,
