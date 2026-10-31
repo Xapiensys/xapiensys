@@ -52,23 +52,34 @@ const soluciones = defineCollection({
 
 const proyectos = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/proyectos' }),
-  schema: z.object({
-    ...seo,
-    title: z.string(),
-    type: z.enum(['demo', 'caso']),
-    order: z.number(),
-    sector: reference('soluciones'),
-    summary: z.string(),
-    problem: z.string(),
-    features: z.array(z.string()).min(2),
-    /** Solo métricas medidas de verdad (Lighthouse, peso, tiempo de carga). */
-    metrics: z
-      .array(z.object({ label: z.string(), value: z.string(), measuredAt: z.coerce.date() }))
-      .default([]),
-    status: z.enum(['en-construccion', 'publicada']),
-    url: z.url().optional(),
-    services: z.array(reference('servicios')),
-  }),
+  // `image()` valida que el archivo exista y permite optimizarlo (AVIF/WebP) al construir.
+  schema: ({ image }) =>
+    z
+      .object({
+        ...seo,
+        title: z.string(),
+        type: z.enum(['demo', 'caso']),
+        order: z.number(),
+        sector: reference('soluciones'),
+        summary: z.string(),
+        problem: z.string(),
+        features: z.array(z.string()).min(2),
+        /** Solo métricas medidas de verdad (Lighthouse, peso, tiempo de carga). */
+        metrics: z
+          .array(z.object({ label: z.string(), value: z.string(), measuredAt: z.coerce.date() }))
+          .default([]),
+        status: z.enum(['en-construccion', 'publicada']),
+        url: z.url().optional(),
+        services: z.array(reference('servicios')),
+        /** Captura real del proyecto (ver src/assets/README.md). */
+        cover: image().optional(),
+        coverAlt: z.string().optional(),
+        gallery: z.array(z.object({ src: image(), alt: z.string().min(5) })).default([]),
+      })
+      .refine((d) => !d.cover || !!d.coverAlt, {
+        message: 'cover requiere coverAlt',
+        path: ['coverAlt'],
+      }),
 });
 
 const faq = defineCollection({

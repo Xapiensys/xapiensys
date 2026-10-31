@@ -8,6 +8,7 @@ import ServicesGrid from '@/components/sections/ServicesGrid.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import SectionLabel from '@/components/ui/SectionLabel.astro';
 import Button from '@/components/ui/Button.astro';
+import ProjectImage from '@/components/ui/ProjectImage.astro';
 import { ogPath } from '@/lib/ogPages';
 
 export const getStaticPaths = (async () =>
@@ -46,6 +47,12 @@ const isDemo = d.type === 'demo';
     title={d.title}
     lede={d.summary}
   />
+
+  {d.cover && d.coverAlt && (
+    <figure class="section-shell cover">
+      <ProjectImage src={d.cover} alt={d.coverAlt} priority />
+    </figure>
+  )}
 
   <section
     class="section-shell section-pad detail"
@@ -96,6 +103,18 @@ const isDemo = d.type === 'demo';
   </section>
 
   <Checklist index="02" label="FUNCIONES" title="Qué incluye la demo" items={d.features} />
+  {d.gallery.length > 0 && (
+    <section class="section-shell section-pad" aria-label="Capturas del proyecto">
+      <div class="gallery">
+        {d.gallery.map((g) => (
+          <figure>
+            <ProjectImage src={g.src} alt={g.alt} sizes="(min-width: 900px) 600px, 100vw" />
+            <figcaption>{g.alt}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  )}
   <ServicesGrid index="03" only={services.map((s) => s.id)} title="Servicios que muestra." />
   <FinalCTA index="04" waIntent="demo" waTopic={d.title} />
 </BaseLayout>
@@ -107,6 +126,43 @@ const isDemo = d.type === 'demo';
 </script>
 
 <style>
+  .cover {
+    margin-block: var(--space-10) 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-strong);
+  }
+
+  .cover :global(img),
+  .gallery :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .gallery {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .gallery figure {
+    margin: 0;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  figcaption {
+    padding: var(--space-3) var(--space-4);
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 900px) {
+    .gallery {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
   .detail {
     display: grid;
     gap: var(--space-8);

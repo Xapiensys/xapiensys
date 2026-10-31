@@ -36,6 +36,9 @@ const proyectos = (await getCollection('proyectos'))
         badge={p.data.type === 'demo' ? 'Demo' : 'Caso'}
         title={p.data.title}
         text={p.data.summary}
+        image={
+          p.data.cover && p.data.coverAlt ? { src: p.data.cover, alt: p.data.coverAlt } : undefined
+        }
       />
     ))}
   </div>
