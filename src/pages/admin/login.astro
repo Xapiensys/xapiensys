@@ -1,0 +1,98 @@
+---
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { adminEnabled, isAdmin } from '@/lib/server/adminAuth';
+
+export const prerender = false;
+
+if (isAdmin(Astro.cookies)) return Astro.redirect('/admin');
+const error = Astro.url.searchParams.get('error');
+const messages: Record<string, string> = {
+  clave: 'Contraseña incorrecta.',
+  limite: 'Demasiados intentos. Espera 15 minutos.',
+  origen: 'Solicitud no válida. Vuelve a intentarlo.',
+};
+Astro.response.headers.set('cache-control', 'no-store');
+Astro.response.headers.set('x-robots-tag', 'noindex');
+---
+
+<AdminLayout title="Ingresar">
+  <form class="login" method="post" action="/api/admin/login">
+    <p class="mono">PANEL XAPIENSYS</p>
+    <h1>Ingresar</h1>
+    {adminEnabled() ? (
+      <>
+        <label for="password">Contraseña</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        />
+        {error && (
+          <p class="error" role="alert">
+            {messages[error] ?? 'No se pudo ingresar.'}
+          </p>
+        )}
+        <button type="submit">Entrar</button>
+      </>
+    ) : (
+      <p class="error">
+        El panel está desactivado. Configura <code>ADMIN_PASSWORD</code> (mínimo 12 caracteres) en
+        las variables de entorno de Vercel y vuelve a desplegar.
+      </p>
+    )}
+  </form>
+</AdminLayout>
+
+<style>
+  .login {
+    display: grid;
+    max-width: 380px;
+    gap: var(--space-3);
+    margin: 10vh auto 0;
+    padding: var(--space-8);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+  }
+
+  .mono {
+    margin: 0;
+    color: var(--color-muted);
+  }
+
+  h1 {
+    margin-bottom: var(--space-3);
+    font-size: 2rem;
+  }
+
+  label {
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  input {
+    min-height: 48px;
+    padding: 10px 13px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    background: var(--color-bg);
+  }
+
+  button {
+    min-height: 48px;
+    border: 0;
+    border-radius: var(--radius-sm);
+    color: var(--color-on-cyan);
+    background: var(--color-cyan);
+    font-weight: 700;
+  }
+
+  .error {
+    margin: 0;
+    color: var(--color-danger);
+    font-size: var(--text-sm);
+  }
+</style>

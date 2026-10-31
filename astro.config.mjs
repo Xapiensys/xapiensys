@@ -13,7 +13,7 @@ export default defineConfig({
   integrations: [
     preact(),
     sitemap({
-      filter: (page) => !/^\/(api|gracias|og)(\/|$)/.test(new URL(page).pathname),
+      filter: (page) => !/^\/(api|gracias|og|admin)(\/|$)/.test(new URL(page).pathname),
       lastmod: new Date(),
     }),
   ],
@@ -27,6 +27,8 @@ export default defineConfig({
         access: 'public',
         default: 'https://xapiensys.com',
       }),
+      /** Enlace de agenda (Cal.com, Calendly…). Si existe, se muestra "Agendar llamada". */
+      PUBLIC_BOOKING_URL: envField.string({ context: 'client', access: 'public', optional: true }),
       PUBLIC_GA4_ID: envField.string({ context: 'client', access: 'public', optional: true }),
       TURNSTILE_SITE_KEY: envField.string({ context: 'client', access: 'public', optional: true }),
       TURNSTILE_SECRET_KEY: envField.string({
@@ -52,6 +54,8 @@ export default defineConfig({
         int: true,
         default: 2000000,
       }),
+      /** Contraseña del panel /admin (larga y única). Sin ella el panel queda desactivado. */
+      ADMIN_PASSWORD: envField.string({ context: 'server', access: 'secret', optional: true }),
       IP_HASH_SALT: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },

@@ -1,0 +1,721 @@
+---
+/** Panel interno de leads: ver, filtrar, cambiar estado, anotar y exportar. */
+import AdminLayout from '@/layouts/AdminLayout.astro';
+import { isAdmin } from '@/lib/server/adminAuth';
+import {
+  chatTranscripts,
+  leadStats,
+  leadStatuses,
+  leadSources,
+  listLeads,
+  PAGE_SIZE,
+  sourceLabels,
+  statusLabels,
+} from '@/lib/server/adminData';
+import { clientWaLink } from '@/lib/server/email';
+import { log } from '@/lib/server/http';
+import { labelOf, needOptions } from '@/lib/quoteOptions';
+
+export const prerender = false;
+
+if (!isAdmin(Astro.cookies)) return Astro.redirect('/admin/login');
+Astro.response.headers.set('cache-control', 'no-store');
+Astro.response.headers.set('x-robots-tag', 'noindex');
+
+const params = Astro.url.searchParams;
+const filters = {
+  status: params.get('estado'),
+  source: params.get('origen'),
+  q: params.get('q'),
+  page: Number(params.get('pagina') ?? 1) || 1,
+};
+
+let data: Awaited<ReturnType<typeof listLeads>> = null;
+let stats: Awaited<ReturnType<typeof leadStats>> = null;
+let transcripts = new Map<number, { role: string; content: string }[]>();
+let dbError = false;
+try {
+  [data, stats] = await Promise.all([listLeads(filters), leadStats()]);
+  if (data)
+    transcripts = await chatTranscripts(
+      data.rows.filter((r) => r.source === 'chat').map((r) => r.id),
+    );
+} catch (error) {
+  log('admin.list', error);
+  dbError = true;
+}
+
+const saved = params.get('guardado');
+const failed = params.get('error');
+const totalPages = data ? Math.max(1, Math.ceil(data.total / PAGE_SIZE)) : 1;
+
+const link = (changes: Record<string, string | number | null>) => {
+  const p = new URLSearchParams(params);
+  p.delete('guardado');
+  p.delete('error');
+  for (const [k, v] of Object.entries(changes)) {
+    if (v === null || v === '') p.delete(k);
+    else p.set(k, String(v));
+  }
+  if (!('pagina' in changes)) p.delete('pagina');
+  const qs = p.toString();
+  return `/admin${qs ? `?${qs}` : ''}`;
+};
+const exportHref = `/api/admin/export.csv?${new URLSearchParams(
+  Object.entries({ estado: filters.status, origen: filters.source, q: filters.q }).filter(
+    (e): e is [string, string] => !!e[1],
+  ),
+)}`;
+const back = `${Astro.url.pathname}${Astro.url.search}`.replace(/[?&](guardado|error)=\d+/g, '');
+const fmtDate = (d: Date) =>
+  d.toLocaleString('es-PE', {
+    timeZone: 'America/Lima',
+    day: '2-digit',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+const soles = (n: number | null) => (n == null ? '' : `S/ ${n.toLocaleString('en-US')}`);
+---
+
+<AdminLayout title="Leads">
+  <header class="top">
+    <div>
+      <p class="mono">PANEL XAPIENSYS</p>
+      <h1>Leads</h1>
+    </div>
+    <div class="top-actions">
+      <a class="btn ghost" href={exportHref}>
+        Exportar CSV
+      </a>
+      <form method="post" action="/api/admin/logout">
+        <button class="btn ghost" type="submit">
+          Salir
+        </button>
+      </form>
+    </div>
+  </header>
+
+  {!data && !dbError && (
+    <p class="notice">
+      No hay base de datos configurada. Agrega <code>DATABASE_URL</code> en Vercel y ejecuta
+      <code>npm run db:push</code>. Mientras tanto, los leads llegan solo por email.
+    </p>
+  )}
+  {dbError && (
+    <p class="notice error">No se pudo leer la base de datos. Revisa los logs en Vercel.</p>
+  )}
+  {saved && (
+    <p class="notice ok" role="status">
+      Cambios guardados.
+    </p>
+  )}
+  {failed && (
+    <p class="notice error" role="alert">
+      No se pudieron guardar los cambios.
+    </p>
+  )}
+
+  {stats && (
+    <section class="stats" aria-label="Resumen">
+      <div class="stat">
+        <span class="mono">ÚLTIMOS 7 DÍAS</span>
+        <strong>{stats.lastWeek}</strong>
+      </div>
+      {leadStatuses.map((s) => (
+        <a
+          class:list={['stat', { active: filters.status === s }]}
+          href={link({ estado: filters.status === s ? null : s })}
+        >
+          <span class="mono">{statusLabels[s].toUpperCase()}</span>
+          <strong>{stats.byStatus[s] ?? 0}</strong>
+        </a>
+      ))}
+      <div class="stat wide">
+        <span class="mono">POR ORIGEN</span>
+        <p>
+          {leadSources.map((s) => (
+            <a
+              class:list={{ active: filters.source === s }}
+              href={link({ origen: filters.source === s ? null : s })}
+            >
+              {sourceLabels[s]} <b>{stats.bySource[s] ?? 0}</b>
+            </a>
+          ))}
+        </p>
+      </div>
+      <div class="stat wide">
+        <span class="mono">DE DÓNDE VIENEN (utm_source)</span>
+        <p>
+          {stats.byOrigin.map((o) => (
+            <span>
+              {o.k} <b>{o.n}</b>
+            </span>
+          ))}
+        </p>
+      </div>
+    </section>
+  )}
+
+  {data && (
+    <>
+      <form class="filters" method="get" action="/admin">
+        <label class="visually-hidden" for="q">
+          Buscar
+        </label>
+        <input
+          id="q"
+          name="q"
+          type="search"
+          placeholder="Código, nombre, empresa, teléfono, campaña…"
+          value={filters.q ?? ''}
+        />
+        <select name="estado" aria-label="Estado">
+          <option value="">Todos los estados</option>
+          {leadStatuses.map((s) => (
+            <option value={s} selected={filters.status === s}>
+              {statusLabels[s]}
+            </option>
+          ))}
+        </select>
+        <select name="origen" aria-label="Origen">
+          <option value="">Todos los orígenes</option>
+          {leadSources.map((s) => (
+            <option value={s} selected={filters.source === s}>
+              {sourceLabels[s]}
+            </option>
+          ))}
+        </select>
+        <button class="btn" type="submit">
+          Filtrar
+        </button>
+        {(filters.q || filters.status || filters.source) && (
+          <a class="btn ghost" href="/admin">
+            Limpiar
+          </a>
+        )}
+      </form>
+
+      <p class="count mono">
+        {data.total} LEAD{data.total === 1 ? '' : 'S'}
+        {totalPages > 1 && ` · PÁGINA ${data.page} DE ${totalPages}`}
+      </p>
+
+      {data.rows.length === 0 && <p class="notice">No hay leads con estos filtros.</p>}
+
+      <ol class="leads">
+        {data.rows.map((l) => (
+          <li id={`lead-${l.id}`}>
+            <details
+              open={saved === String(l.id) || failed === String(l.id) || filters.q === l.code}
+            >
+              <summary>
+                <span class="code mono">{l.code}</span>
+                <span class="who">
+                  <strong>{l.name}</strong>
+                  {l.company && <span>{l.company}</span>}
+                </span>
+                <span class="meta">
+                  <span class="tag">{sourceLabels[l.source] ?? l.source}</span>
+                  {l.estimateMin != null && (
+                    <span class="tag money">
+                      {soles(l.estimateMin)} – {soles(l.estimateMax)}
+                    </span>
+                  )}
+                  <span class={`status status-${l.status}`}>{statusLabels[l.status]}</span>
+                  <time datetime={l.createdAt.toISOString()}>{fmtDate(l.createdAt)}</time>
+                </span>
+              </summary>
+              <div class="body">
+                <dl>
+                  <div>
+                    <dt>Teléfono</dt>
+                    <dd>{l.phone}</dd>
+                  </div>
+                  {l.email && (
+                    <div>
+                      <dt>Email</dt>
+                      <dd>
+                        <a href={`mailto:${l.email}`}>{l.email}</a>
+                      </dd>
+                    </div>
+                  )}
+                  {l.siteUrl && (
+                    <div>
+                      <dt>Web actual</dt>
+                      <dd>
+                        <a href={l.siteUrl} target="_blank" rel="noopener noreferrer nofollow">
+                          {l.siteUrl.replace(/^https?:\/\//, '')}
+                        </a>
+                      </dd>
+                    </div>
+                  )}
+                  {l.needs.length > 0 && (
+                    <div>
+                      <dt>Necesidad</dt>
+                      <dd>{l.needs.map((n) => labelOf(needOptions, n)).join(', ')}</dd>
+                    </div>
+                  )}
+                  {l.sector && (
+                    <div>
+                      <dt>Sector</dt>
+                      <dd>{l.sector}</dd>
+                    </div>
+                  )}
+                  {l.timeline && (
+                    <div>
+                      <dt>Plazo</dt>
+                      <dd>{l.timeline}</dd>
+                    </div>
+                  )}
+                  {(l.utmSource || l.utmCampaign) && (
+                    <div>
+                      <dt>Campaña</dt>
+                      <dd>
+                        {[l.utmSource, l.utmMedium, l.utmCampaign].filter(Boolean).join(' · ')}
+                      </dd>
+                    </div>
+                  )}
+                  {l.landingPath && (
+                    <div>
+                      <dt>Llegó por</dt>
+                      <dd>{l.landingPath}</dd>
+                    </div>
+                  )}
+                  {l.userAgent && (
+                    <div>
+                      <dt>Dispositivo</dt>
+                      <dd>{l.userAgent}</dd>
+                    </div>
+                  )}
+                </dl>
+                {l.message && <p class="message">{l.message}</p>}
+                {transcripts.get(l.id) && (
+                  <details class="transcript">
+                    <summary>
+                      Ver conversación del chat ({transcripts.get(l.id)!.length} mensajes)
+                    </summary>
+                    <ol>
+                      {transcripts.get(l.id)!.map((m) => (
+                        <li class={m.role}>
+                          <span class="mono">{m.role === 'user' ? 'CLIENTE' : 'ASISTENTE'}</span>
+                          {m.content}
+                        </li>
+                      ))}
+                    </ol>
+                  </details>
+                )}
+                <div class="contact-actions">
+                  <a
+                    class="btn"
+                    href={clientWaLink(l.phone, l.code)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Escribir por WhatsApp ↗
+                  </a>
+                  {l.email && (
+                    <a
+                      class="btn ghost"
+                      href={`mailto:${l.email}?subject=${encodeURIComponent(`Tu consulta ${l.code} en Xapiensys`)}`}
+                    >
+                      Enviar email
+                    </a>
+                  )}
+                </div>
+                <form class="update" method="post" action="/api/admin/lead">
+                  <input type="hidden" name="id" value={l.id} />
+                  <input type="hidden" name="back" value={back} />
+                  <label for={`status-${l.id}`}>Estado</label>
+                  <select id={`status-${l.id}`} name="status">
+                    {leadStatuses.map((s) => (
+                      <option value={s} selected={l.status === s}>
+                        {statusLabels[s]}
+                      </option>
+                    ))}
+                  </select>
+                  <label for={`notes-${l.id}`}>Notas internas</label>
+                  <textarea
+                    id={`notes-${l.id}`}
+                    name="notes"
+                    rows="3"
+                    maxlength="4000"
+                  >{l.notes ?? ''}</textarea>
+                  <button class="btn" type="submit">
+                    Guardar
+                  </button>
+                </form>
+              </div>
+            </details>
+          </li>
+        ))}
+      </ol>
+
+      {totalPages > 1 && (
+        <nav class="pager" aria-label="Páginas">
+          {data.page > 1 && (
+            <a class="btn ghost" href={link({ pagina: data.page - 1 })}>
+              ← Anteriores
+            </a>
+          )}
+          {data.page < totalPages && (
+            <a class="btn ghost" href={link({ pagina: data.page + 1 })}>
+              Siguientes →
+            </a>
+          )}
+        </nav>
+      )}
+    </>
+  )}
+</AdminLayout>
+
+<style>
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  .top .mono {
+    margin: 0 0 6px;
+    color: var(--color-muted);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 2.2rem;
+  }
+
+  .top-actions {
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .btn {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    border: 1px solid var(--color-cyan);
+    border-radius: var(--radius-sm);
+    color: var(--color-on-cyan);
+    background: var(--color-cyan);
+    font-size: var(--text-sm);
+    font-weight: 700;
+  }
+
+  .btn.ghost {
+    border-color: var(--color-border-cta);
+    color: var(--color-text);
+    background: transparent;
+  }
+
+  .btn.ghost:hover {
+    border-color: var(--color-cyan-a42);
+  }
+
+  .notice {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text-soft);
+  }
+
+  .notice.ok {
+    border-color: var(--color-cyan-a42);
+  }
+
+  .notice.error {
+    border-color: var(--color-danger);
+    color: var(--color-danger);
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1px;
+    margin-bottom: var(--space-6);
+    border: 1px solid var(--color-border);
+    background: var(--color-border);
+  }
+
+  .stat {
+    display: grid;
+    gap: 4px;
+    padding: var(--space-4);
+    background: var(--color-bg);
+  }
+
+  a.stat:hover,
+  .stat.active {
+    background: var(--color-surface-raised);
+  }
+
+  .stat.active {
+    box-shadow: inset 0 -2px 0 var(--color-cyan);
+  }
+
+  .stat .mono {
+    color: var(--color-muted);
+  }
+
+  .stat strong {
+    color: var(--color-cyan);
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .stat.wide {
+    grid-column: span 2;
+  }
+
+  .stat p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin: 0;
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+  }
+
+  .stat p a.active,
+  .stat p a:hover {
+    color: var(--color-cyan);
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
+  }
+
+  .filters input,
+  .filters select,
+  .update select,
+  .update textarea {
+    min-height: 40px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    background: var(--color-bg);
+    font-size: 14px;
+  }
+
+  .filters input {
+    flex: 1 1 260px;
+  }
+
+  .count {
+    color: var(--color-muted);
+  }
+
+  .leads {
+    display: grid;
+    gap: var(--space-2);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .leads > li > details {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .leads > li > details[open] {
+    border-color: var(--color-border-strong);
+  }
+
+  .leads > li > details > summary {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 4px 14px;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .leads > li > details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .code {
+    color: var(--color-cyan);
+  }
+
+  .who {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 10px;
+    align-items: baseline;
+  }
+
+  .who span {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    gap: 6px 10px;
+    align-items: center;
+    color: var(--color-muted);
+    font-size: 12px;
+  }
+
+  .tag,
+  .status {
+    padding: 2px 8px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-full);
+    color: var(--color-text-soft);
+  }
+
+  .money {
+    color: var(--color-cyan);
+  }
+
+  .status-nuevo {
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+  }
+
+  .status-propuesta {
+    border-color: var(--color-violet-soft);
+    color: var(--color-violet-pale);
+  }
+
+  .status-ganado {
+    border-color: var(--color-cyan);
+    color: var(--color-on-cyan);
+    background: var(--color-cyan);
+  }
+
+  .status-perdido {
+    opacity: 0.6;
+  }
+
+  .body {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0 16px 18px;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  dt {
+    color: var(--color-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  dd {
+    margin: 2px 0 0;
+    color: var(--color-text-soft);
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+
+  dd a,
+  .transcript summary {
+    color: var(--color-cyan);
+  }
+
+  .message {
+    margin: 0;
+    padding: var(--space-3);
+    border-left: 2px solid var(--color-violet-soft);
+    color: var(--color-text-soft);
+    white-space: pre-line;
+  }
+
+  .transcript summary {
+    cursor: pointer;
+    font-size: var(--text-sm);
+  }
+
+  .transcript ol {
+    display: grid;
+    gap: 8px;
+    padding: 12px 0 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .transcript li {
+    max-width: 85%;
+    padding: 8px 12px;
+    background: var(--color-surface-strong);
+    color: var(--color-text-soft);
+    font-size: 13px;
+    white-space: pre-line;
+  }
+
+  .transcript li.user {
+    justify-self: end;
+    background: var(--color-violet-a12);
+  }
+
+  .transcript .mono {
+    display: block;
+    color: var(--color-muted);
+  }
+
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .update {
+    display: grid;
+    gap: 6px;
+    max-width: 560px;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .update label {
+    color: var(--color-muted);
+    font-size: 12px;
+  }
+
+  .update .btn {
+    justify-self: start;
+    margin-top: 6px;
+  }
+
+  .pager {
+    display: flex;
+    gap: var(--space-2);
+    margin-top: var(--space-6);
+  }
+
+  @media (min-width: 900px) {
+    .leads > li > details > summary {
+      grid-template-columns: 80px minmax(0, 1fr) auto;
+    }
+
+    .meta {
+      grid-column: auto;
+      justify-content: flex-end;
+    }
+  }
+</style>
