@@ -282,7 +282,7 @@ Modificadores: alcance (+%), urgencia < 2 semanas (+15–25 %), combinación de 
 ### 7.5 Modelo de datos (Drizzle / Postgres)
 
 ```
-leads            id, code (unique), created_at, source, name, company, phone, email,
+contacts         id, code (unique), created_at, source, name, company, phone, email,
                  needs (text[]), sector, timeline, message, estimate_min, estimate_max,
                  utm_source, utm_medium, utm_campaign, landing_path, status
                  (nuevo|contactado|propuesta|ganado|perdido), notes
@@ -371,6 +371,7 @@ Sugerencia comercial (fuera del código): ofrecer a los 2–3 primeros clientes 
 |----------|---------|--------------------------|--------|
 | Framework | Astro | Next.js, HTML puro | HTML estático + islas = máximo SEO y CWV; escala a multipágina sin duplicar código |
 | Backend | Endpoints Astro en Vercel Functions | FastAPI aparte | Un repo, un deploy, sin servidor que mantener |
+| Tabla de contactos (2026-10-31) | `contacts` (antes `leads`; migración `0002` que la renombra conservando datos) | Dos tablas separadas | Un solo registro para formulario, diagnóstico, cotizador y chat; el panel `/admin` lee de ahí |
 | Panel de leads (2026-10-31) | `/admin` propio con `ADMIN_PASSWORD` y cookie HMAC (12 h), formularios sin JS | Netlify Identity / auth externa | Cero dependencias y cero costo; CSRF por origen, bloqueo tras 5 intentos/15 min, CSV con protección contra fórmulas |
 | Imágenes (2026-10-31) | `src/assets/` + `astro:assets` (`<Picture>` AVIF/WebP) y `image()` en el esquema | Imágenes en `public/` | Se optimizan al construir, sin CLS, y el build falla si falta un archivo o su texto alternativo |
 | Prospección (2026-10-31) | Landing `/diagnostico` + UTM first-touch + prellenado por URL | Formularios por campaña | Una sola página medible para todos los mensajes; la campaña queda en cada lead |

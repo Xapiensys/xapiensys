@@ -33,6 +33,13 @@ export const clientWaLink = (phone: string, code: string): string => {
   return `https://wa.me/${intl}?text=${encodeURIComponent(`Hola, te escribimos de Xapiensys por tu consulta ${code}.`)}`;
 };
 
+const sourceNames: Record<string, string> = {
+  form: 'Formulario de contacto',
+  diagnostico: 'Diagnóstico gratuito',
+  quote: 'Cotizador',
+  chat: 'Chat IA',
+};
+
 // TODO(xapiensys): usar un remitente del dominio verificado en Resend (ej. leads@xapiensys.com).
 const from = () => EMAIL_FROM ?? 'Xapiensys <onboarding@resend.dev>';
 
@@ -58,7 +65,7 @@ export async function sendLeadNotification(lead: LeadEmail): Promise<boolean> {
   if (!LEAD_NOTIFY_EMAIL) return false;
   const rows: [string, string | undefined][] = [
     ['Código', lead.leadCode],
-    ['Origen', lead.source],
+    ['Origen', sourceNames[lead.source] ?? lead.source],
     ['Nombre', lead.name],
     ['Empresa', lead.company],
     ['Teléfono', lead.phone],
@@ -89,7 +96,7 @@ export async function sendLeadNotification(lead: LeadEmail): Promise<boolean> {
   return send(
     {
       to: LEAD_NOTIFY_EMAIL.split(',').map((s) => s.trim()),
-      subject: `[${lead.leadCode}] Nuevo lead (${lead.source}) — ${lead.name}`,
+      subject: `[${lead.leadCode}] ${sourceNames[lead.source] ?? lead.source} — ${lead.name}`,
       html,
       ...(lead.email ? { reply_to: lead.email } : {}),
     },

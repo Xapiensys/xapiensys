@@ -128,7 +128,7 @@ Objetivo: páginas que rankean para búsquedas de compra.
 - [x] Botón "Agendar una llamada" configurable (`PUBLIC_BOOKING_URL`) en resultado del cotizador, chat, contacto, gracias y CTA final.
 - [x] Sistema de imágenes `src/assets/` (AVIF/WebP) + `cover`/`gallery` en proyectos. Guía: `src/assets/README.md`.
 - [x] Guía de prospección con UTM y plantillas: `docs/PROSPECCION.md`.
-- [ ] 🧑 Confirmar si el diagnóstico es gratuito y su formato (`TODO(xapiensys)` en `src/pages/diagnostico.astro`).
+- [x] 🧑 Diagnóstico confirmado: **Diagnóstico Digital Gratuito de 15 minutos** (2026-10-31).
 - [ ] 🧑 Crear el enlace de agenda (Cal.com o Calendly) y cargarlo en `PUBLIC_BOOKING_URL`.
 
 **Verificado:** Lighthouse móvil 100/100/100/100 en `/`, `/diagnostico`, `/cotizar` y una página de proyecto; flujos de diagnóstico, cotizador, chat y contacto en navegador; panel probado contra Postgres (login, bloqueo tras 5 intentos, CSRF, cambio de estado, CSV).

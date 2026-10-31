@@ -28,7 +28,7 @@ export async function getOgPages(): Promise<OgPage[]> {
     { slug: 'contacto', title: 'Conversemos sobre tu proyecto', label: 'Contacto' },
     {
       slug: 'diagnostico',
-      title: 'Descubre qué está frenando tus ventas en internet',
+      title: 'Diagnóstico Digital Gratuito de 15 minutos',
       label: 'Diagnóstico digital',
     },
     ...servicios.map((s) => ({ slug: `servicios-${s.id}`, title: s.data.h1, label: 'Servicio' })),
