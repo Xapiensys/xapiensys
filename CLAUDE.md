@@ -5,6 +5,8 @@ Sitio corporativo de **Xapiensys**: agencia de ingeniería de software, desarrol
 Lee antes de cualquier tarea:
 - `docs/ARCHITECTURE.md` — arquitectura completa (stack, rutas, backend, datos, SEO, rendimiento).
 - `docs/ROADMAP.md` — fases de trabajo con criterios de aceptación. **Trabaja una fase a la vez** y no avances sin cumplir sus criterios.
+- `docs/PROSPECCION.md` — cómo se usan el sitio y el panel `/admin` para prospectar y convertir.
+- Imágenes: van en `src/assets/` (guía en `src/assets/README.md`), nunca en `public/` salvo favicon/OG/fuentes.
 
 ## Stack
 - **Astro** (última versión estable; `output: 'static'`, adaptador `@astrojs/vercel`). Las páginas se prerenderizan; solo `src/pages/api/*` corre en servidor (`export const prerender = false`).

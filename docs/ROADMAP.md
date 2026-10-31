@@ -115,9 +115,23 @@ Objetivo: páginas que rankean para búsquedas de compra.
 ---
 
 ## F6 — Laboratorio de demos y panel (opcional, después de tener tráfico)
-- [ ] 3 demos propias (Clínica, Constructora, Comercio) como páginas en `/proyectos/[slug]`, cada una etiquetada "Demo" y con métricas técnicas medidas.
-- [ ] Panel `/admin` protegido (auth simple o proveedor externo) para ver leads, cambiar estado y notas.
+- [ ] 3 demos propias (Clínica, Constructora, Comercio) como páginas en `/proyectos/[slug]`, cada una etiquetada "Demo" y con métricas técnicas medidas. → Las páginas existen ("En construcción"); faltan las demos navegables, sus capturas (`src/assets/proyectos/`) y sus métricas.
+- [x] Panel `/admin` protegido (auth simple o proveedor externo) para ver leads, cambiar estado y notas. → Contraseña `ADMIN_PASSWORD` + cookie firmada, filtros, búsqueda por campaña, conversación del chat, exportación CSV.
+- [ ] 🧑 Configurar `ADMIN_PASSWORD` en Vercel.
 - [ ] Cuando exista el primer cliente con permiso: primer `proyectos` con `type: "caso"`.
+
+---
+
+## F7 — Prospección y conversión (2026-10-31)
+- [x] Landing `/diagnostico` para enlaces de prospección (prellenado con `?empresa=&sector=`, guarda la web del prospecto).
+- [x] Correo de confirmación al cliente con su código y el siguiente paso.
+- [x] Botón "Agendar una llamada" configurable (`PUBLIC_BOOKING_URL`) en resultado del cotizador, chat, contacto, gracias y CTA final.
+- [x] Sistema de imágenes `src/assets/` (AVIF/WebP) + `cover`/`gallery` en proyectos. Guía: `src/assets/README.md`.
+- [x] Guía de prospección con UTM y plantillas: `docs/PROSPECCION.md`.
+- [ ] 🧑 Confirmar si el diagnóstico es gratuito y su formato (`TODO(xapiensys)` en `src/pages/diagnostico.astro`).
+- [ ] 🧑 Crear el enlace de agenda (Cal.com o Calendly) y cargarlo en `PUBLIC_BOOKING_URL`.
+
+**Verificado:** Lighthouse móvil 100/100/100/100 en `/`, `/diagnostico`, `/cotizar` y una página de proyecto; flujos de diagnóstico, cotizador, chat y contacto en navegador; panel probado contra Postgres (login, bloqueo tras 5 intentos, CSRF, cambio de estado, CSV).
 
 ---
 

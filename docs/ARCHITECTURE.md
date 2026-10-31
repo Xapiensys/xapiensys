@@ -113,10 +113,12 @@ xapiensys/
         ├── servicios/index.astro  servicios/[slug].astro
         ├── soluciones/[slug].astro
         ├── proyectos/index.astro  proyectos/[slug].astro
-        ├── empresa.astro  contacto.astro  cotizar.astro
+        ├── empresa.astro  contacto.astro  cotizar.astro  diagnostico.astro
         ├── gracias.astro  privacidad.astro  404.astro
+        ├── admin/index.astro  admin/login.astro      # panel interno (SSR, noindex)
         └── api/
             ├── lead.ts  quote.ts  chat.ts  health.ts
+            └── admin/login.ts  logout.ts  lead.ts  export.csv.ts
 ```
 
 `src/lib/site.ts` es la **única fuente** del nombre, teléfono, correo y redes. Header, Footer, Schema y WhatsApp lo leen de ahí, así el NAP (nombre-dirección-teléfono) es idéntico en todo el sitio, algo clave para el SEO local.
@@ -369,6 +371,9 @@ Sugerencia comercial (fuera del código): ofrecer a los 2–3 primeros clientes 
 |----------|---------|--------------------------|--------|
 | Framework | Astro | Next.js, HTML puro | HTML estático + islas = máximo SEO y CWV; escala a multipágina sin duplicar código |
 | Backend | Endpoints Astro en Vercel Functions | FastAPI aparte | Un repo, un deploy, sin servidor que mantener |
+| Panel de leads (2026-10-31) | `/admin` propio con `ADMIN_PASSWORD` y cookie HMAC (12 h), formularios sin JS | Netlify Identity / auth externa | Cero dependencias y cero costo; CSRF por origen, bloqueo tras 5 intentos/15 min, CSV con protección contra fórmulas |
+| Imágenes (2026-10-31) | `src/assets/` + `astro:assets` (`<Picture>` AVIF/WebP) y `image()` en el esquema | Imágenes en `public/` | Se optimizan al construir, sin CLS, y el build falla si falta un archivo o su texto alternativo |
+| Prospección (2026-10-31) | Landing `/diagnostico` + UTM first-touch + prellenado por URL | Formularios por campaña | Una sola página medible para todos los mensajes; la campaña queda en cada lead |
 | Hosting (2026-10-30) | Vercel (`@astrojs/vercel`, `maxDuration: 30`) | Netlify | Netlify bloqueó los deploys por falta de créditos. Funciones Node 22 con streaming (necesario para el chat SSE); IP del cliente desde `x-real-ip` |
 | Chat | IA real con límites | Simulado | Una agencia de IA necesita una demo real; los límites controlan el costo |
 | Simulador del hero | Cotizador + diagnóstico | Calculadora ROI | Califica y captura el lead con datos útiles para vender |
