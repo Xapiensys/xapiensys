@@ -19,7 +19,7 @@ En Vercel → *Settings → Environment Variables* (y luego *Redeploy*):
 | `PUBLIC_GA4_ID` | Embudo en Google Analytics | Sin analítica externa |
 | `IP_HASH_SALT` | Anonimizar IPs | Usa una sal por defecto (cámbiala) |
 
-Después, una vez: `DATABASE_URL="…" npm run db:migrate` para crear o actualizar las tablas.
+Las tablas se crean y actualizan solas en cada despliegue de Vercel (`vercel-build` ejecuta `scripts/db-migrate.mjs`). En local: `DATABASE_URL="…" npm run db:migrate`.
 
 ## 2. A dónde enviar a cada prospecto
 

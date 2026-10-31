@@ -98,8 +98,8 @@ const soles = (n: number | null) => (n == null ? '' : `S/ ${n.toLocaleString('en
 
   {!data && !dbError && (
     <p class="notice">
-      No hay base de datos configurada. Agrega <code>DATABASE_URL</code> en Vercel y ejecuta
-      <code>npm run db:migrate</code>. Mientras tanto, los leads llegan solo por email.
+      No hay base de datos configurada. Agrega <code>DATABASE_URL</code> en Vercel y vuelve a
+      desplegar: las tablas se crean solas. Mientras tanto, los leads llegan solo por email.
     </p>
   )}
   {dbError && (
