@@ -65,7 +65,7 @@ xapiensys/
 ├── .env.example
 ├── public/
 │   ├── fonts/                  # inter-latin.woff2, space-grotesk-latin.woff2
-│   ├── favicon.svg  logo.svg  og-image.png
+│   ├── favicon.ico  favicon-48.png  icon-192/512.png  apple-touch-icon.png  site.webmanifest  logo.svg  og-image.png
 │   └── robots.txt
 └── src/
     ├── styles/

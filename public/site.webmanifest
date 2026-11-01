@@ -1,0 +1,14 @@
+{
+  "name": "Xapiensys",
+  "short_name": "Xapiensys",
+  "description": "Páginas web, chatbots con IA y automatización de procesos para empresas en Lima, Perú y Latinoamérica.",
+  "lang": "es-PE",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#0a0a0f",
+  "theme_color": "#0a0a0f",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
