@@ -7,3 +7,6 @@ dist/
 !.env.example
 old/
 .DS_Store
+
+# Originales sin optimizar de los assets 3D (ver ASSETS.md)
+assets/src/

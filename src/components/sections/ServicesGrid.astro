@@ -1,7 +1,12 @@
 ---
 import { getCollection } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 import LinkCard from '../ui/LinkCard.astro';
 import SectionLabel from '../ui/SectionLabel.astro';
+import web from '@/assets/marca/web.webp';
+import chatbot from '@/assets/marca/chatbot.webp';
+import automation from '@/assets/marca/automation.webp';
+import lima from '@/assets/marca/lima.webp';
 
 interface Props {
   index?: string;
@@ -17,6 +22,26 @@ const {
   title = 'Tecnología útil.',
   intro = 'Soluciones digitales pensadas para reducir fricción y apoyar el crecimiento de tu empresa.',
 } = Astro.props;
+
+// Imágenes propias (generadas con IA para la marca, no de stock), una por servicio.
+const imagenes: Record<string, { src: ImageMetadata; alt: string }> = {
+  'paginas-web': {
+    src: web,
+    alt: 'Portátil flotante mostrando una página web moderna y rápida con paneles de cristal',
+  },
+  'chatbots-ia': {
+    src: chatbot,
+    alt: 'Teléfono con burbujas de chat y un asistente de inteligencia artificial',
+  },
+  automatizacion: {
+    src: automation,
+    alt: 'Flujo de automatización con nodos de cristal conectados por haces de luz',
+  },
+  'sistemas-a-medida': {
+    src: lima,
+    alt: 'Ingeniero trabajando de noche con vista a la costa de Lima, Perú',
+  },
+};
 
 const servicios = (await getCollection('servicios'))
   .filter((s) => !only || only.includes(s.id))
@@ -43,6 +68,7 @@ const servicios = (await getCollection('servicios'))
         title={s.data.title}
         text={s.data.summary}
         icon={s.data.icon}
+        image={imagenes[s.id]}
       />
     ))}
   </div>

@@ -22,6 +22,17 @@ export function pickQuality(): SceneQuality | null {
   return 'medium';
 }
 
+/** Modelo 3D del hero: solo en escritorio apto; si falla, queda el póster del HTML. */
+function bootHeroModel(): void {
+  const stage = document.getElementById('hero-stage');
+  const canvas = document.getElementById('hero3d');
+  if (!stage || !(canvas instanceof HTMLCanvasElement)) return;
+  if (!matchMedia('(min-width: 900px) and (pointer: fine)').matches) return;
+  void import('./HeroModel')
+    .then(({ mountHeroModel }) => mountHeroModel(canvas, stage, '/3d'))
+    .catch(() => {});
+}
+
 export function bootScene(): void {
   const canvas = document.getElementById('bg');
   if (!(canvas instanceof HTMLCanvasElement)) return;
@@ -32,6 +43,7 @@ export function bootScene(): void {
   const start = () => {
     if (started) return;
     started = true;
+    bootHeroModel();
     void import('./Scene3D')
       .then(({ mountScene }) => {
         const anchor = document.querySelector<HTMLElement>('[data-scene-anchor]');

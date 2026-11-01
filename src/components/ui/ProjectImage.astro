@@ -27,6 +27,7 @@ const widths = [480, 800, 1200, 1600].filter((w) => w <= src.width);
   src={src}
   alt={alt}
   formats={['avif', 'webp']}
+  {...src.format === 'webp' ? { fallbackFormat: 'webp' as const } : {}}
   widths={widths.length ? widths : [src.width]}
   sizes={sizes}
   loading={priority ? 'eager' : 'lazy'}
