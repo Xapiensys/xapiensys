@@ -7,6 +7,8 @@ import web from '@/assets/marca/web.webp';
 import chatbot from '@/assets/marca/chatbot.webp';
 import automation from '@/assets/marca/automation.webp';
 import lima from '@/assets/marca/lima.webp';
+import tienda from '@/assets/marca/tienda.webp';
+import cubo3d from '@/assets/marca/3d.webp';
 
 interface Props {
   index?: string;
@@ -28,6 +30,14 @@ const imagenes: Record<string, { src: ImageMetadata; alt: string }> = {
   'paginas-web': {
     src: web,
     alt: 'Portátil flotante mostrando una página web moderna y rápida con paneles de cristal',
+  },
+  'tiendas-virtuales': {
+    src: tienda,
+    alt: 'Teléfono de cristal con una tienda en línea, carrito de compras y paquete flotando',
+  },
+  'experiencias-3d': {
+    src: cubo3d,
+    alt: 'Cubo y cristal 3D translúcidos con anillos luminosos en tonos cian y violeta',
   },
   'chatbots-ia': {
     src: chatbot,
