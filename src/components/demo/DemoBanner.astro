@@ -1,0 +1,50 @@
+---
+/** Franja que identifica de forma inequívoca una página como demostración propia. */
+interface Props {
+  name: string;
+}
+const { name } = Astro.props;
+---
+
+<aside class="demo-banner" aria-label="Aviso de demostración">
+  <div class="section-shell inner">
+    <p>
+      <strong class="mono">DEMO</strong>
+      {name} es un ejemplo creado por Xapiensys. Datos, precios y personas son ficticios; no es un
+      negocio real.
+    </p>
+    <a href="/proyectos">← Volver a proyectos</a>
+  </div>
+</aside>
+
+<style>
+  .demo-banner {
+    border-block: 1px solid var(--color-violet-a25);
+    background: var(--color-surface);
+    color: var(--color-text-dim);
+    font-size: var(--text-sm);
+  }
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 20px;
+    padding-block: 10px;
+  }
+  p {
+    margin: 0;
+  }
+  strong {
+    margin-right: 8px;
+    padding: 2px 8px;
+    border: 1px solid var(--color-violet-soft);
+    color: var(--color-violet-soft);
+  }
+  a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    color: var(--color-cyan);
+  }
+</style>

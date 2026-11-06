@@ -1,0 +1,51 @@
+---
+import Button from '@/components/ui/Button.astro';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
+
+interface Props {
+  demo: string;
+}
+const { demo } = Astro.props;
+---
+
+<section class="section-shell section-pad cta" aria-labelledby="demo-cta-title">
+  <h2 id="demo-cta-title">¿Quieres algo así para tu negocio?</h2>
+  <p>
+    Esta demo muestra el tipo de solución que podemos construir. Cuéntanos tu caso y te enviamos una
+    propuesta con alcance y precio por escrito.
+  </p>
+  <div class="actions">
+    <Button
+      href={buildWhatsAppUrl({ intent: 'demo', topic: demo })}
+      icon="arrow-up-right"
+      track="cta_whatsapp_click"
+      trackLocation={`demo_${demo}`}
+    >
+      Pedir una propuesta por WhatsApp
+    </Button>
+    <Button
+      href="/cotizar"
+      variant="secondary"
+      icon="arrow-right"
+      track="cta_quote_click"
+      trackLocation={`demo_${demo}`}
+    >
+      Solicitar cotización
+    </Button>
+  </div>
+</section>
+
+<style>
+  .cta {
+    max-width: 760px;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  p {
+    color: var(--color-text-dim);
+    margin-bottom: var(--space-6);
+  }
+</style>

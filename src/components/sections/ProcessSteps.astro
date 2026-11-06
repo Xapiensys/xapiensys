@@ -9,20 +9,24 @@ interface Props {
 
 const defaultSteps = [
   {
-    title: 'Diagnóstico',
-    text: 'Entendemos tus objetivos, procesos y necesidades antes de proponer una solución.',
+    title: 'Diagnóstico del negocio',
+    text: 'Entendemos tus objetivos, procesos y clientes antes de proponer una solución.',
   },
   {
-    title: 'Diseño',
-    text: 'Definimos estructura, experiencia y alcance con prioridades compartidas.',
+    title: 'Propuesta de solución',
+    text: 'Te presentamos alcance, plazos e inversión por escrito, sin sorpresas.',
   },
   {
-    title: 'Desarrollo',
-    text: 'Construimos, integramos y revisamos la solución en ciclos claros.',
+    title: 'Diseño y desarrollo',
+    text: 'Definimos la experiencia y construimos en ciclos cortos que puedes revisar.',
   },
   {
-    title: 'Lanzamiento y mejora',
-    text: 'Ponemos en marcha, medimos lo acordado y encontramos oportunidades de mejora.',
+    title: 'Revisión y entrega',
+    text: 'Probamos contigo, ajustamos lo acordado y publicamos la solución.',
+  },
+  {
+    title: 'Soporte y mantenimiento',
+    text: 'Según el servicio contratado, te acompañamos con soporte y mejoras.',
   },
 ];
 
@@ -47,7 +51,7 @@ const { index = '06', steps = defaultSteps, title } = Astro.props;
       Un proceso colaborativo que pone primero el problema, define el rumbo y mejora con evidencia.
     </p>
   </div>
-  <ol class="grid">
+  <ol class="grid" style={`--cols:${steps.length}`}>
     {steps.map((s, i) => (
       <li>
         <span class="num mono">{String(i + 1).padStart(2, '0')}</span>
@@ -111,9 +115,9 @@ const { index = '06', steps = defaultSteps, title } = Astro.props;
     }
   }
 
-  @media (min-width: 900px) {
+  @media (min-width: 1100px) {
     .grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
     }
 
     li {

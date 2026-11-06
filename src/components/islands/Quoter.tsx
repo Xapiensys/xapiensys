@@ -172,12 +172,14 @@ export default function Quoter({ variant = 'embedded' }: Props) {
           {result.diagnosis ? 'Tu proyecto requiere un diagnóstico' : 'Tu inversión estimada'}
         </Heading>
         <p class="q-range">
-          {formatSoles(result.range.min)} – {formatSoles(result.range.max)}
+          {result.range.max > 0
+            ? `${formatSoles(result.range.min)} – ${formatSoles(result.range.max)}`
+            : 'A cotizar tras un diagnóstico'}
         </p>
         <p class="q-note">
           {result.diagnosis
-            ? 'Es un rango amplio: para darte un número preciso necesitamos una conversación corta.'
-            : 'Rango orientativo. Confirmamos el monto exacto por escrito antes de empezar.'}
+            ? 'Estimación orientativa, no es una cotización definitiva. Para darte un monto preciso necesitamos una conversación corta.'
+            : 'Estimación orientativa, no es una cotización definitiva. Confirmamos el monto exacto por escrito antes de empezar.'}
         </p>
         {result.maintenance.max > 0 && (
           <p class="q-maint">

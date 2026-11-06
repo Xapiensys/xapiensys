@@ -1,0 +1,333 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DemoBanner from '@/components/demo/DemoBanner.astro';
+import DemoCTA from '@/components/demo/DemoCTA.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import { ogPath } from '@/lib/ogPages';
+
+// Todo es ficticio: la clínica, los profesionales y los horarios.
+const services = [
+  {
+    t: 'Consulta médica general',
+    d: 'Evaluación inicial, control y orientación para derivar a la especialidad adecuada.',
+  },
+  {
+    t: 'Control pediátrico',
+    d: 'Seguimiento de crecimiento, vacunas y consultas de niños y adolescentes.',
+  },
+  {
+    t: 'Laboratorio básico',
+    d: 'Toma de muestras y entrega de resultados en línea (en esta demo, solo ilustrativo).',
+  },
+  {
+    t: 'Chequeo preventivo',
+    d: 'Paquete de evaluación periódica con recomendaciones personalizadas.',
+  },
+];
+const specialties = [
+  'Medicina general',
+  'Pediatría',
+  'Ginecología',
+  'Cardiología',
+  'Dermatología',
+  'Nutrición',
+];
+const team = [
+  { n: 'Dra. Lucía Ejemplo', r: 'Medicina general', i: 'LE' },
+  { n: 'Dr. Mateo Demostración', r: 'Pediatría', i: 'MD' },
+  { n: 'Dra. Camila Ficticia', r: 'Dermatología', i: 'CF' },
+];
+const hours = [
+  ['Lunes a viernes', '8:00 a 20:00'],
+  ['Sábados', '8:00 a 14:00'],
+  ['Domingos', 'Cerrado'],
+];
+---
+
+<BaseLayout
+  title="Demo: web para clínica con citas | Xapiensys"
+  description="Demo de sitio web para clínica: servicios, especialidades, equipo y solicitud de citas. Ejemplo ficticio creado por Xapiensys, no es una clínica real."
+  path="/demos/clinica"
+  ogImage={ogPath('proyectos-clinica-chatbot-citas')}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Proyectos', path: '/proyectos' },
+    { name: 'Demo clínica digital', path: '/demos/clinica' },
+  ]}
+  waIntent="demo"
+  waTopic="Clínica digital"
+>
+  <DemoBanner name="Clínica Demo Salud" />
+  <PageHero
+    label="DEMO · CLÍNICA DIGITAL"
+    title="Clínica Demo Salud"
+    lede="Una web pensada para que el paciente entienda qué ofreces y pida su cita en menos de un minuto."
+  />
+
+  <section class="section-shell block" aria-labelledby="srv">
+    <h2 id="srv">Servicios</h2>
+    <ul class="cards">
+      {services.map((s) => (
+        <li>
+          <h3>{s.t}</h3>
+          <p>{s.d}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section-shell block" aria-labelledby="esp">
+    <h2 id="esp">Especialidades</h2>
+    <ul class="chips">
+      {specialties.map((s) => (
+        <li>{s}</li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section-shell block" aria-labelledby="eq">
+    <h2 id="eq">
+      Equipo médico <span class="fict">(profesionales ficticios)</span>
+    </h2>
+    <ul class="cards team">
+      {team.map((p) => (
+        <li>
+          <span class="avatar" aria-hidden="true">
+            {p.i}
+          </span>
+          <h3>{p.n}</h3>
+          <p>{p.r}</p>
+        </li>
+      ))}
+    </ul>
+    <h3 class="hours-t">Horarios de atención (ejemplo)</h3>
+    <dl class="hours">
+      {hours.map(([d, h]) => (
+        <div>
+          <dt>{d}</dt>
+          <dd>{h}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <section class="section-shell block" aria-labelledby="cita">
+    <h2 id="cita">Solicita una cita</h2>
+    <p class="lead">
+      Prueba el formulario. Al enviarlo se abre WhatsApp con tu solicitud de prueba dirigida a
+      Xapiensys; no llega a ninguna clínica real.
+    </p>
+    <form class="form" data-form novalidate>
+      <div class="f">
+        <label for="n">Nombre completo</label>
+        <input id="n" name="n" autocomplete="name" required minlength="2" maxlength="80" />
+      </div>
+      <div class="f">
+        <label for="t">Celular</label>
+        <input
+          id="t"
+          name="t"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          required
+          placeholder="9XX XXX XXX"
+        />
+      </div>
+      <div class="f">
+        <label for="e">Especialidad</label>
+        <select id="e" name="e" required>
+          <option value="">Elige una opción</option>
+          {specialties.map((s) => (
+            <option>{s}</option>
+          ))}
+        </select>
+      </div>
+      <div class="f">
+        <label for="d">Fecha preferida</label>
+        <input id="d" name="d" type="date" required />
+      </div>
+      <p class="err" role="alert" data-err hidden></p>
+      <button class="btn" type="submit">
+        Preparar solicitud de cita
+      </button>
+      <p class="ok" role="status" data-ok hidden>
+        Abrimos WhatsApp con tu solicitud de prueba. Aún no se envió: debes pulsar «Enviar» allí. Si
+        no se abrió,
+        <a data-link href="#" target="_blank" rel="noopener noreferrer">
+          pulsa aquí
+        </a>
+        .
+      </p>
+    </form>
+  </section>
+
+  <DemoCTA demo="la clínica digital" />
+</BaseLayout>
+
+<script>
+  import { buildWhatsAppUrl } from '@/lib/whatsapp';
+  import { track } from '@/lib/analytics';
+
+  const form = document.querySelector<HTMLFormElement>('[data-form]')!;
+  const err = form.querySelector<HTMLElement>('[data-err]')!;
+  const ok = form.querySelector<HTMLElement>('[data-ok]')!;
+  const link = form.querySelector<HTMLAnchorElement>('[data-link]')!;
+  const date = form.querySelector<HTMLInputElement>('#d')!;
+  date.min = new Date().toISOString().slice(0, 10);
+
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    ok.hidden = true;
+    const v = Object.fromEntries(new FormData(form)) as Record<string, string>;
+    let msg = '';
+    if (!v.n || v.n.trim().length < 2) msg = 'Escribe tu nombre completo.';
+    else if (!/^\+?[\d\s()-]{7,20}$/.test(v.t ?? ''))
+      msg = 'Escribe un celular válido (solo números).';
+    else if (!v.e) msg = 'Elige una especialidad.';
+    else if (!v.d || v.d < date.min) msg = 'Elige una fecha de hoy en adelante.';
+    err.hidden = !msg;
+    err.textContent = msg;
+    if (msg) return;
+    const url = buildWhatsAppUrl({
+      intent: 'demo',
+      topic: `la clínica digital. SOLICITUD DE CITA DE PRUEBA: ${(v.n ?? '').trim()}, cel. ${(v.t ?? '').trim()}, ${v.e}, fecha preferida ${v.d}`,
+    });
+    link.href = url;
+    ok.hidden = false;
+    track('demo_interaction', { demo: 'clinica', action: 'appointment_request' });
+    window.open(url, '_blank', 'noopener');
+  });
+</script>
+
+<style>
+  .block {
+    padding-block: var(--space-8);
+  }
+  h2 {
+    margin-bottom: var(--space-5);
+  }
+  .fict {
+    color: var(--color-violet-soft);
+    font-size: 0.6em;
+    font-weight: 400;
+  }
+  .cards,
+  .chips {
+    display: grid;
+    padding: 0;
+    margin: 0;
+    gap: var(--space-3);
+    list-style: none;
+  }
+  .cards {
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
+  .cards li {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .cards h3 {
+    margin-bottom: 6px;
+    font-size: 1.05rem;
+  }
+  .cards p {
+    margin: 0;
+    color: var(--color-text-dim);
+    font-size: var(--text-sm);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .chips li {
+    padding: 10px 16px;
+    border: 1px solid var(--color-cyan-a25);
+    background: var(--color-cyan-a06);
+    color: var(--color-cyan);
+  }
+  .avatar {
+    display: grid;
+    width: 56px;
+    height: 56px;
+    margin-bottom: var(--space-3);
+    place-items: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-cyan-a25), var(--color-violet-a25));
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+  .hours-t {
+    margin: var(--space-6) 0 var(--space-2);
+  }
+  .hours {
+    display: grid;
+    max-width: 420px;
+    gap: 6px;
+    margin: 0;
+  }
+  .hours div {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 6px;
+  }
+  .hours dd {
+    margin: 0;
+    color: var(--color-cyan);
+  }
+  .lead {
+    max-width: 640px;
+    color: var(--color-text-dim);
+  }
+  .form {
+    display: grid;
+    max-width: 560px;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-raised);
+  }
+  label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+  input,
+  select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+  :is(input, select, .btn):focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 2px;
+  }
+  .btn {
+    min-height: 48px;
+    border: 0;
+    background: var(--color-cyan);
+    color: var(--color-on-cyan);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .err {
+    margin: 0;
+    color: var(--color-danger);
+  }
+  .ok {
+    margin: 0;
+    color: var(--color-text-soft);
+  }
+  .ok a {
+    color: var(--color-cyan);
+    text-decoration: underline;
+  }
+</style>

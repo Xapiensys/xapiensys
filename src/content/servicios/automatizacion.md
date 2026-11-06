@@ -5,9 +5,9 @@ description: Conectamos tus herramientas y eliminamos tareas manuales con Python
 keyword: automatización de procesos para empresas
 h1: Automatización de procesos para empresas
 lede: Conectamos tus herramientas para que las tareas repetitivas se hagan solas y tu equipo se dedique a lo que genera valor.
-order: 3
+order: 5
 icon: automatizacion
-cardIndex: 03 / OPERACIÓN
+cardIndex: 05 / OPERACIÓN
 summary: Conectamos tareas y herramientas con flujos usando Python y n8n para ahorrar trabajo manual.
 problems:
   - title: Copiar y pegar entre sistemas

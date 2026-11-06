@@ -33,7 +33,10 @@ const MAINTENANCE = {
   cap: 400,
 } as const;
 
+// Tienda virtual y experiencia 3D no tienen precio publicado: se cotizan tras un diagnóstico.
 const INCLUDES: Record<Exclude<Need, 'no_seguro'>, string[]> = {
+  tienda: ['Catálogo, carrito y pedidos', 'Propuesta con alcance e inversión por escrito'],
+  cubo3d: ['Escena 3D con versión ligera', 'Propuesta con alcance e inversión por escrito'],
   web: [
     'Diseño a medida y responsive',
     'SEO técnico y Schema.org',
@@ -69,7 +72,11 @@ export interface PricingResult {
 export function calculateQuote(answers: QuoteAnswers): PricingResult {
   const needs = new Set(answers.needs);
   const diagnosis =
-    needs.has('no_seguro') || needs.has('sistema') || answers.scope.automatizacion === '4+';
+    needs.has('no_seguro') ||
+    needs.has('sistema') ||
+    needs.has('tienda') ||
+    needs.has('cubo3d') ||
+    answers.scope.automatizacion === '4+';
 
   let range: Range = { min: 0, max: 0 };
   let priced = 0;

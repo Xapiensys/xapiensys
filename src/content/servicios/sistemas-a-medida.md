@@ -5,9 +5,9 @@ description: "Aplicaciones y sistemas web hechos para tu operación: inventarios
 keyword: desarrollo de software a medida en Lima
 h1: Desarrollo de software a medida en Lima
 lede: Cuando ninguna herramienta del mercado encaja con tu forma de trabajar, construimos la que necesitas.
-order: 4
+order: 6
 icon: sistema
-cardIndex: 04 / INTEGRACIÓN
+cardIndex: 06 / INTEGRACIÓN
 summary: Aplicaciones y herramientas conectadas para resolver necesidades concretas de tu operación.
 problems:
   - title: Herramientas que no encajan

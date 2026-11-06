@@ -19,7 +19,7 @@ const servicios = defineCollection({
     h1: z.string(),
     lede: z.string(),
     order: z.number(),
-    icon: z.enum(['web', 'chatbot', 'automatizacion', 'sistema']),
+    icon: z.enum(['web', 'tienda', 'cubo', 'chatbot', 'automatizacion', 'sistema']),
     cardIndex: z.string(),
     summary: z.string(),
     problems: z.array(step).min(2),
@@ -69,7 +69,7 @@ const proyectos = defineCollection({
           .array(z.object({ label: z.string(), value: z.string(), measuredAt: z.coerce.date() }))
           .default([]),
         status: z.enum(['en-construccion', 'publicada']),
-        url: z.url().optional(),
+        url: z.string().startsWith('/').optional(),
         services: z.array(reference('servicios')),
         /** Captura real del proyecto (ver src/assets/README.md). */
         cover: image().optional(),

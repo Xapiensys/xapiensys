@@ -19,27 +19,33 @@ const from = prices.length ? Math.min(...prices) : null;
     <SectionLabel dot>INGENIERÍA DIGITAL · LIMA / REMOTO</SectionLabel>
     <h1 id="hero-title">Páginas web inteligentes, automatización e IA para empresas</h1>
     <p class="hero-lede">
-      Ahorra tiempo en tareas repetitivas y convierte más oportunidades con tecnología diseñada
-      alrededor de tu negocio.
+      Creamos páginas web, tiendas virtuales, experiencias 3D, chatbots con IA y automatizaciones
+      para que tu negocio atienda más rápido, ordene sus procesos y reciba más consultas de
+      clientes.
     </p>
     <div class="hero-actions">
-      <Button
-        href={buildWhatsAppUrl({ intent: 'general' })}
-        icon="arrow-up-right"
-        track="cta_whatsapp_click"
-        trackLocation="hero"
-      >
-        Hablemos por WhatsApp
+      <Button href="#cotizador" icon="arrow-down" track="cta_quote_click" trackLocation="hero">
+        Solicitar cotización
       </Button>
       <Button
-        href="#cotizador"
+        href="/proyectos"
         variant="secondary"
-        icon="arrow-down"
-        track="cta_quote_click"
+        icon="arrow-right"
+        track="cta_demo_click"
         trackLocation="hero"
       >
-        Cotiza tu proyecto en 1 minuto
+        Ver demostraciones
       </Button>
+      <a
+        class="hero-wa"
+        href={buildWhatsAppUrl({ intent: 'general' })}
+        target="_blank"
+        rel="noopener noreferrer"
+        data-track="cta_whatsapp_click"
+        data-track-location="hero"
+      >
+        o escríbenos por WhatsApp ↗
+      </a>
     </div>
     <ul class="hero-facts mono" aria-label="En resumen">
       {from && <li>PROYECTOS DESDE {formatSoles(from)}</li>}
@@ -124,6 +130,15 @@ const from = prices.length ? Math.min(...prices) : null;
     border-radius: 50%;
     background: var(--color-cyan);
     content: '';
+  }
+
+  .hero-wa {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    color: var(--color-text-soft);
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
 
   .hero-diag {

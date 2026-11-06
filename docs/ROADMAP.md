@@ -115,7 +115,7 @@ Objetivo: páginas que rankean para búsquedas de compra.
 ---
 
 ## F6 — Laboratorio de demos y panel (opcional, después de tener tráfico)
-- [ ] 3 demos propias (Clínica, Constructora, Comercio) como páginas en `/proyectos/[slug]`, cada una etiquetada "Demo" y con métricas técnicas medidas. → Las páginas existen ("En construcción"); faltan las demos navegables, sus capturas (`src/assets/proyectos/`) y sus métricas.
+- [x] (2026-11-06) Demos navegables en `/demos/ferreteria`, `/demos/clinica`, `/demos/constructora` (ver `docs/LANZAMIENTO.md`). Faltan sus métricas medidas. Original: 3 demos propias (Clínica, Constructora, Comercio) como páginas en `/proyectos/[slug]`, cada una etiquetada "Demo" y con métricas técnicas medidas. → Las páginas existen ("En construcción"); faltan las demos navegables, sus capturas (`src/assets/proyectos/`) y sus métricas.
 - [x] Panel `/admin` protegido (auth simple o proveedor externo) para ver leads, cambiar estado y notas. → Contraseña `ADMIN_PASSWORD` + cookie firmada, filtros, búsqueda por campaña, conversación del chat, exportación CSV.
 - [ ] 🧑 Configurar `ADMIN_PASSWORD` en Vercel.
 - [ ] Cuando exista el primer cliente con permiso: primer `proyectos` con `type: "caso"`.

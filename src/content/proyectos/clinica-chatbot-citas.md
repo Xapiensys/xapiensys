@@ -1,18 +1,20 @@
 ---
-title: Demo Clínica — asistente que agenda citas
-seoTitle: Demo de chatbot que agenda citas para clínicas | Xapiensys
-description: Demo propia de Xapiensys. Landing para clínica con asistente que responde consultas y simula el agendamiento de citas. No es un cliente real.
-keyword: demo chatbot de citas para clínica
+title: Demo Clínica digital — web con solicitud de citas
+seoTitle: Demo de web para clínica con citas | Xapiensys
+description: Demo propia de Xapiensys. Sitio de clínica con servicios, especialidades, equipo ficticio y solicitud de citas por WhatsApp. No es una clínica real.
+keyword: demo web para clínica
 type: demo
-order: 1
+order: 2
 sector: clinicas
-summary: Landing de clínica con un asistente que responde preguntas frecuentes y guía al paciente hasta pedir una cita.
+summary: Sitio de ejemplo para una clínica con servicios, especialidades, equipo ficticio y un formulario que prepara la solicitud de cita.
 problem: Recepción saturada por consultas repetidas y pacientes que preguntan pero no agendan.
 features:
-  - Página por especialidad, optimizada para búsquedas locales
-  - Asistente que responde horarios, especialidades y requisitos
-  - Flujo de agendamiento simulado claramente (sin datos reales)
-  - Derivación a WhatsApp con el resumen de la consulta
-status: en-construccion
+  - Servicios y especialidades explicados con claridad
+  - Equipo médico y horarios (datos ficticios, identificados como demo)
+  - Formulario de cita con validación de datos
+  - Derivación a WhatsApp con el resumen de la solicitud
+  - Diseño adaptable a móviles
+status: publicada
+url: /demos/clinica
 services: [paginas-web, chatbots-ia]
 ---

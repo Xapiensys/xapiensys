@@ -6,6 +6,7 @@ import PageHero from '@/components/sections/PageHero.astro';
 import ProblemGrid from '@/components/sections/ProblemGrid.astro';
 import Checklist from '@/components/sections/Checklist.astro';
 import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import { serviceIntent } from '@/lib/whatsapp';
 import Investment from '@/components/sections/Investment.astro';
 import DemoShowcase from '@/components/sections/DemoShowcase.astro';
 import FAQ from '@/components/sections/FAQ.astro';
@@ -42,15 +43,13 @@ const idx = () => String(n++).padStart(2, '0');
     { name: d.title, path },
   ]}
   service={{ name: d.title, description: d.description, priceFrom: d.priceFrom }}
-  waIntent="servicio"
-  waTopic={d.title.toLowerCase()}
+  waIntent={serviceIntent(entry.id)}
 >
   <PageHero
     label={`SERVICIO · ${d.title.toUpperCase()}`}
     title={d.h1}
     lede={d.lede}
-    waIntent="servicio"
-    waTopic={d.title.toLowerCase()}
+    waIntent={serviceIntent(entry.id)}
   />
   <ProblemGrid
     index={idx()}
@@ -69,5 +68,5 @@ const idx = () => String(n++).padStart(2, '0');
   {demo && <DemoShowcase index={idx()} only={[demo.id]} />}
   <FAQ page={entry.id} index={idx()} />
   <SectorsGrid index={idx()} only={sectors.map((s) => s.id)} title="Sectores donde aplica" />
-  <FinalCTA index={idx()} waIntent="servicio" waTopic={d.title.toLowerCase()} />
+  <FinalCTA index={idx()} waIntent={serviceIntent(entry.id)} />
 </BaseLayout>

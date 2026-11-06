@@ -1,0 +1,600 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DemoBanner from '@/components/demo/DemoBanner.astro';
+import DemoCTA from '@/components/demo/DemoCTA.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import { ogPath } from '@/lib/ogPages';
+
+// Todos los datos son ficticios (SKU DEMO-xxx, precios de ejemplo).
+const categories = ['Manuales', 'Eléctricas', 'Pinturas', 'Gasfitería', 'Seguridad'] as const;
+type Cat = (typeof categories)[number];
+const glyph: Record<Cat, string> = {
+  Manuales: '<path d="M8 40 30 18l8 8-22 22zM30 18l6-6 10 10-6 6"/>',
+  Eléctricas:
+    '<rect x="8" y="18" width="30" height="14" rx="3"/><path d="M38 22h8v6h-8M18 32v14h8V32"/>',
+  Pinturas: '<path d="M14 10h26v14H14zM27 24v8M22 32h10v16H22z"/>',
+  Gasfitería: '<path d="M10 20h22a8 8 0 0 1 8 8v4M10 20v10h14M40 32h6v10H34V32z"/>',
+  Seguridad: '<path d="M10 24a16 12 0 0 1 32 0zM8 24h36v6H8z"/>',
+};
+const products: { id: string; name: string; cat: Cat; price: number; desc: string }[] = [
+  {
+    id: 'DEMO-001',
+    name: 'Martillo de uña 16 oz',
+    cat: 'Manuales',
+    price: 28,
+    desc: 'Cabeza forjada y mango antideslizante. Para carpintería y trabajos generales.',
+  },
+  {
+    id: 'DEMO-002',
+    name: 'Juego de destornilladores x6',
+    cat: 'Manuales',
+    price: 35,
+    desc: 'Puntas planas y Phillips con imán. Estuche organizador incluido.',
+  },
+  {
+    id: 'DEMO-003',
+    name: 'Taladro percutor 650 W',
+    cat: 'Eléctricas',
+    price: 219,
+    desc: 'Velocidad variable, reversa y mandril de 13 mm. Para madera, metal y concreto liviano.',
+  },
+  {
+    id: 'DEMO-004',
+    name: 'Amoladora angular 4 1/2"',
+    cat: 'Eléctricas',
+    price: 189,
+    desc: 'Para corte y desbaste. Incluye guarda de seguridad y mango lateral.',
+  },
+  {
+    id: 'DEMO-005',
+    name: 'Sierra circular 7 1/4"',
+    cat: 'Eléctricas',
+    price: 289,
+    desc: 'Corte recto con guía y ajuste de profundidad. Ideal para tableros y listones.',
+  },
+  {
+    id: 'DEMO-006',
+    name: 'Pintura látex blanco 1 gal',
+    cat: 'Pinturas',
+    price: 64,
+    desc: 'Acabado mate lavable para interiores. Rendimiento aproximado de 35 m² por galón.',
+  },
+  {
+    id: 'DEMO-007',
+    name: 'Rodillo profesional 9"',
+    cat: 'Pinturas',
+    price: 18,
+    desc: 'Felpa media para paredes lisas. Compatible con látex y esmaltes al agua.',
+  },
+  {
+    id: 'DEMO-008',
+    name: 'Brocha de cerda 3"',
+    cat: 'Pinturas',
+    price: 12,
+    desc: 'Cerda resistente para acabados parejos en superficies pequeñas y bordes.',
+  },
+  {
+    id: 'DEMO-009',
+    name: 'Llave stillson 14"',
+    cat: 'Gasfitería',
+    price: 46,
+    desc: 'Mordaza ajustable en acero para tuberías y accesorios.',
+  },
+  {
+    id: 'DEMO-010',
+    name: 'Cinta teflón x10',
+    cat: 'Gasfitería',
+    price: 15,
+    desc: 'Sellado de roscas en instalaciones de agua. Paquete de 10 rollos.',
+  },
+  {
+    id: 'DEMO-011',
+    name: 'Casco de seguridad',
+    cat: 'Seguridad',
+    price: 22,
+    desc: 'Ajuste con cremallera, ventilado, uso en obra y taller.',
+  },
+  {
+    id: 'DEMO-012',
+    name: 'Guantes de cuero reforzado',
+    cat: 'Seguridad',
+    price: 19,
+    desc: 'Palma reforzada y cierre de velcro. Resistentes al desgaste.',
+  },
+];
+const money = (n: number) => `S/ ${n.toFixed(2)}`;
+---
+
+<BaseLayout
+  title="Demo: ferretería virtual con carrito | Xapiensys"
+  description="Demo de tienda virtual para ferretería: catálogo, filtros, ficha de producto y pedido de prueba. Ejemplo creado por Xapiensys, no es un negocio real."
+  path="/demos/ferreteria"
+  ogImage={ogPath('proyectos-comercio-catalogo-whatsapp')}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Proyectos', path: '/proyectos' },
+    { name: 'Demo ferretería virtual', path: '/demos/ferreteria' },
+  ]}
+  waIntent="demo"
+  waTopic="Ferretería virtual"
+>
+  <DemoBanner name="La Ferretería Demo" />
+  <PageHero
+    label="DEMO · TIENDA VIRTUAL"
+    title="Ferretería virtual"
+    lede="Catálogo con filtros, ficha de producto y carrito. El pedido de prueba se envía a Xapiensys por WhatsApp para que veas el flujo completo."
+  />
+
+  <section class="section-shell shop" aria-label="Catálogo de la ferretería demo" data-shop>
+    <div class="toolbar">
+      <div class="field">
+        <label for="q">Buscar producto</label>
+        <input id="q" type="search" placeholder="Ej. taladro" autocomplete="off" data-q />
+      </div>
+      <div class="field">
+        <label for="sort">Ordenar</label>
+        <select id="sort" data-sort>
+          <option value="name">Nombre</option>
+          <option value="asc">Precio: menor a mayor</option>
+          <option value="desc">Precio: mayor a menor</option>
+        </select>
+      </div>
+    </div>
+    <div class="chips" role="group" aria-label="Filtrar por categoría">
+      <button type="button" class="chip" aria-pressed="true" data-cat="">
+        Todas
+      </button>
+      {categories.map((c) => (
+        <button type="button" class="chip" aria-pressed="false" data-cat={c}>
+          {c}
+        </button>
+      ))}
+    </div>
+    <p class="count mono" data-count aria-live="polite">
+      {products.length} PRODUCTOS
+    </p>
+
+    <div class="layout">
+      <ul class="grid" data-grid>
+        {products.map((p) => (
+          <li
+            class="product"
+            data-id={p.id}
+            data-name={p.name}
+            data-cat={p.cat}
+            data-price={p.price}
+            data-desc={p.desc}
+          >
+            <button type="button" class="art" data-open aria-label={`Ver detalle de ${p.name}`}>
+              <svg
+                viewBox="0 0 56 56"
+                width="56"
+                height="56"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                set:html={glyph[p.cat]}
+              />
+            </button>
+            <p class="mono tag">
+              {p.cat.toUpperCase()} · {p.id}
+            </p>
+            <h3>{p.name}</h3>
+            <p class="price">
+              {money(p.price)} <small>precio de ejemplo</small>
+            </p>
+            <div class="row">
+              <button type="button" class="btn ghost" data-open>
+                Ver detalle
+              </button>
+              <button type="button" class="btn" data-add>
+                Agregar
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <aside class="cart" aria-label="Carrito de la demo">
+        <h2>Tu pedido de prueba</h2>
+        <p class="empty" data-empty>
+          Aún no agregaste productos.
+        </p>
+        <ul class="lines" data-lines></ul>
+        <p class="total" data-totalrow hidden>
+          Total referencial <strong data-total>S/ 0.00</strong>
+        </p>
+        <p class="note">Precios ficticios. No se procesa ningún pago ni se despacha mercadería.</p>
+        <a
+          class="btn wide"
+          data-send
+          href="#"
+          aria-disabled="true"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Enviar pedido de prueba por WhatsApp
+        </a>
+        <button type="button" class="btn ghost wide" data-clear hidden>
+          Vaciar carrito
+        </button>
+      </aside>
+    </div>
+  </section>
+
+  <dialog class="detail" data-dialog aria-labelledby="d-title">
+    <form method="dialog">
+      <button class="close" aria-label="Cerrar detalle">
+        ✕
+      </button>
+    </form>
+    <p class="mono tag" data-d-cat></p>
+    <h2 id="d-title" data-d-title></h2>
+    <p data-d-desc></p>
+    <p class="price" data-d-price></p>
+    <p class="note">Producto y precio ficticios, solo para demostración.</p>
+    <button type="button" class="btn" data-d-add>
+      Agregar al pedido
+    </button>
+  </dialog>
+
+  <DemoCTA demo="la ferretería virtual" />
+</BaseLayout>
+
+<script>
+  import { buildWhatsAppUrl } from '@/lib/whatsapp';
+  import { track } from '@/lib/analytics';
+
+  const root = document.querySelector<HTMLElement>('[data-shop]')!;
+  const items = [...root.querySelectorAll<HTMLElement>('.product')];
+  const grid = root.querySelector<HTMLElement>('[data-grid]')!;
+  const q = root.querySelector<HTMLInputElement>('[data-q]')!;
+  const sort = root.querySelector<HTMLSelectElement>('[data-sort]')!;
+  const chips = [...root.querySelectorAll<HTMLButtonElement>('.chip')];
+  const count = root.querySelector<HTMLElement>('[data-count]')!;
+  const lines = root.querySelector<HTMLElement>('[data-lines]')!;
+  const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+  const totalRow = root.querySelector<HTMLElement>('[data-totalrow]')!;
+  const totalEl = root.querySelector<HTMLElement>('[data-total]')!;
+  const send = root.querySelector<HTMLAnchorElement>('[data-send]')!;
+  const clear = root.querySelector<HTMLButtonElement>('[data-clear]')!;
+  const dialog = document.querySelector<HTMLDialogElement>('[data-dialog]')!;
+  const cart = new Map<string, number>();
+  let cat = '';
+  let current: HTMLElement | null = null;
+  const money = (n: number) => `S/ ${n.toFixed(2)}`;
+
+  function apply() {
+    const term = q.value.trim().toLowerCase();
+    let shown = items.filter(
+      (el) =>
+        (!cat || el.dataset.cat === cat) &&
+        (!term || el.dataset.name!.toLowerCase().includes(term)),
+    );
+    const by = sort.value;
+    shown = shown.sort((a, b) =>
+      by === 'name'
+        ? a.dataset.name!.localeCompare(b.dataset.name!, 'es')
+        : (Number(a.dataset.price) - Number(b.dataset.price)) * (by === 'asc' ? 1 : -1),
+    );
+    items.forEach((el) => (el.hidden = !shown.includes(el)));
+    shown.forEach((el) => grid.append(el));
+    count.textContent = shown.length ? `${shown.length} PRODUCTOS` : 'SIN RESULTADOS';
+  }
+
+  function renderCart() {
+    lines.replaceChildren();
+    let total = 0;
+    let n = 0;
+    const parts: string[] = [];
+    for (const [id, qty] of cart) {
+      const el = items.find((i) => i.dataset.id === id)!;
+      const name = el.dataset.name!;
+      const price = Number(el.dataset.price);
+      total += price * qty;
+      n += qty;
+      parts.push(`${qty} × ${name}`);
+      const li = document.createElement('li');
+      const label = document.createElement('span');
+      label.textContent = `${name} — ${money(price * qty)}`;
+      const ctr = document.createElement('span');
+      ctr.className = 'qty';
+      const minus = document.createElement('button');
+      minus.type = 'button';
+      minus.textContent = '−';
+      minus.setAttribute('aria-label', `Quitar una unidad de ${name}`);
+      minus.addEventListener('click', () => change(id, -1));
+      const num = document.createElement('span');
+      num.textContent = String(qty);
+      const plus = document.createElement('button');
+      plus.type = 'button';
+      plus.textContent = '+';
+      plus.setAttribute('aria-label', `Agregar una unidad de ${name}`);
+      plus.addEventListener('click', () => change(id, 1));
+      ctr.append(minus, num, plus);
+      li.append(label, ctr);
+      lines.append(li);
+    }
+    const has = n > 0;
+    empty.hidden = has;
+    totalRow.hidden = !has;
+    clear.hidden = !has;
+    totalEl.textContent = money(total);
+    send.setAttribute('aria-disabled', String(!has));
+    send.href = has
+      ? buildWhatsAppUrl({
+          intent: 'demo',
+          topic: `la ferretería virtual y quiero enviar este PEDIDO DE PRUEBA: ${parts.join('; ')}. Total referencial ${money(total)}`,
+        })
+      : '#';
+  }
+
+  function change(id: string, delta: number) {
+    const next = (cart.get(id) ?? 0) + delta;
+    if (next <= 0) cart.delete(id);
+    else cart.set(id, next);
+    renderCart();
+  }
+
+  chips.forEach((c) =>
+    c.addEventListener('click', () => {
+      cat = c.dataset.cat ?? '';
+      chips.forEach((x) => x.setAttribute('aria-pressed', String(x === c)));
+      apply();
+      track('demo_interaction', { demo: 'ferreteria', action: 'filter' });
+    }),
+  );
+  q.addEventListener('input', apply);
+  sort.addEventListener('change', apply);
+  items.forEach((el) => {
+    el.querySelector('[data-add]')!.addEventListener('click', () => {
+      change(el.dataset.id!, 1);
+      track('demo_interaction', { demo: 'ferreteria', action: 'add_to_cart' });
+    });
+    el.querySelectorAll('[data-open]').forEach((b) =>
+      b.addEventListener('click', () => {
+        current = el;
+        dialog.querySelector('[data-d-cat]')!.textContent =
+          `${el.dataset.cat!.toUpperCase()} · ${el.dataset.id}`;
+        dialog.querySelector('[data-d-title]')!.textContent = el.dataset.name!;
+        dialog.querySelector('[data-d-desc]')!.textContent = el.dataset.desc!;
+        dialog.querySelector('[data-d-price]')!.textContent =
+          `${money(Number(el.dataset.price))} (precio de ejemplo)`;
+        dialog.showModal();
+        track('demo_interaction', { demo: 'ferreteria', action: 'view_product' });
+      }),
+    );
+  });
+  dialog.querySelector('[data-d-add]')!.addEventListener('click', () => {
+    if (current) change(current.dataset.id!, 1);
+    dialog.close();
+  });
+  clear.addEventListener('click', () => {
+    cart.clear();
+    renderCart();
+  });
+  send.addEventListener('click', (e) => {
+    if (send.getAttribute('aria-disabled') === 'true') e.preventDefault();
+    else track('cta_whatsapp_click', { location: 'demo_ferreteria_pedido' });
+  });
+  renderCart();
+</script>
+
+<style>
+  .shop {
+    padding-block: var(--space-8) var(--space-10);
+  }
+  .toolbar {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+  .field label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+  input,
+  select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chip,
+  .btn {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border: 1px solid var(--color-border-strong);
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .chip[aria-pressed='true'] {
+    border-color: var(--color-cyan);
+    background: var(--color-cyan-a12);
+    color: var(--color-cyan);
+  }
+  .btn {
+    border-color: var(--color-cyan);
+    background: var(--color-cyan);
+    color: var(--color-on-cyan);
+    font-weight: 700;
+  }
+  .btn.ghost {
+    border-color: var(--color-border-strong);
+    background: transparent;
+    color: var(--color-text);
+    font-weight: 400;
+  }
+  .btn.wide {
+    width: 100%;
+    margin-top: var(--space-3);
+  }
+  .btn[aria-disabled='true'] {
+    cursor: not-allowed;
+    opacity: 0.45;
+  }
+  :is(.chip, .btn, input, select, .close, .art, .qty button):focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 2px;
+  }
+  .count {
+    margin: var(--space-4) 0;
+    color: var(--color-muted);
+  }
+  .layout {
+    display: grid;
+    gap: var(--space-6);
+  }
+  .grid {
+    display: grid;
+    padding: 0;
+    margin: 0;
+    gap: var(--space-3);
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    list-style: none;
+  }
+  .product {
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .product[hidden] {
+    display: none;
+  }
+  .art {
+    display: grid;
+    width: 100%;
+    height: 110px;
+    place-items: center;
+    border: 0;
+    background: linear-gradient(135deg, var(--color-cyan-a06), var(--color-violet-a12));
+    color: var(--color-cyan);
+    cursor: pointer;
+  }
+  .tag {
+    margin: var(--space-3) 0 4px;
+    color: var(--color-muted);
+    font-size: 11px;
+  }
+  h3 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+  }
+  .price {
+    margin: 0 0 var(--space-3);
+    color: var(--color-cyan);
+    font-weight: 700;
+  }
+  .price small {
+    color: var(--color-muted);
+    font-size: 12px;
+    font-weight: 400;
+  }
+  .row {
+    display: flex;
+    gap: 8px;
+  }
+  .row .btn {
+    flex: 1;
+    padding: 0 8px;
+  }
+  .cart {
+    align-self: start;
+    padding: var(--space-5);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-raised);
+  }
+  .cart h2 {
+    margin-bottom: var(--space-3);
+    font-size: 1.2rem;
+  }
+  .empty,
+  .note {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+  .lines {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+  .lines :global(li) {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: var(--text-sm);
+  }
+  .lines :global(.qty) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .lines :global(.qty button) {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--color-border-strong);
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  .total {
+    display: flex;
+    justify-content: space-between;
+    margin: var(--space-3) 0;
+  }
+  .total strong {
+    color: var(--color-cyan);
+  }
+  .detail {
+    max-width: 460px;
+    padding: var(--space-6);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-raised);
+    color: var(--color-text);
+  }
+  .detail::backdrop {
+    background: rgb(0 0 0 / 0.7);
+  }
+  .close {
+    float: right;
+    min-width: 44px;
+    min-height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  @media (min-width: 900px) {
+    .toolbar {
+      grid-template-columns: 2fr 1fr;
+    }
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 320px;
+    }
+    .cart {
+      position: sticky;
+      top: calc(var(--header-height) + 16px);
+    }
+  }
+</style>

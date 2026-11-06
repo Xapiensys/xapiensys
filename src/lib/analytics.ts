@@ -16,7 +16,9 @@ export type AnalyticsEvent =
   | 'chat_message'
   | 'chat_lead_form_shown'
   | 'chat_limit_reached'
-  | 'demo_view';
+  | 'demo_view'
+  | 'demo_interaction'
+  | 'service_click';
 
 export type EventProps = Record<string, string | number | boolean | undefined>;
 

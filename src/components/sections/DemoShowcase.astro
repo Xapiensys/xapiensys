@@ -32,7 +32,7 @@ const proyectos = (await getCollection('proyectos'))
     {proyectos.map((p) => (
       <LinkCard
         href={`/proyectos/${p.id}`}
-        index={p.data.status === 'en-construccion' ? 'EN CONSTRUCCIÓN' : 'PUBLICADA'}
+        index={p.data.status === 'en-construccion' ? 'EN CONSTRUCCIÓN' : 'DEMO NAVEGABLE'}
         badge={p.data.type === 'demo' ? 'Demo' : 'Caso'}
         title={p.data.title}
         text={p.data.summary}

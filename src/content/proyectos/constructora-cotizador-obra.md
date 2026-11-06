@@ -1,18 +1,20 @@
 ---
-title: Demo Constructora — cotizador de obra
-seoTitle: Demo de cotizador de obra para constructoras | Xapiensys
-description: Demo propia de Xapiensys. Cotizador de remodelación y obra que estima un rango y captura los datos del interesado. No es un cliente real.
-keyword: demo cotizador de obra
+title: Demo Constructora digital — proyectos y cotización
+seoTitle: Demo de web para constructora | Xapiensys
+description: Demo propia de Xapiensys. Sitio de constructora con proyectos de ejemplo, servicios y formulario de cotización de obra. No es una empresa real.
+keyword: demo web para constructora
 type: demo
-order: 2
+order: 3
 sector: constructoras
-summary: Cotizador por pasos que estima un rango para remodelaciones y obras y registra al interesado con todos sus datos.
+summary: Sitio de ejemplo para una constructora con proyectos demostrativos, servicios y un formulario que reúne los datos de la obra.
 problem: Solicitudes de presupuesto incompletas que obligan a varias llamadas antes de poder cotizar.
 features:
-  - Cotizador por pasos (tipo de obra, metraje, acabados, plazo)
-  - Cálculo del rango en el servidor
-  - Registro del interesado con código de seguimiento
-  - Aviso inmediato por correo al equipo comercial
-status: en-construccion
+  - Galería de proyectos de ejemplo
+  - Servicios de construcción y remodelación
+  - Formulario de cotización (tipo de obra, metraje y acabados)
+  - Solicitud lista para enviar por WhatsApp
+  - Diseño adaptable a móviles
+status: publicada
+url: /demos/constructora
 services: [paginas-web, automatizacion]
 ---

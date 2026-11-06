@@ -1,18 +1,20 @@
 ---
-title: Demo Comercio — catálogo con pedidos por WhatsApp
-seoTitle: Demo de catálogo con pedidos por WhatsApp | Xapiensys
-description: Demo propia de Xapiensys. Catálogo web ligero donde el cliente arma su pedido y lo envía ordenado por WhatsApp. No es un cliente real.
-keyword: demo catálogo con pedidos por WhatsApp
+title: Demo Ferretería virtual — catálogo y pedido
+seoTitle: Demo de ferretería virtual con carrito | Xapiensys
+description: Demo propia de Xapiensys. Tienda virtual para ferretería con filtros, ficha de producto y carrito que arma el pedido por WhatsApp. No es un cliente real.
+keyword: demo tienda virtual para ferretería
 type: demo
-order: 3
+order: 1
 sector: comercios
-summary: Catálogo web rápido donde el cliente arma su pedido y lo envía completo y ordenado por WhatsApp.
+summary: "Tienda virtual de ejemplo para una ferretería: catálogo con filtros, ficha de producto y carrito que envía el pedido ordenado por WhatsApp."
 problem: Pedidos desordenados por chat y dependencia de apps de delivery con comisiones altas.
 features:
-  - Catálogo por categorías con precios
-  - Carrito que genera el mensaje de pedido para WhatsApp
-  - Respuestas automáticas a preguntas frecuentes
-  - Peso mínimo para cargar rápido con datos móviles
-status: en-construccion
-services: [paginas-web, chatbots-ia]
+  - Catálogo por categorías con búsqueda y orden por precio
+  - Ficha de producto con descripción y precio de ejemplo
+  - Carrito con cantidades y total referencial
+  - Pedido de prueba armado como mensaje de WhatsApp (sin pagos reales)
+  - Diseño adaptable y ligero para datos móviles
+status: publicada
+url: /demos/ferreteria
+services: [paginas-web, tiendas-virtuales]
 ---

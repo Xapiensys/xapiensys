@@ -5,9 +5,9 @@ description: Asistentes con inteligencia artificial que responden consultas, cap
 keyword: chatbot con IA para empresas en Perú
 h1: Chatbot con IA para empresas en Perú
 lede: Un asistente que responde las consultas repetidas de tus clientes a cualquier hora y te entrega los interesados listos para cerrar.
-order: 2
+order: 4
 icon: chatbot
-cardIndex: 02 / CONVERSACIÓN
+cardIndex: 04 / CONVERSACIÓN
 summary: Asistentes conversacionales para responder consultas y guiar a las personas al siguiente paso.
 problems:
   - title: Las mismas preguntas todo el día

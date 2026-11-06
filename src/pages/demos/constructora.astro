@@ -1,0 +1,321 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import DemoBanner from '@/components/demo/DemoBanner.astro';
+import DemoCTA from '@/components/demo/DemoCTA.astro';
+import PageHero from '@/components/sections/PageHero.astro';
+import { ogPath } from '@/lib/ogPages';
+
+// Todo es ficticio: la empresa, los proyectos y sus datos.
+const services = [
+  { t: 'Remodelaciones', d: 'Cocinas, baños, fachadas y ambientes completos.' },
+  { t: 'Construcción de vivienda', d: 'Casas unifamiliares y ampliaciones de pisos.' },
+  { t: 'Obras comerciales', d: 'Locales, oficinas y tiendas listas para operar.' },
+  { t: 'Supervisión de obra', d: 'Control de avance, costos y calidad en cada etapa.' },
+];
+// Ilustraciones generadas por código (sin fotos de stock).
+const projects = [
+  {
+    n: 'Casa Ejemplo I',
+    k: 'Vivienda · 180 m²',
+    s: '<path d="M6 46V24l22-14 22 14v22zM22 46V32h12v14"/>',
+  },
+  {
+    n: 'Edificio Demo Norte',
+    k: 'Multifamiliar · 5 pisos',
+    s: '<path d="M14 46V8h28v38M20 14h4M32 14h4M20 22h4M32 22h4M20 30h4M32 30h4M24 46v-8h8v8"/>',
+  },
+  {
+    n: 'Local Comercial Muestra',
+    k: 'Comercial · 95 m²',
+    s: '<path d="M6 20h44l-4-10H10zM10 20v26h36V20M22 46V32h12v14"/>',
+  },
+  {
+    n: 'Remodelación Ficticia',
+    k: 'Remodelación · 60 m²',
+    s: '<path d="M8 40 28 20l8 8-20 20zM28 20l6-6 10 10-6 6"/>',
+  },
+];
+const types = ['Remodelación', 'Vivienda nueva', 'Local comercial', 'Ampliación'];
+---
+
+<BaseLayout
+  title="Demo: web para constructora con cotizador | Xapiensys"
+  description="Demo de sitio web para constructora: proyectos, galería, servicios y formulario de cotización. Ejemplos ficticios creados por Xapiensys."
+  path="/demos/constructora"
+  ogImage={ogPath('proyectos-constructora-cotizador-obra')}
+  breadcrumbs={[
+    { name: 'Inicio', path: '/' },
+    { name: 'Proyectos', path: '/proyectos' },
+    { name: 'Demo constructora digital', path: '/demos/constructora' },
+  ]}
+  waIntent="demo"
+  waTopic="Constructora digital"
+>
+  <DemoBanner name="Constructora Demo" />
+  <PageHero
+    label="DEMO · CONSTRUCTORA DIGITAL"
+    title="Constructora Demo"
+    lede="Presenta tus obras, explica tus servicios y recibe solicitudes de presupuesto con los datos completos."
+  />
+
+  <section class="section-shell block" aria-labelledby="srv">
+    <h2 id="srv">Servicios</h2>
+    <ul class="cards">
+      {services.map((s) => (
+        <li>
+          <h3>{s.t}</h3>
+          <p>{s.d}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section-shell block" aria-labelledby="proy">
+    <h2 id="proy">
+      Proyectos <span class="fict">(ejemplos demostrativos)</span>
+    </h2>
+    <ul class="gallery">
+      {projects.map((p) => (
+        <li>
+          <figure>
+            <div class="art">
+              <svg
+                viewBox="0 0 56 56"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                role="img"
+                aria-label={`Ilustración esquemática: ${p.n}`}
+                set:html={p.s}
+              />
+            </div>
+            <figcaption>
+              <strong>{p.n}</strong>
+              <span>{p.k} · ejemplo</span>
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="section-shell block" aria-labelledby="cot">
+    <h2 id="cot">Solicita una cotización</h2>
+    <p class="lead">
+      Prueba el formulario. Al enviarlo se abre WhatsApp con tu solicitud de prueba dirigida a
+      Xapiensys; no llega a ninguna constructora real y no incluye precios.
+    </p>
+    <form class="form" data-form novalidate>
+      <div class="f">
+        <label for="n">Nombre</label>
+        <input id="n" name="n" autocomplete="name" required minlength="2" maxlength="80" />
+      </div>
+      <div class="f">
+        <label for="t">Celular</label>
+        <input
+          id="t"
+          name="t"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          required
+          placeholder="9XX XXX XXX"
+        />
+      </div>
+      <div class="f">
+        <label for="k">Tipo de obra</label>
+        <select id="k" name="k" required>
+          <option value="">Elige una opción</option>
+          {types.map((s) => (
+            <option>{s}</option>
+          ))}
+        </select>
+      </div>
+      <div class="f">
+        <label for="m">Metraje aproximado (m²)</label>
+        <input id="m" name="m" type="number" inputmode="numeric" min="5" max="100000" required />
+      </div>
+      <div class="f">
+        <label for="a">Nivel de acabados</label>
+        <select id="a" name="a" required>
+          <option value="">Elige una opción</option>
+          <option>Básico</option>
+          <option>Intermedio</option>
+          <option>Premium</option>
+        </select>
+      </div>
+      <p class="err" role="alert" data-err hidden></p>
+      <button class="btn" type="submit">
+        Preparar solicitud de cotización
+      </button>
+      <p class="ok" role="status" data-ok hidden>
+        Abrimos WhatsApp con tu solicitud de prueba. Aún no se envió: debes pulsar «Enviar» allí. Si
+        no se abrió,
+        <a data-link href="#" target="_blank" rel="noopener noreferrer">
+          pulsa aquí
+        </a>
+        .
+      </p>
+    </form>
+  </section>
+
+  <DemoCTA demo="la constructora digital" />
+</BaseLayout>
+
+<script>
+  import { buildWhatsAppUrl } from '@/lib/whatsapp';
+  import { track } from '@/lib/analytics';
+
+  const form = document.querySelector<HTMLFormElement>('[data-form]')!;
+  const err = form.querySelector<HTMLElement>('[data-err]')!;
+  const ok = form.querySelector<HTMLElement>('[data-ok]')!;
+  const link = form.querySelector<HTMLAnchorElement>('[data-link]')!;
+
+  form.addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    ok.hidden = true;
+    const v = Object.fromEntries(new FormData(form)) as Record<string, string>;
+    const m = Number(v.m);
+    let msg = '';
+    if (!v.n || v.n.trim().length < 2) msg = 'Escribe tu nombre.';
+    else if (!/^\+?[\d\s()-]{7,20}$/.test(v.t ?? ''))
+      msg = 'Escribe un celular válido (solo números).';
+    else if (!v.k) msg = 'Elige el tipo de obra.';
+    else if (!Number.isFinite(m) || m < 5 || m > 100000)
+      msg = 'Indica un metraje entre 5 y 100 000 m².';
+    else if (!v.a) msg = 'Elige el nivel de acabados.';
+    err.hidden = !msg;
+    err.textContent = msg;
+    if (msg) return;
+    const url = buildWhatsAppUrl({
+      intent: 'demo',
+      topic: `la constructora digital. SOLICITUD DE COTIZACIÓN DE PRUEBA: ${(v.n ?? '').trim()}, cel. ${(v.t ?? '').trim()}, ${v.k}, ${m} m², acabados ${v.a}`,
+    });
+    link.href = url;
+    ok.hidden = false;
+    track('demo_interaction', { demo: 'constructora', action: 'quote_request' });
+    window.open(url, '_blank', 'noopener');
+  });
+</script>
+
+<style>
+  .block {
+    padding-block: var(--space-8);
+  }
+  h2 {
+    margin-bottom: var(--space-5);
+  }
+  .fict {
+    color: var(--color-violet-soft);
+    font-size: 0.6em;
+    font-weight: 400;
+  }
+  .cards,
+  .gallery {
+    display: grid;
+    padding: 0;
+    margin: 0;
+    gap: var(--space-3);
+    list-style: none;
+  }
+  .cards {
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
+  .gallery {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+  .cards li {
+    padding: var(--space-5);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .cards h3 {
+    margin-bottom: 6px;
+    font-size: 1.05rem;
+  }
+  .cards p {
+    margin: 0;
+    color: var(--color-text-dim);
+    font-size: var(--text-sm);
+  }
+  figure {
+    margin: 0;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .art {
+    display: grid;
+    height: 160px;
+    place-items: center;
+    color: var(--color-cyan);
+    background: linear-gradient(135deg, var(--color-cyan-a06), var(--color-violet-a12));
+  }
+  .art svg {
+    width: 84px;
+    height: 84px;
+  }
+  figcaption {
+    display: grid;
+    gap: 2px;
+    padding: var(--space-3) var(--space-4);
+  }
+  figcaption span {
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+  .lead {
+    max-width: 640px;
+    color: var(--color-text-dim);
+  }
+  .form {
+    display: grid;
+    max-width: 560px;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-raised);
+  }
+  label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-muted);
+    font-size: var(--text-sm);
+  }
+  input,
+  select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+  }
+  :is(input, select, .btn):focus-visible {
+    outline: 2px solid var(--color-cyan);
+    outline-offset: 2px;
+  }
+  .btn {
+    min-height: 48px;
+    border: 0;
+    background: var(--color-cyan);
+    color: var(--color-on-cyan);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .err {
+    margin: 0;
+    color: var(--color-danger);
+  }
+  .ok {
+    margin: 0;
+    color: var(--color-text-soft);
+  }
+  .ok a {
+    color: var(--color-cyan);
+    text-decoration: underline;
+  }
+</style>

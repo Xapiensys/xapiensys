@@ -4,6 +4,8 @@
  */
 export const needOptions = [
   { value: 'web', label: 'Página web' },
+  { value: 'tienda', label: 'Tienda virtual' },
+  { value: 'cubo3d', label: 'Experiencia web 3D' },
   { value: 'chatbot', label: 'Chatbot con IA' },
   { value: 'automatizacion', label: 'Automatización de procesos' },
   { value: 'sistema', label: 'Sistema a medida' },
