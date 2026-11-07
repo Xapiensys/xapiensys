@@ -15,7 +15,7 @@ Objetivo: dejar el sitio en producción sin errores mientras se construye la v2.
 
 **Aceptación:** HTML válido (validator.w3.org sin errores), deploy en verde.
 
-> Estado (2026-10-30): el sitio viejo se reemplazó por la v2 (F1), así que los dos primeros puntos quedan resueltos. Correo de dominio y `sameAs` siguen pendientes (marcados `TODO(xapiensys)` en `src/lib/site.ts`; el Instagram `jinfaxtech` no coincide con la marca).
+> Estado (2026-10-30): el sitio viejo se reemplazó por la v2 (F1), así que los dos primeros puntos quedan resueltos. Correo de dominio sigue pendiente (`TODO(xapiensys)` en `src/lib/site.ts`); `sameAs` ya usa las redes oficiales.
 
 ---
 

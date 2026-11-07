@@ -1,4 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="title">
-  <title id="title">Xapiensys</title>
-  <path d="M8 8 40 40M40 8 8 40" fill="none" stroke="#22D3EE" stroke-width="4" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="470 194 670 522" role="img" aria-labelledby="t">
+  <title id="t">Xapiensys</title>
+  <defs>
+    <linearGradient id="g" gradientUnits="userSpaceOnUse" x1="520" y1="0" x2="1090" y2="0">
+      <stop offset="0" stop-color="#00f0ff"/>
+      <stop offset=".45" stop-color="#00f0ff"/>
+      <stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#g)" stroke-width="30" stroke-miterlimit="10">
+    <path d="M834 410 689 250H549l199 185-228 225h131l112-113"/>
+    <path d="M846 328l72-78h86"/>
+    <path d="M1034 262 870 435l190 208"/>
+    <path d="M772 478l180 182h106"/>
+  </g>
+  <g fill="url(#g)">
+    <circle cx="633" cy="543" r="30"/>
+    <circle cx="1052" cy="244" r="32"/>
+    <circle cx="1066" cy="655" r="30"/>
+  </g>
 </svg>

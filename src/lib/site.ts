@@ -33,11 +33,11 @@ export const site = {
     'Sistemas a medida',
     'SEO técnico',
   ],
-  // TODO(xapiensys): confirmar que cada perfil existe y enlaza a xapiensys.com.
-  // El usuario de Instagram (jinfaxtech) no coincide con la marca.
   socials: [
-    { name: 'Instagram', url: 'https://www.instagram.com/jinfaxtech/' },
+    { name: 'Instagram', url: 'https://www.instagram.com/xapiensysdevs/' },
+    { name: 'YouTube', url: 'https://www.youtube.com/@Xapiensysdev' },
     { name: 'Facebook', url: 'https://www.facebook.com/profile.php?id=61574070666802' },
+    { name: 'TikTok', url: 'https://www.tiktok.com/@xapiensys.dev' },
     { name: 'GitHub', url: 'https://github.com/Xapiensys-com' },
   ],
   googleSiteVerification: 'p3S19uGZlClLbqNKLQYBV9NlXXAMnWxUeEkdXt46b7k',

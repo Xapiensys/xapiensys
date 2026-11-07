@@ -9,7 +9,7 @@ Estado local (rama `mejora-comercial-lanzamiento`, sin desplegar). Nada de esto 
 - 🧑 `PUBLIC_GA4_ID`: sin él los eventos solo quedan en `dataLayer`. Crear conversiones `lead_submit`, `cta_whatsapp_click`, `cta_quote_click`.
 - 🧑 `LLM_API_KEY` (chat IA), `ADMIN_PASSWORD` (panel), `IP_HASH_SALT`.
 - 🧑 Correo de dominio: `site.email` sigue siendo `xapiensys@gmail.com` (TODO en `src/lib/site.ts`).
-- 🧑 Redes: el Instagram `jinfaxtech` no coincide con la marca; confirmar o quitar de `site.socials`.
+- ✅ Redes oficiales cargadas en `site.socials` (Instagram, YouTube, Facebook, TikTok).
 
 ## Precios: decisiones e inconsistencias
 - Conservados: web desde S/ 1,500; web + chatbot desde S/ 2,500; automatización desde S/ 1,800 por flujo; sistemas desde S/ 3,500.

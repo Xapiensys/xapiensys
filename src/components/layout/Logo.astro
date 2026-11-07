@@ -2,21 +2,47 @@
 interface Props {
   label: string;
   class?: string;
+  /** Id único del degradado: obligatorio si el logo aparece más de una vez en la página. */
+  gradientId?: string;
 }
-const { label, class: className } = Astro.props;
+const { label, class: className, gradientId = 'xapiensys-mark' } = Astro.props;
 ---
 
 <a class:list={['brand', className]} href="/" aria-label={label}>
-  <svg class="brand-mark" viewBox="0 0 48 48" aria-hidden="true">
-    <path d="M7 7 41 41M41 7 7 41" fill="none" stroke="currentColor" stroke-width="3.5"></path>
-    <path
-      d="M24 4v40M4 24h40"
+  <svg class="brand-mark" viewBox="490 214 630 482" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient
+        id={gradientId}
+        gradientUnits="userSpaceOnUse"
+        x1="520"
+        y1="0"
+        x2="1090"
+        y2="0"
+      >
+        <stop offset="0" style="stop-color: var(--color-cyan)"></stop>
+        <stop offset="0.45" style="stop-color: var(--color-cyan)"></stop>
+        <stop offset="1" style="stop-color: var(--color-violet-soft)"></stop>
+      </linearGradient>
+    </defs>
+    <g
       fill="none"
-      stroke="currentColor"
-      stroke-width="1"
-      opacity=".55"
-    ></path>
-    <circle cx="24" cy="24" r="3" fill="currentColor"></circle>
+      stroke={`url(#${gradientId})`}
+      stroke-width="21"
+      stroke-linejoin="miter"
+      stroke-miterlimit="10"
+    >
+      <!-- Mitad azul -->
+      <path d="M834 410 689 250H549l199 185-228 225h131l112-113"></path>
+      <!-- Mitad violeta -->
+      <path d="M846 328l72-78h86"></path>
+      <path d="M1034 262 870 435l190 208"></path>
+      <path d="M772 478l180 182h106"></path>
+    </g>
+    <g fill={`url(#${gradientId})`}>
+      <circle cx="633" cy="543" r="21"></circle>
+      <circle cx="1052" cy="244" r="23"></circle>
+      <circle cx="1066" cy="655" r="21"></circle>
+    </g>
   </svg>
   <span>XAPIENSYS</span>
 </a>
@@ -37,8 +63,8 @@ const { label, class: className } = Astro.props;
 
   .brand-mark {
     display: block;
-    width: 34px;
-    height: 34px;
-    color: var(--color-cyan);
+    width: 44px;
+    height: auto;
+    aspect-ratio: 630 / 482;
   }
 </style>
