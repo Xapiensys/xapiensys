@@ -209,16 +209,22 @@ export default function ChatDemo({ suggestions, guided }: Props) {
   const chips = mode === 'guided' ? guided.map((g) => g.label) : suggestions;
 
   return (
-    <div class="chat" onFocusIn={open}>
+    <div class="chat" data-state={busy ? 'busy' : mode} onFocusIn={open}>
+      <div class="chat-scan" aria-hidden="true" />
       <div class="chat-header">
-        <div class="chat-avatar" aria-hidden="true">
+        <div class="chat-core" aria-hidden="true">
+          <span />
           <svg viewBox="0 0 24 24">
-            <path d="M4 4 20 20M20 4 4 20" />
+            <path d="M5 5 19 19M19 5 5 19" />
           </svg>
         </div>
         <div class="chat-id">
-          <strong>Asistente X</strong>
-          <span>{mode === 'ai' ? 'IA de Xapiensys · responde en segundos' : 'Modo guiado'}</span>
+          <strong>
+            X<span class="chat-slash">/</span>CORE
+          </strong>
+          <span class="mono">
+            {mode === 'ai' ? (busy ? 'PROCESANDO…' : 'ASISTENTE IA · LISTO') : 'MODO GUIADO'}
+          </span>
         </div>
         <span class="chat-online mono">
           <i aria-hidden="true" /> {mode === 'ai' ? 'EN LÍNEA' : 'GUIADO'}
@@ -228,8 +234,13 @@ export default function ChatDemo({ suggestions, guided }: Props) {
       <div class="chat-messages" ref={listRef} aria-live="polite" aria-relevant="additions">
         {messages.map((m) => (
           <div class={`chat-msg ${m.role}`} key={m.id} aria-busy={m.streaming ? 'true' : undefined}>
-            {m.role === 'agent' && <span class="chat-msg-label mono">ASISTENTE</span>}
-            {m.text ||
+            <span class="chat-msg-label mono" aria-hidden="true">
+              {m.role === 'agent' ? 'X/CORE ›' : 'TÚ ›'}
+            </span>
+            <span class="visually-hidden">{m.role === 'agent' ? 'Asistente:' : 'Tú:'}</span>
+            {m.text && <span class="chat-text">{m.text}</span>}
+            {m.streaming && m.text && <span class="chat-caret" aria-hidden="true" />}
+            {!m.text &&
               (m.streaming ? (
                 <span class="chat-typing" aria-label="Escribiendo">
                   <i />
@@ -288,7 +299,9 @@ export default function ChatDemo({ suggestions, guided }: Props) {
         )}
         {leadForm === 'done' && leadCode && (
           <div class="chat-msg agent">
-            <span class="chat-msg-label mono">ASISTENTE</span>
+            <span class="chat-msg-label mono" aria-hidden="true">
+              X/CORE ›
+            </span>
             Listo, {contact.name.split(' ')[0]}. Tu código es {leadCode}. Te escribimos pronto, o
             adelántate:
             <span class="chat-links">
@@ -335,11 +348,16 @@ export default function ChatDemo({ suggestions, guided }: Props) {
         <label class="visually-hidden" for="chat-input">
           Escribe tu mensaje
         </label>
+        <span class="chat-prompt mono" aria-hidden="true">
+          &gt;_
+        </span>
         <input
           id="chat-input"
           type="text"
           maxLength={500}
-          placeholder={mode === 'ai' ? 'Escribe tu consulta…' : 'Elige una opción de arriba'}
+          placeholder={
+            mode === 'ai' ? 'Pregúntale a la IA por tu proyecto…' : 'Elige una opción de arriba'
+          }
           autocomplete="off"
           value={input}
           disabled={mode === 'guided'}

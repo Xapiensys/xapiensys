@@ -43,7 +43,7 @@ export default defineConfig({
       LLM_PROVIDER: envField.enum({
         context: 'server',
         access: 'secret',
-        values: ['anthropic'],
+        values: ['anthropic', 'gemini'],
         optional: true,
       }),
       LLM_MODEL: envField.string({ context: 'server', access: 'secret', optional: true }),

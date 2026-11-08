@@ -66,7 +66,9 @@ Objetivo: que cada interesado quede registrado y medido.
 
 ## F3 — Chat IA real
 Objetivo: la demo en vivo que vende.
-- [ ] 🧑 Elegir proveedor/modelo LLM, crear API key con límite de gasto en el panel del proveedor (doble protección).
+- [ ] 🧑 Elegir proveedor/modelo LLM, crear API key con límite de gasto en el panel del proveedor (doble protección). → (2026-11-08) Elegido **Gemini** (`gemini-3.5-flash-lite`). Falta: cargar `LLM_PROVIDER=gemini` y `LLM_API_KEY` en Vercel y poner tope de gasto en Google AI Studio.
+- [x] (2026-11-08) Proveedor `gemini` en `llm.ts` (REST + SSE, sin SDK) junto a `anthropic`.
+- [x] (2026-11-08) `ChatDemo` rediseñado como terminal "X/CORE": anillo vivo, escaneo y cursor mientras responde, respeta `prefers-reduced-motion`.
 - [x] Tablas `chat_sessions`, `chat_messages`, `usage_monthly`.
 - [x] `lib/server/llm.ts` (streaming) y `chatPrompt.ts` (base de conocimiento desde `src/content`).
 - [x] `POST /api/chat` con SSE y todos los límites de ARCHITECTURE §7.3.
