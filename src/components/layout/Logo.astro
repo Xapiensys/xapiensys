@@ -2,46 +2,22 @@
 interface Props {
   label: string;
   class?: string;
-  /** Id único del degradado: obligatorio si el logo aparece más de una vez en la página. */
-  gradientId?: string;
 }
-const { label, class: className, gradientId = 'xapiensys-mark' } = Astro.props;
+const { label, class: className } = Astro.props;
 ---
 
 <a class:list={['brand', className]} href="/" aria-label={label}>
   <svg class="brand-mark" viewBox="490 214 630 482" aria-hidden="true" focusable="false">
-    <defs>
-      <linearGradient
-        id={gradientId}
-        gradientUnits="userSpaceOnUse"
-        x1="520"
-        y1="0"
-        x2="1090"
-        y2="0"
-      >
-        <stop offset="0" style="stop-color: var(--color-cyan)"></stop>
-        <stop offset="0.45" style="stop-color: var(--color-cyan)"></stop>
-        <stop offset="1" style="stop-color: var(--color-violet-soft)"></stop>
-      </linearGradient>
-    </defs>
-    <g
-      fill="none"
-      stroke={`url(#${gradientId})`}
-      stroke-width="21"
-      stroke-linejoin="miter"
-      stroke-miterlimit="10"
-    >
-      <!-- Mitad azul -->
+    <g class="blue" fill="none" stroke-width="21" stroke-miterlimit="10">
       <path d="M834 410 689 250H549l199 185-228 225h131l112-113"></path>
-      <!-- Mitad violeta -->
+      <circle class="dot" cx="633" cy="543" r="21"></circle>
+    </g>
+    <g class="violet" fill="none" stroke-width="21" stroke-miterlimit="10">
       <path d="M846 328l72-78h86"></path>
       <path d="M1034 262 870 435l190 208"></path>
       <path d="M772 478l180 182h106"></path>
-    </g>
-    <g fill={`url(#${gradientId})`}>
-      <circle cx="633" cy="543" r="21"></circle>
-      <circle cx="1052" cy="244" r="23"></circle>
-      <circle cx="1066" cy="655" r="21"></circle>
+      <circle class="dot" cx="1052" cy="244" r="23"></circle>
+      <circle class="dot" cx="1066" cy="655" r="21"></circle>
     </g>
   </svg>
   <span>XAPIENSYS</span>
@@ -59,6 +35,27 @@ const { label, class: className, gradientId = 'xapiensys-mark' } = Astro.props;
     font-weight: 700;
     letter-spacing: 0.16em;
     line-height: 1;
+  }
+
+  .blue {
+    stroke: var(--color-cyan);
+  }
+
+  .violet {
+    stroke: var(--color-violet-soft);
+  }
+
+  .dot {
+    stroke: none;
+    fill: currentColor;
+  }
+
+  .blue .dot {
+    fill: var(--color-cyan);
+  }
+
+  .violet .dot {
+    fill: var(--color-violet-soft);
   }
 
   .brand-mark {
