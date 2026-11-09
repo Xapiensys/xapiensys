@@ -4,6 +4,18 @@ import PageHero from '@/components/sections/PageHero.astro';
 import SiteSimulator from '@/components/islands/SiteSimulator';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import { ogPath } from '@/lib/ogPages';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+// Fotos de portada por rubro (generadas para el simulador; ilustrativas).
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/simulador/*.webp', {
+  eager: true,
+});
+const images: Record<string, string> = {};
+for (const [path, mod] of Object.entries(files)) {
+  const id = path.split('/').pop()!.replace('.webp', '');
+  images[id] = (await getImage({ src: mod.default, width: 1200, format: 'webp', quality: 72 })).src;
+}
 ---
 
 <BaseLayout
@@ -24,7 +36,7 @@ import { ogPath } from '@/lib/ogPages';
     ctas={false}
   />
   <section class="section-shell section-pad" aria-label="Simulador de página web">
-    <SiteSimulator client:load />
+    <SiteSimulator client:load images={images} />
     <noscript>
       <p>
         El simulador necesita JavaScript. <a href="/contacto">Escríbenos</a> y te mostramos una

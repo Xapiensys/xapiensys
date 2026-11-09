@@ -359,6 +359,25 @@
   }
 }
 
+.chat-retry {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  margin-top: 8px;
+  padding: 0 14px;
+  border: 1px solid var(--color-cyan-a42);
+  color: var(--color-cyan);
+  background: var(--color-cyan-a06);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chat-retry:hover:not(:disabled),
+.chat-retry:focus-visible {
+  border-color: var(--color-cyan);
+}
+
 .chat-links {
   display: flex;
   flex-wrap: wrap;

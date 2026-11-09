@@ -1,0 +1,100 @@
+---
+/**
+ * Imagen de sección (panorámica o lateral) para que ninguna sección sea solo texto.
+ * Aparece con zoom suave al hacer scroll (fx.ts) y respira lentamente sin distraer.
+ */
+import ProjectImage from './ProjectImage.astro';
+import type { Visual } from '@/lib/visuals';
+
+interface Props {
+  image: Visual;
+  /** banner: ancho completo bajo el título · side: columna lateral. */
+  shape?: 'banner' | 'side';
+  caption?: string;
+  sizes?: string;
+}
+
+const { image, shape = 'banner', caption, sizes } = Astro.props;
+const defaultSizes =
+  shape === 'banner' ? '(min-width: 1200px) 1200px, 100vw' : '(min-width: 900px) 520px, 100vw';
+---
+
+<figure class:list={['visual', 'section-visual', shape]}>
+  <ProjectImage src={image.src} alt={image.alt} sizes={sizes ?? defaultSizes} />
+  {caption && <figcaption class="mono">{caption}</figcaption>}
+</figure>
+
+<style>
+  .section-visual {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface-strong);
+    box-shadow: var(--glow-violet);
+  }
+
+  .banner {
+    margin-block: 0 var(--space-8);
+    aspect-ratio: 16 / 9;
+  }
+
+  .side {
+    margin-top: var(--space-6);
+    aspect-ratio: 16 / 10;
+  }
+
+  .section-visual :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: section-breathe 16s ease-in-out infinite alternate;
+  }
+
+  /* Bordes que se funden con el fondo. */
+  .section-visual::after {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        90deg,
+        var(--color-bg-a50),
+        transparent 18%,
+        transparent 82%,
+        var(--color-bg-a50)
+      ),
+      linear-gradient(0deg, var(--color-bg-a50), transparent 30%);
+    content: '';
+    pointer-events: none;
+  }
+
+  figcaption {
+    position: absolute;
+    z-index: 1;
+    right: 14px;
+    bottom: 12px;
+    padding: 5px 9px;
+    color: var(--color-text);
+    background: var(--color-bg-a78);
+    font-size: var(--text-mono);
+  }
+
+  @keyframes section-breathe {
+    to {
+      transform: scale(1.05);
+    }
+  }
+
+  @media (min-width: 760px) {
+    .banner {
+      aspect-ratio: 21 / 8;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .section-visual :global(img) {
+      animation: none;
+    }
+  }
+</style>

@@ -79,6 +79,11 @@ Objetivo: la demo en vivo que vende.
 - [x] (2026-11-09) **Radio Tommy** (`MusicPlayer`): reproductor flotante, en silencio por defecto, búsqueda libre + sugerencias vía `/api/music` (fragmentos oficiales de 30 s de iTunes) y ecualizador con el audio real.
 - [x] (2026-11-09) **Simulador de página web** en `/simulador` (`SiteSimulator` + `/api/simulate`, Gemini con salida JSON y plantilla de respaldo por rubro).
 - [x] (2026-11-09) WhatsApp verde en todo el sitio (flotante con burbuja, menú, héroes, CTA) + franja de oferta real (`PromoBar`).
+- [x] (2026-11-09) Chat: 40 mensajes por conversación (continúa sola en sesión nueva al llegar al tope), reintentos y modelo de respaldo en Gemini, botón «Reintentar» en vez de pasar a modo guiado ante cortes.
+- [x] (2026-11-09) Radio Tommy v2: barra mini minimizable, avance arrastrable, anterior/siguiente; motor YouTube (canción completa) + iTunes de respaldo.
+- [ ] 🧑 Crear `YOUTUBE_API_KEY` (Google Cloud → YouTube Data API v3) y cargarla en Vercel para canciones completas. Luego probar el motor YouTube en producción.
+- [x] (2026-11-09) Simulador v2: foto real por rubro (`src/assets/simulador/`), color de marca, secciones «Cómo funciona» y franja final, animación de construcción, pantalla completa y vista celular con container queries.
+- [x] (2026-11-09) Imágenes en todas las secciones de texto (`SectionVisual` + `sectionVisuals` en `lib/visuals.ts`).
 - [ ] 🧑 Definir una promo de lanzamiento real (descuento, cupos o fecha) para `PromoBar` — hoy solo muestra el diagnóstico gratuito.
 - [ ] Set de 20 preguntas de prueba (comerciales, fuera de tema, intentos de cambiar instrucciones) y revisar respuestas.
 

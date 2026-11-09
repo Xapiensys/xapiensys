@@ -1,4 +1,6 @@
 ---
+import SectionVisual from '../ui/SectionVisual.astro';
+import { sectionVisuals } from '@/lib/visuals';
 import { getCollection } from 'astro:content';
 import SectionLabel from '../ui/SectionLabel.astro';
 import Quoter from '../islands/Quoter';
@@ -46,6 +48,7 @@ const servicios = (await getCollection('servicios')).sort((a, b) => a.data.order
         rango.
       </p>
     </noscript>
+    <SectionVisual image={sectionVisuals.precios} shape="side" />
   </div>
 </section>
 

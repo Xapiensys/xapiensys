@@ -75,7 +75,8 @@ const DEFAULT_MODELS = {
   anthropic: 'claude-haiku-5-5',
   gemini: 'gemini-3.5-flash-lite',
 } as const;
-const MAX_OUTPUT_TOKENS = 350;
+// Margen suficiente para no cortar respuestas a mitad de frase (el prompt pide ~80 palabras).
+const MAX_OUTPUT_TOKENS = 700;
 const LEAD_TOOL_DESCRIPTION =
   'Muestra al visitante un formulario corto (nombre, negocio, WhatsApp) para que el equipo de Xapiensys lo contacte. Úsala cuando la persona muestre interés en contratar, pida una cotización o quiera que la contacten.';
 const LEAD_TOOL_PARAMS = {
@@ -171,53 +172,78 @@ type GeminiChunk = {
 
 const GEMINI_BLOCKED = new Set(['SAFETY', 'PROHIBITED_CONTENT', 'BLOCKLIST', 'SPII', 'RECITATION']);
 
+/** Modelo de respaldo si el principal está saturado (429/5xx). */
+const GEMINI_FALLBACK_MODEL = 'gemini-3.5-flash';
+const RETRYABLE = new Set([429, 500, 502, 503, 504]);
+
 function geminiProvider(apiKey: string, model: string): ChatProvider {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
+  const urlFor = (m: string) =>
+    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(m)}:streamGenerateContent?alt=sse`;
   return {
     model,
     async *stream(system, history, signal, opts) {
-      const timeout = AbortSignal.timeout(20_000);
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
-        signal: AbortSignal.any([signal, timeout]),
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: system }] },
-          contents: history.map((t) => ({
-            role: t.role === 'assistant' ? 'model' : 'user',
-            parts: [{ text: t.content }],
-          })),
-          tools: [
-            {
-              functionDeclarations: [
-                {
-                  name: LEAD_TOOL_NAME,
-                  description: LEAD_TOOL_DESCRIPTION,
-                  parameters: LEAD_TOOL_PARAMS,
-                },
-                {
-                  name: MUSIC_TOOL_NAME,
-                  description: MUSIC_TOOL_DESCRIPTION,
-                  parameters: MUSIC_TOOL_PARAMS,
-                },
-              ],
-            },
-          ],
-          ...(opts?.forceTool
-            ? {
-                toolConfig: {
-                  functionCallingConfig: { mode: 'ANY', allowedFunctionNames: [opts.forceTool] },
-                },
-              }
-            : {}),
-          generationConfig: {
-            maxOutputTokens: MAX_OUTPUT_TOKENS,
-            // Atención comercial: respuestas cortas y rápidas, razonamiento mínimo.
-            thinkingConfig: { thinkingLevel: 'minimal' },
+      const body = JSON.stringify({
+        systemInstruction: { parts: [{ text: system }] },
+        contents: history.map((t) => ({
+          role: t.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: t.content }],
+        })),
+        tools: [
+          {
+            functionDeclarations: [
+              {
+                name: LEAD_TOOL_NAME,
+                description: LEAD_TOOL_DESCRIPTION,
+                parameters: LEAD_TOOL_PARAMS,
+              },
+              {
+                name: MUSIC_TOOL_NAME,
+                description: MUSIC_TOOL_DESCRIPTION,
+                parameters: MUSIC_TOOL_PARAMS,
+              },
+            ],
           },
-        }),
+        ],
+        ...(opts?.forceTool
+          ? {
+              toolConfig: {
+                functionCallingConfig: { mode: 'ANY', allowedFunctionNames: [opts.forceTool] },
+              },
+            }
+          : {}),
+        generationConfig: {
+          maxOutputTokens: MAX_OUTPUT_TOKENS,
+          // Atención comercial: respuestas cortas y rápidas, razonamiento mínimo.
+          thinkingConfig: { thinkingLevel: 'minimal' },
+        },
       });
-      if (!res.ok || !res.body) throw new Error(`gemini ${res.status}`);
+
+      // Reintento: mismo modelo tras una pausa breve y luego el de respaldo.
+      // Solo antes de empezar a responder (nunca se duplica texto ya enviado).
+      const attempts = [
+        model,
+        model,
+        ...(model === GEMINI_FALLBACK_MODEL ? [] : [GEMINI_FALLBACK_MODEL]),
+      ];
+      let res: Response | null = null;
+      for (let i = 0; i < attempts.length; i++) {
+        if (i > 0) await new Promise((r) => setTimeout(r, 500 * i));
+        if (signal.aborted) throw new Error('aborted');
+        try {
+          res = await fetch(urlFor(attempts[i]!), {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', 'x-goog-api-key': apiKey },
+            signal: AbortSignal.any([signal, AbortSignal.timeout(25_000)]),
+            body,
+          });
+        } catch (error) {
+          if (signal.aborted || i === attempts.length - 1) throw error;
+          continue;
+        }
+        if (res.ok && res.body) break;
+        if (!RETRYABLE.has(res.status) || i === attempts.length - 1) break;
+      }
+      if (!res?.ok || !res.body) throw new Error(`gemini ${res?.status ?? 'sin respuesta'}`);
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();

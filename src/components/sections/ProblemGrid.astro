@@ -1,4 +1,6 @@
 ---
+import SectionVisual from '../ui/SectionVisual.astro';
+import { sectionVisuals } from '@/lib/visuals';
 import SectionLabel from '../ui/SectionLabel.astro';
 
 interface Props {
@@ -17,6 +19,7 @@ const { index, label, title, items, id = 'problema', accent = 'violet' } = Astro
   <h2 id={`${id}-title`} class="title">
     {title}
   </h2>
+  <SectionVisual image={sectionVisuals.problemas} />
   <ul class:list={['grid', accent]}>
     {items.map((item, i) => (
       <li>

@@ -6,6 +6,7 @@
  */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
+import { sectionVisuals } from '@/lib/visuals';
 import ProblemGrid from '@/components/sections/ProblemGrid.astro';
 import ProcessSteps from '@/components/sections/ProcessSteps.astro';
 import ContactForm from '@/components/sections/ContactForm.astro';
@@ -69,6 +70,7 @@ const steps = [
     title="Descubre qué está frenando tus ventas en internet"
     lede="Diagnóstico Digital Gratuito de 15 minutos: revisamos tu web, tu atención por WhatsApp y tus procesos, y te decimos qué mejorar primero."
     ctas={false}
+    image={sectionVisuals.diagnostico}
   >
     <a
       class="jump"

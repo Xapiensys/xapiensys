@@ -1,4 +1,6 @@
 ---
+import SectionVisual from '../ui/SectionVisual.astro';
+import { sectionVisuals } from '@/lib/visuals';
 import SectionLabel from '../ui/SectionLabel.astro';
 
 const rows = [
@@ -46,6 +48,7 @@ const rows = [
       atender y medir.
     </p>
   </div>
+  <SectionVisual image={sectionVisuals.valor} />
   <div
     class="wrap"
     role="region"

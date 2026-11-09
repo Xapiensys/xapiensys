@@ -1,4 +1,6 @@
 ---
+import SectionVisual from '../ui/SectionVisual.astro';
+import { sectionVisuals } from '@/lib/visuals';
 import { getCollection, render } from 'astro:content';
 import SectionLabel from '../ui/SectionLabel.astro';
 
@@ -27,6 +29,7 @@ const rendered = await Promise.all(
         ¿Tienes otra duda? Escríbenos por WhatsApp o pregúntale al asistente.
       </p>
     </div>
+    <SectionVisual image={sectionVisuals.faq} />
     <div class="list">
       {rendered.map(({ e, Content }) => (
         <details>

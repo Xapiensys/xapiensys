@@ -1,5 +1,7 @@
 ---
 import { siteMetrics, stack } from '@/lib/metrics';
+import SectionVisual from '../ui/SectionVisual.astro';
+import { sectionVisuals } from '@/lib/visuals';
 
 const measured = siteMetrics.measuredAt
   ? new Date(siteMetrics.measuredAt).toLocaleDateString('es-PE', {
@@ -16,6 +18,7 @@ const measured = siteMetrics.measuredAt
     <span>ESTE SITIO / 00</span>
   </div>
   <h2 id="proof-title">Este sitio es la demo: rápido, medible y construido con lo que vendemos.</h2>
+  <SectionVisual image={sectionVisuals.velocidad} />
   {siteMetrics.items.length > 0 && (
     <>
       <dl class="metrics">

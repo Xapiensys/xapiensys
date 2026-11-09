@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
+import { sectionVisuals } from '@/lib/visuals';
 import ContactForm from '@/components/sections/ContactForm.astro';
 import Button from '@/components/ui/Button.astro';
 import BookingLink from '@/components/ui/BookingLink.astro';
@@ -24,6 +25,7 @@ import { ogPath } from '@/lib/ogPages';
     title="Conversemos sobre tu proyecto"
     lede="Elige el canal que prefieras. Por WhatsApp suele ser lo más rápido."
     ctas={false}
+    image={sectionVisuals.contacto}
   />
   <section class="section-shell section-pad layout" aria-label="Canales de contacto">
     <div class="channels">

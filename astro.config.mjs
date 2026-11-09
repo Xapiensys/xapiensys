@@ -48,6 +48,8 @@ export default defineConfig({
       }),
       LLM_MODEL: envField.string({ context: 'server', access: 'secret', optional: true }),
       LLM_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
+      /** Radio Tommy: canciones completas vía YouTube Data API v3 (sin ella, fragmentos de iTunes). */
+      YOUTUBE_API_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
       CHAT_MONTHLY_TOKEN_CAP: envField.number({
         context: 'server',
         access: 'secret',
@@ -63,12 +65,12 @@ export default defineConfig({
     csp: {
       directives: [
         "default-src 'self'",
-        "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com https://*.mzstatic.com",
+        "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com https://*.mzstatic.com https://i.ytimg.com",
         // Radio Tommy: fragmentos de audio oficiales de iTunes/Apple Music.
         "media-src 'self' https://*.itunes.apple.com https://*.mzstatic.com",
         "font-src 'self'",
         "connect-src 'self' https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
-        'frame-src https://challenges.cloudflare.com',
+        'frame-src https://challenges.cloudflare.com https://www.youtube-nocookie.com https://www.youtube.com',
         "base-uri 'self'",
         "form-action 'self'",
         "object-src 'none'",
@@ -78,6 +80,9 @@ export default defineConfig({
           "'self'",
           'https://challenges.cloudflare.com',
           'https://www.googletagmanager.com',
+          // Reproductor oficial de YouTube (Radio Tommy).
+          'https://www.youtube.com',
+          'https://s.ytimg.com',
         ],
       },
     },

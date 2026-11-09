@@ -54,6 +54,11 @@
   --sim-elegante-accent: #9a7547;
   --sim-elegante-accent-2: #2f4a3c;
   --sim-ink: #0b0d12;
+  --sim-acc-azul: #1f7aff;
+  --sim-acc-verde: #16b364;
+  --sim-acc-naranja: #ff7a1a;
+  --sim-acc-rojo: #e5484d;
+  --sim-acc-dorado: #d4a017;
 
   /* Transparencias derivadas */
   --color-border: rgb(255 255 255 / 0.08);

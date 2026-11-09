@@ -9,9 +9,11 @@ import { log } from './http';
 import type { ChatTurn } from './llm';
 
 export const LIMITS = {
-  messagesPerSession: 12,
-  sessionsPerIpPerDay: 5,
-  historyTurns: 10,
+  // Conversaciones largas: el tope real de gasto lo pone CHAT_MONTHLY_TOKEN_CAP.
+  messagesPerSession: 40,
+  sessionsPerIpPerDay: 8,
+  // Contexto que se envía al modelo (las últimas N idas y vueltas).
+  historyTurns: 12,
 } as const;
 
 const DAY = 24 * 60 * 60 * 1000;

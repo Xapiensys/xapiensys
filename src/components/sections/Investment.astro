@@ -1,4 +1,6 @@
 ---
+import SectionVisual from '../ui/SectionVisual.astro';
+import { sectionVisuals } from '@/lib/visuals';
 import Button from '../ui/Button.astro';
 import SectionLabel from '../ui/SectionLabel.astro';
 import { formatSoles } from '@/lib/quoteOptions';
@@ -26,6 +28,7 @@ const { index, priceFrom, note, maintenance } = Astro.props;
     <Button href="/cotizar" icon="arrow-right" track="cta_quote_click" trackLocation="investment">
       Calcula tu rango en 1 minuto
     </Button>
+    <SectionVisual image={sectionVisuals.precios} shape="side" />
   </div>
 </section>
 
@@ -63,7 +66,18 @@ const { index, priceFrom, note, maintenance } = Astro.props;
 
   @media (min-width: 900px) {
     .box {
-      grid-template-columns: 1fr auto;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+      align-items: center;
+    }
+
+    .box > :global(.section-visual) {
+      grid-row: 1 / span 2;
+      grid-column: 2;
+      margin: 0;
+    }
+
+    .box > :global(.button) {
+      justify-self: start;
     }
   }
 </style>

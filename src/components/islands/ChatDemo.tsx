@@ -15,6 +15,8 @@ type Message = {
   text: string;
   links?: Link[];
   streaming?: boolean;
+  /** Si falló por un corte momentáneo: texto del usuario para reintentar. */
+  retry?: string;
 };
 
 export type { GuidedTopic };
@@ -42,6 +44,21 @@ const msg = (role: Message['role'], text: string, links?: Link[]): Message => ({
   text,
   ...(links ? { links } : {}),
 });
+
+/** Nueva sesión (cuando la conversación llega a su tope de mensajes). */
+function rotateSessionId(): string {
+  const id = crypto.randomUUID();
+  try {
+    sessionStorage.setItem('xp_chat', id);
+  } catch {
+    // Sin almacenamiento: la sesión vive solo en esta pestaña.
+  }
+  return id;
+}
+
+const RETRY_TEXT = 'Se me cortó la señal un segundo. Toca «Reintentar» y lo vuelvo a intentar.';
+/** Límites reales: pasan a modo guiado. El resto (cortes) se reintenta. */
+const HARD_LIMITS = new Set(['ip_sessions', 'monthly_cap', 'rate', 'unavailable']);
 
 function getSessionId(): string {
   try {
@@ -92,6 +109,17 @@ export default function ChatDemo({
     track('chat_limit_reached', { reason });
   };
 
+  /** Quita el intento fallido (y su pregunta) y vuelve a enviarla. */
+  const retry = (m: Message) => {
+    if (!m.retry || busy) return;
+    const question = m.retry;
+    setMessages((list) => {
+      const i = list.findIndex((x) => x.id === m.id);
+      return i > 0 ? [...list.slice(0, i - 1), ...list.slice(i + 1)] : list;
+    });
+    void send(question);
+  };
+
   const showLeadForm = () => {
     setLeadForm((s) => (s === 'hidden' ? 'open' : s));
     track('chat_lead_form_shown');
@@ -123,17 +151,18 @@ export default function ChatDemo({
     const update = (fn: (r: Message) => Message) =>
       setMessages((m) => m.map((x) => (x.id === reply.id ? fn(x) : x)));
 
-    try {
+    /** Envía y procesa el stream. Devuelve el motivo del límite, si hubo. */
+    const ask = async (sessionId: string): Promise<string | null> => {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ sessionId: getSessionId(), message: text }),
+        body: JSON.stringify({ sessionId, message: text }),
       });
       if (!res.ok || !res.body) throw new Error(String(res.status));
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = '';
-      let limited = false;
+      let limit: string | null = null;
       for (;;) {
         const { value, done } = await reader.read();
         if (done) break;
@@ -156,32 +185,37 @@ export default function ChatDemo({
             window.dispatchEvent(
               new CustomEvent('tommy:music', { detail: { query: event.query } }),
             );
-          else if (event.type === 'limit') {
-            limited = true;
-            goGuided(event.reason ?? 'limit');
-          }
+          else if (event.type === 'limit') limit = event.reason ?? 'limit';
         }
       }
-      update((r) => ({
-        ...r,
-        streaming: false,
-        text: r.text.trim() || (limited ? LIMIT_TEXT : r.text),
-        ...(limited
-          ? {
-              links: [
-                { label: 'Escribir por WhatsApp', href: buildWhatsAppUrl({ intent: 'chat' }) },
-              ],
-            }
-          : {}),
-      }));
+      return limit;
+    };
+
+    const failSoft = () =>
+      update((r) => ({ ...r, streaming: false, text: r.text.trim() || RETRY_TEXT, retry: text }));
+
+    try {
+      let limit = await ask(getSessionId());
+      // Conversación larga: sigue en una sesión nueva sin que el usuario lo note.
+      if (limit === 'session_messages') limit = await ask(rotateSessionId());
+
+      if (limit && HARD_LIMITS.has(limit)) {
+        goGuided(limit);
+        update((r) => ({
+          ...r,
+          streaming: false,
+          text: r.text.trim() || LIMIT_TEXT,
+          links: [{ label: 'Escribir por WhatsApp', href: buildWhatsAppUrl({ intent: 'chat' }) }],
+        }));
+      } else if (limit) {
+        track('chat_limit_reached', { reason: limit });
+        failSoft();
+      } else {
+        update((r) => ({ ...r, streaming: false, text: r.text.trim() }));
+      }
     } catch {
-      goGuided('error');
-      update((r) => ({
-        ...r,
-        streaming: false,
-        text: r.text.trim() || LIMIT_TEXT,
-        links: [{ label: 'Escribir por WhatsApp', href: buildWhatsAppUrl({ intent: 'chat' }) }],
-      }));
+      track('chat_limit_reached', { reason: 'network' });
+      failSoft();
     } finally {
       setBusy(false);
     }
@@ -267,6 +301,11 @@ export default function ChatDemo({
                   <i />
                 </span>
               ) : null)}
+            {m.retry && (
+              <button type="button" class="chat-retry" onClick={() => retry(m)} disabled={busy}>
+                Reintentar ↻
+              </button>
+            )}
             {m.links && (
               <span class="chat-links">
                 {m.links.map((l) => (

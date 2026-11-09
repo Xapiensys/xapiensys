@@ -1,4 +1,4 @@
-/* Radio Tommy: lanzador abajo a la izquierda y panel de cristal. */
+/* Radio Tommy: lanzador abajo a la izquierda, panel de cristal y barra mini. */
 .music-launcher {
   position: fixed;
   z-index: var(--z-float);
@@ -36,14 +36,8 @@
   transform: translateY(-3px);
 }
 
-.music-launcher.is-playing {
-  border-color: var(--color-violet-soft);
-  box-shadow: var(--glow-violet);
-}
-
 .music-launcher.is-hidden {
-  opacity: 0;
-  pointer-events: none;
+  display: none;
 }
 
 @keyframes music-in {
@@ -59,13 +53,6 @@
   gap: 1px;
 }
 
-.music-launcher-text strong,
-.music-launcher-text small {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .music-launcher-text strong {
   font-family: var(--font-heading);
   font-size: 13px;
@@ -77,7 +64,7 @@
   font-size: var(--text-xs);
 }
 
-/* Ecualizador: cada barra escala con --lvl (lo fija el analizador de audio). */
+/* Ecualizador: cada barra escala con --lvl (lo fija el reproductor). */
 .eq {
   display: inline-flex;
   height: 22px;
@@ -120,28 +107,26 @@
   --lvl: 0.3;
 }
 
-.eq-panel {
+.eq-panel,
+.eq-cover {
   height: 30px;
   gap: 3px;
 }
 
-.eq-panel i {
+.eq-panel i,
+.eq-cover i {
   width: 4px;
 }
 
-/* Panel */
+/* Panel y barra mini: el mismo contenedor cambia de forma (el video no se recarga). */
 .music-panel {
   position: fixed;
   z-index: calc(var(--z-float) + 1);
   left: max(16px, env(safe-area-inset-left));
   bottom: max(16px, env(safe-area-inset-bottom));
   display: grid;
-  width: min(380px, calc(100vw - 32px));
-  max-height: min(640px, calc(100dvh - 32px));
   gap: 14px;
-  overflow: auto;
   overscroll-behavior: contain;
-  padding: 18px;
   border: 1px solid var(--glass-border);
   background: var(--color-surface);
   box-shadow: var(--glow-violet);
@@ -160,6 +145,20 @@
   display: none;
 }
 
+.music-panel.is-open {
+  width: min(400px, calc(100vw - 32px));
+  max-height: min(700px, calc(100dvh - 32px));
+  overflow: auto;
+  padding: 18px;
+}
+
+.music-panel.is-mini {
+  width: min(470px, calc(100vw - 32px));
+  gap: 0;
+  padding: 8px;
+  border-radius: 14px;
+}
+
 @keyframes music-open {
   from {
     opacity: 0;
@@ -170,12 +169,13 @@
 .music-head {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .music-head > div {
   display: grid;
   gap: 2px;
+  margin-right: auto;
 }
 
 .music-head strong {
@@ -188,25 +188,31 @@
   font-size: var(--text-mono);
 }
 
-.music-close {
+.music-icon-btn {
   display: grid;
-  width: 36px;
-  height: 36px;
-  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
   place-items: center;
   border: 1px solid var(--color-border-strong);
+  border-radius: 8px;
   color: var(--color-text-soft);
   background: transparent;
   cursor: pointer;
 }
 
-.music-close:hover,
-.music-close:focus-visible {
+.music-icon-btn:hover:not(:disabled),
+.music-icon-btn:focus-visible {
   border-color: var(--color-violet-soft);
   color: var(--color-violet-pale);
 }
 
-.music-close svg,
+.music-icon-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.music-icon-btn svg,
 .music-controls svg {
   width: 16px;
   height: 16px;
@@ -289,27 +295,83 @@
   font-size: var(--text-sm);
 }
 
-.music-now {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px;
-  border: 1px solid var(--color-border);
-  background: var(--color-fill-faint);
+.is-mini .music-error {
+  padding: 0 4px 6px;
+  font-size: var(--text-xs);
 }
 
-.music-now img {
-  width: 64px;
-  height: 64px;
-  flex: 0 0 auto;
+/* Lo que está sonando. */
+.music-now {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.is-open .music-now {
+  grid-template-columns: 1fr;
+}
+
+.is-mini .music-now {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 10px;
+}
+
+.music-media {
+  position: relative;
+  display: grid;
+  width: 56px;
+  height: 56px;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--color-surface-strong);
+}
+
+.music-media img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+}
+
+/* Video de YouTube: 16:9, grande en el panel y pequeño (pero visible) en la barra. */
+.music-media.is-video {
+  width: 112px;
+  height: 63px;
+  border-radius: 8px;
+}
+
+.is-open .music-media.is-video {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+.is-open .music-media:not(.is-video) {
+  width: 120px;
+  height: 120px;
+  justify-self: center;
+}
+
+.music-yt,
+.music-yt iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.music-yt[hidden] {
+  display: none;
 }
 
 .music-meta {
   display: grid;
   min-width: 0;
-  flex: 1;
   gap: 2px;
+}
+
+.is-open .music-meta {
+  text-align: center;
 }
 
 .music-meta strong,
@@ -328,25 +390,46 @@
   font-size: var(--text-xs);
 }
 
-.music-progress {
-  height: 4px;
-  margin-top: 8px;
-  overflow: hidden;
-  background: var(--color-border-strong);
+.music-mini-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Avance: adelantar o retroceder. */
+.music-seek {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-muted);
+  font-size: var(--text-mono);
+}
+
+.music-seek input {
+  min-width: 0;
+  flex: 1;
+  accent-color: var(--color-cyan);
   cursor: pointer;
 }
 
-.music-progress i {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--color-violet), var(--color-cyan));
-  transform-origin: left;
+.music-seek input:disabled {
+  cursor: default;
+}
+
+.is-mini .music-seek {
+  margin-top: 4px;
+}
+
+.music-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .music-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .music-controls button {
@@ -361,6 +444,11 @@
   cursor: pointer;
 }
 
+.music-controls-sm button {
+  width: 34px;
+  height: 34px;
+}
+
 .music-controls button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -370,19 +458,22 @@
   width: 48px;
   height: 48px;
   border: 0;
-  color: var(--color-text);
   background: linear-gradient(135deg, var(--color-violet), var(--color-cyan));
   box-shadow: var(--glow-violet);
 }
 
+.music-controls-sm .music-play {
+  width: 38px;
+  height: 38px;
+}
+
 .music-controls .music-play svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .music-volume {
   flex: 1;
-  margin-left: 6px;
 }
 
 .music-volume input {
@@ -392,7 +483,7 @@
 
 .music-list {
   display: grid;
-  max-height: 180px;
+  max-height: 200px;
   gap: 2px;
   margin: 0;
   overflow: auto;
@@ -444,13 +535,13 @@
   text-decoration: underline;
 }
 
-/* Brillo rítmico sutil en la página mientras suena (--beat lo fija el analizador). */
-:root[data-music='on'] .site-header {
+/* Brillo rítmico sutil en la página mientras suena (--beat lo fija el reproductor). */
+:root[data-music-playing] .site-header {
   box-shadow: 0 1px calc(var(--beat, 0) * 18px)
     color-mix(in srgb, var(--color-violet) calc(20% + var(--beat, 0) * 60%), transparent);
 }
 
-:root[data-music='on'] .dock-launcher {
+:root[data-music-playing] .dock-launcher {
   box-shadow: 0 0 calc(16px + var(--beat, 0) * 26px)
     color-mix(in srgb, var(--color-cyan) calc(18% + var(--beat, 0) * 40%), transparent);
 }
@@ -465,9 +556,24 @@
     display: none;
   }
 
-  .music-panel {
+  .music-panel.is-open {
     right: 16px;
     width: auto;
+  }
+
+  /* En celular la barra mini deja libre la esquina de WhatsApp. */
+  .music-panel.is-mini {
+    right: 88px;
+    width: auto;
+  }
+
+  .is-mini .music-media.is-video {
+    width: 72px;
+    height: 41px;
+  }
+
+  .is-mini .music-controls-sm button:not(.music-play) {
+    display: none;
   }
 }
 

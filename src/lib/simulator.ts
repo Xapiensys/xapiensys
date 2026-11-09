@@ -42,9 +42,39 @@ export interface SimContent {
   services: { title: string; text: string }[];
   highlights: string[];
   about: string;
+  steps: { title: string; text: string }[];
+  ctaBand: string;
 }
 
-type Base = Omit<SimContent, 'tagline' | 'about'> & { about: (n: string) => string };
+/** Colores de marca que el visitante puede elegir (clases, sin estilos en línea). */
+export const ACCENTS = [
+  { id: 'auto', label: 'Del estilo' },
+  { id: 'azul', label: 'Azul' },
+  { id: 'verde', label: 'Verde' },
+  { id: 'naranja', label: 'Naranja' },
+  { id: 'rojo', label: 'Rojo' },
+  { id: 'dorado', label: 'Dorado' },
+] as const;
+
+export type AccentId = (typeof ACCENTS)[number]['id'];
+
+/** Ejemplos de descripción por rubro (inspiran a escribir con sus propias palabras). */
+export const EXAMPLES: Record<string, string> = {
+  restaurante: 'Pollos a la brasa y parrillas en Surco, delivery hasta las 11 p. m.',
+  clinica: 'Ortodoncia y blanqueamiento en Miraflores, atención a familias y niños.',
+  construccion: 'Casas y ampliaciones en Lima Norte, con planos y licencia incluidos.',
+  comercio: 'Ferretería en San Juan de Lurigancho, envíos a todo Lima.',
+  servicios: 'Estudio contable para pymes: declaraciones, planillas y asesoría tributaria.',
+  belleza: 'Salón en Los Olivos: cortes, color, uñas y paquetes para novias.',
+  gimnasio: 'Gimnasio 24 horas en Arequipa con clases de spinning y funcional.',
+  educacion: 'Academia preuniversitaria en Trujillo con simulacros semanales.',
+  hotel: 'Hotel boutique en Cusco a dos cuadras de la Plaza de Armas.',
+  otro: 'Cuéntanos qué vendes, dónde estás y quiénes son tus clientes.',
+};
+
+type Base = Omit<SimContent, 'tagline' | 'about' | 'steps' | 'ctaBand'> & {
+  about: (n: string) => string;
+};
 
 const TEMPLATES: Record<RubroId, Base> = {
   restaurante: {
@@ -181,6 +211,12 @@ export function templateContent(input: Pick<SimInput, 'business' | 'rubro'>): Si
     services: t.services,
     highlights: t.highlights,
     about: t.about(input.business),
+    steps: [
+      { title: 'Elige', text: 'Mira las opciones y elige lo que necesitas.' },
+      { title: 'Escríbenos', text: 'Confirma por WhatsApp o desde la web en un minuto.' },
+      { title: 'Listo', text: 'Te atendemos rápido y te mantenemos al tanto.' },
+    ],
+    ctaBand: `¿Empezamos? ${input.business} te atiende hoy mismo.`,
   };
 }
 

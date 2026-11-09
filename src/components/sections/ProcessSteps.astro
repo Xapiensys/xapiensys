@@ -1,4 +1,6 @@
 ---
+import SectionVisual from '../ui/SectionVisual.astro';
+import { sectionVisuals } from '@/lib/visuals';
 import SectionLabel from '../ui/SectionLabel.astro';
 
 interface Props {
@@ -51,6 +53,7 @@ const { index = '06', steps = defaultSteps, title } = Astro.props;
       Un proceso colaborativo que pone primero el problema, define el rumbo y mejora con evidencia.
     </p>
   </div>
+  <SectionVisual image={sectionVisuals.proceso} />
   <ol class={`grid cols-${steps.length}`}>
     {steps.map((s, i) => (
       <li>
