@@ -1,6 +1,12 @@
 import type { APIRoute } from 'astro';
 import { z } from 'zod';
-import { getProvider, estimateCost, type ChatEvent } from '@/lib/server/llm';
+import {
+  getProvider,
+  estimateCost,
+  wantsMusic,
+  MUSIC_TOOL_NAME,
+  type ChatEvent,
+} from '@/lib/server/llm';
 import { buildSystemPrompt } from '@/lib/server/chatPrompt';
 import { checkAndCountMessage, loadHistory, saveExchange } from '@/lib/server/chatStore';
 import { rateLimit } from '@/lib/server/rateLimit';
@@ -72,7 +78,12 @@ export const POST: APIRoute = async ({ request }) => {
       let tokensIn = 0;
       let tokensOut = 0;
       try {
-        for await (const event of provider.stream(system, turns, abort.signal)) {
+        for await (const event of provider.stream(
+          system,
+          turns,
+          abort.signal,
+          wantsMusic(message) ? { forceTool: MUSIC_TOOL_NAME } : undefined,
+        )) {
           if (event.type === 'usage') {
             tokensIn = event.tokensIn;
             tokensOut = event.tokensOut;

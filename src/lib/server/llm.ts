@@ -15,9 +15,31 @@ export type ChatEvent =
   | { type: 'usage'; tokensIn: number; tokensOut: number }
   | { type: 'refused' };
 
+export interface StreamOptions {
+  /** Obliga al modelo a llamar esta herramienta en este turno. */
+  forceTool?: string;
+}
+
 export interface ChatProvider {
   model: string;
-  stream(system: string, history: ChatTurn[], signal: AbortSignal): AsyncGenerator<ChatEvent>;
+  stream(
+    system: string,
+    history: ChatTurn[],
+    signal: AbortSignal,
+    opts?: StreamOptions,
+  ): AsyncGenerator<ChatEvent>;
+}
+
+/** Pedido claro de música: se fuerza la herramienta (el modelo a veces solo lo "dice"). */
+const MUSIC_REQUEST =
+  /(?<!\p{L})(m[uú]sica|canci[oó]n|canciones|playlist|reproduce|reproducir|escuchar|cumbia|salsa|rock|reggaet[oó]n|jazz|house|lo-?fi|bachata|merengue|criolla|electr[oó]nica|baladas?|techno)(?!\p{L})/iu;
+export function wantsMusic(message: string): boolean {
+  return (
+    MUSIC_REQUEST.test(message) ||
+    /^\s*(tommy,?\s*)?(pon|ponme|pone|toca|tócame)\s+(algo|a|al|unas?\s+canci|un\s+tema|m[uú]sica)(?!\p{L})/iu.test(
+      message,
+    )
+  );
 }
 
 /** Herramienta que el modelo usa para pedir los datos de contacto (el cliente muestra el mini-formulario). */
@@ -67,7 +89,7 @@ function anthropicProvider(apiKey: string, model: string): ChatProvider {
   const client = new Anthropic({ apiKey, maxRetries: 1, timeout: 20_000 });
   return {
     model,
-    async *stream(system, history, signal) {
+    async *stream(system, history, signal, opts) {
       const stream = client.messages.stream(
         {
           model,
@@ -92,7 +114,7 @@ function anthropicProvider(apiKey: string, model: string): ChatProvider {
               },
             },
           ],
-          tool_choice: { type: 'auto' },
+          tool_choice: opts?.forceTool ? { type: 'tool', name: opts.forceTool } : { type: 'auto' },
           messages: history,
         },
         { signal },
@@ -153,7 +175,7 @@ function geminiProvider(apiKey: string, model: string): ChatProvider {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:streamGenerateContent?alt=sse`;
   return {
     model,
-    async *stream(system, history, signal) {
+    async *stream(system, history, signal, opts) {
       const timeout = AbortSignal.timeout(20_000);
       const res = await fetch(url, {
         method: 'POST',
@@ -181,6 +203,13 @@ function geminiProvider(apiKey: string, model: string): ChatProvider {
               ],
             },
           ],
+          ...(opts?.forceTool
+            ? {
+                toolConfig: {
+                  functionCallingConfig: { mode: 'ANY', allowedFunctionNames: [opts.forceTool] },
+                },
+              }
+            : {}),
           generationConfig: {
             maxOutputTokens: MAX_OUTPUT_TOKENS,
             // Atención comercial: respuestas cortas y rápidas, razonamiento mínimo.
@@ -243,12 +272,12 @@ const PROMISES_FORM = /\bformulario\b|\bdeja(?:r|nos)? tus datos\b|\bdéjanos tu
 function withCleanText(inner: ChatProvider): ChatProvider {
   return {
     model: inner.model,
-    async *stream(system, history, signal) {
+    async *stream(system, history, signal, opts) {
       const cleaner = createTextCleaner([LEAD_TOOL_NAME, MUSIC_TOOL_NAME]);
       let leadShown = false;
       let musicSent = false;
       let said = '';
-      for await (const event of inner.stream(system, history, signal)) {
+      for await (const event of inner.stream(system, history, signal, opts)) {
         if (event.type === 'text') {
           const text = cleaner.push(event.text);
           said += text;
