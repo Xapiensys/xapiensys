@@ -91,6 +91,21 @@ const isActive = (href: string) => current === href || current.startsWith(`${hre
     color: var(--color-text);
   }
 
+  #main-nav .nav-whatsapp {
+    min-height: 38px;
+    padding: 0 14px;
+    border-radius: var(--radius-full);
+    color: var(--color-on-whatsapp);
+    background: var(--color-whatsapp);
+    box-shadow: var(--glow-whatsapp);
+  }
+
+  #main-nav .nav-whatsapp:hover,
+  #main-nav .nav-whatsapp:focus-visible {
+    color: var(--color-on-whatsapp);
+    background: var(--color-whatsapp-strong);
+  }
+
   #main-nav .nav-whatsapp span {
     margin-left: 6px;
   }

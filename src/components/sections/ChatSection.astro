@@ -2,31 +2,44 @@
 import SectionLabel from '../ui/SectionLabel.astro';
 import ChatDemo from '../islands/ChatDemo';
 import { chatSuggestions, getGuidedTopics } from '@/lib/chatGuided';
+import { getImage } from 'astro:assets';
+import tommyAvatar from '@/assets/marca/tommy-avatar.webp';
+import tommyPortrait from '@/assets/marca/tommy.webp';
+import ProjectImage from '../ui/ProjectImage.astro';
 
 interface Props {
   index?: string;
 }
 const { index = '03' } = Astro.props;
 const guided = await getGuidedTopics();
+const avatar = await getImage({ src: tommyAvatar, width: 96, height: 96, format: 'webp' });
 ---
 
 <section class="section-shell section-pad chat-section" id="demo" aria-labelledby="demo-title">
   <div class="copy">
     <SectionLabel index={index}>DEMO EN VIVO</SectionLabel>
     <h2 id="demo-title" class="display-h2">
-      Atención inteligente.
+      Conoce a Tommy.
       <br />
-      <span class="accent-cyan">Pruébala ahora.</span>
+      <span class="accent-cyan">Tu asistente con IA.</span>
     </h2>
+    <figure class="portrait">
+      <ProjectImage
+        src={tommyPortrait}
+        alt="Tommy, el asistente con IA de Xapiensys: un cazador tecnológico con casco y visor cian"
+        sizes="160px"
+      />
+    </figure>
     <p>
-      Este asistente usa IA real y conoce nuestros servicios. Pregúntale lo que quieras sobre tu
-      proyecto: es el mismo tipo de asistente que podemos construir para tu negocio.
+      Tommy rastrea lo que frena a tu negocio: te orienta, te da rangos de precio y te conecta con
+      el equipo. Hasta te pone música. Es el mismo tipo de asistente que podemos construir para tu
+      negocio.
     </p>
     <span class="badge mono">
       <i aria-hidden="true"></i> IA REAL · CON LÍMITES DE USO
     </span>
   </div>
-  <ChatDemo client:visible suggestions={chatSuggestions} guided={guided} />
+  <ChatDemo client:visible suggestions={chatSuggestions} guided={guided} avatarSrc={avatar.src} />
 </section>
 
 <style>
@@ -34,6 +47,24 @@ const guided = await getGuidedTopics();
     display: grid;
     align-items: center;
     gap: 42px;
+  }
+
+  .portrait {
+    width: 132px;
+    margin: 22px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--color-cyan-a42);
+    border-radius: 50%;
+    aspect-ratio: 1;
+    box-shadow: var(--glow-cyan);
+  }
+
+  .portrait :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 22%;
   }
 
   .copy > p {

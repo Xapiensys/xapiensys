@@ -3,7 +3,7 @@
   position: fixed;
   z-index: var(--z-float);
   right: max(16px, env(safe-area-inset-right));
-  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 68px);
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 72px);
   display: inline-flex;
   align-items: center;
   gap: 11px;
@@ -51,10 +51,11 @@
 .dock-core {
   position: relative;
   display: grid;
-  width: 40px;
-  height: 40px;
+  width: 46px;
+  height: 46px;
   flex: 0 0 auto;
   place-items: center;
+  border: 1px solid var(--color-cyan);
   border-radius: var(--radius-full);
   color: var(--color-on-cyan);
   background: var(--color-cyan);
@@ -66,6 +67,25 @@
   border: 1px solid var(--color-cyan);
   border-radius: inherit;
   animation: dock-pulse 2.6s ease-out infinite;
+}
+
+.dock-core img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+/* Punto verde de "en línea". */
+.dock-online {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  background: var(--color-whatsapp);
 }
 
 .dock-core svg {

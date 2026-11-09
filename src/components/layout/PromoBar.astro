@@ -1,0 +1,146 @@
+---
+/**
+ * Franja superior de oferta. Solo ofertas reales y vigentes (CLAUDE.md: no inventar).
+ * TODO(xapiensys): si defines una promo de lanzamiento (descuento, cupos o fecha límite),
+ * agrégala en `offers` con sus condiciones exactas.
+ */
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
+
+const offers = [
+  'Diagnóstico Digital Gratuito de 15 minutos',
+  'Tu rango de inversión en 1 minuto',
+  'Propuesta por escrito, sin compromiso',
+];
+---
+
+<aside class="promo" aria-label="Oferta">
+  <span class="promo-tag mono">GRATIS</span>
+  <p class="promo-text">
+    {offers.map((o, i) => (
+      <span class:list={['promo-item', { 'promo-extra': i > 0 }]}>
+        {i > 0 && <i aria-hidden="true">·</i>}
+        {o}
+      </span>
+    ))}
+  </p>
+  <a
+    class="promo-cta"
+    href={buildWhatsAppUrl({ intent: 'consultoria' })}
+    target="_blank"
+    rel="noopener noreferrer"
+    data-track="cta_whatsapp_click"
+    data-track-location="promo_bar"
+  >
+    Pedir<span class="promo-cta-long"> por WhatsApp</span> <span aria-hidden="true">→</span>
+  </a>
+</aside>
+
+<style>
+  .promo {
+    position: relative;
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    overflow: hidden;
+    padding: 6px var(--page-gutter);
+    border-bottom: 1px solid var(--color-whatsapp-a42);
+    color: var(--color-text);
+    background: linear-gradient(
+      90deg,
+      var(--color-whatsapp-a18),
+      var(--color-bg) 35%,
+      var(--color-bg) 65%,
+      var(--color-whatsapp-a18)
+    );
+    font-size: var(--text-sm);
+  }
+
+  /* Destello que recorre la franja cada pocos segundos. */
+  .promo::after {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 40%,
+      var(--color-whatsapp-a18) 50%,
+      transparent 60%
+    );
+    content: '';
+    transform: translateX(-100%);
+    animation: promo-sweep 5s ease-in-out 1.5s infinite;
+    pointer-events: none;
+  }
+
+  @keyframes promo-sweep {
+    0% {
+      transform: translateX(-100%);
+    }
+    40%,
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .promo-tag {
+    flex: 0 0 auto;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    color: var(--color-on-whatsapp);
+    background: var(--color-whatsapp);
+    font-size: var(--text-mono);
+    font-weight: 700;
+  }
+
+  .promo-text {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .promo-item i {
+    margin: 0 10px;
+    color: var(--color-whatsapp);
+    font-style: normal;
+  }
+
+  .promo-extra {
+    display: none;
+  }
+
+  .promo-cta {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 auto;
+    color: var(--color-whatsapp);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .promo-cta:hover,
+  .promo-cta:focus-visible {
+    color: var(--color-text);
+  }
+
+  @media (max-width: 559px) {
+    .promo-cta-long {
+      display: none;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .promo-extra {
+      display: inline;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .promo::after {
+      display: none;
+    }
+  }
+</style>

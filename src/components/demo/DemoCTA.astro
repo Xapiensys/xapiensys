@@ -17,7 +17,8 @@ const { demo } = Astro.props;
   <div class="actions">
     <Button
       href={buildWhatsAppUrl({ intent: 'demo', topic: demo })}
-      icon="arrow-up-right"
+      variant="whatsapp"
+      icon="whatsapp"
       track="cta_whatsapp_click"
       trackLocation={`demo_${demo}`}
     >

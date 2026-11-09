@@ -1,4 +1,9 @@
 ---
+/**
+ * Botón flotante de WhatsApp: verde, con onda de pulso y una burbuja que aparece a los
+ * pocos segundos con la oferta real (diagnóstico gratuito). La burbuja se puede cerrar
+ * y no vuelve a salir en la sesión.
+ */
 import Icon from '../ui/Icon.astro';
 import { buildWhatsAppUrl, type WhatsAppIntent } from '@/lib/whatsapp';
 
@@ -7,45 +12,283 @@ interface Props {
   topic?: string | undefined;
 }
 const { intent = 'general', topic } = Astro.props;
+const href = buildWhatsAppUrl({ intent, ...(topic ? { topic } : {}) });
 ---
 
-<a
-  class="wa-float"
-  href={buildWhatsAppUrl({ intent, ...(topic ? { topic } : {}) })}
-  target="_blank"
-  rel="noopener noreferrer"
-  aria-label="Escríbenos por WhatsApp"
-  data-track="cta_whatsapp_click"
-  data-track-location="float"
->
-  <Icon name="whatsapp" size={26} />
-</a>
+<div class="wa-dock" data-wa-dock>
+  <div class="wa-bubble" data-wa-bubble hidden>
+    <button type="button" class="wa-bubble-close" aria-label="Cerrar mensaje" data-wa-close>
+      ×
+    </button>
+    <p>
+      <strong>¿Hablamos hoy?</strong>
+      Diagnóstico digital <b>gratis</b> de 15 min y tu rango de precio al instante.
+    </p>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      data-track="cta_whatsapp_click"
+      data-track-location="float_bubble"
+    >
+      Escribir ahora <span aria-hidden="true">→</span>
+    </a>
+  </div>
+
+  <a
+    class="wa-float"
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="Escríbenos por WhatsApp"
+    data-track="cta_whatsapp_click"
+    data-track-location="float"
+  >
+    <span class="wa-ring" aria-hidden="true"></span>
+    <Icon name="whatsapp" size={28} />
+    <span class="wa-label" aria-hidden="true">
+      <strong>WhatsApp</strong>
+      <small>Respuesta rápida</small>
+    </span>
+  </a>
+</div>
+
+<script>
+  // La burbuja aparece a los 6 s, una vez por sesión, y nunca tapa un panel abierto.
+  const dock = document.querySelector<HTMLElement>('[data-wa-dock]');
+  const bubble = dock?.querySelector<HTMLElement>('[data-wa-bubble]');
+  const seen = () => {
+    try {
+      return sessionStorage.getItem('xp_wa_bubble') === '1';
+    } catch {
+      return false;
+    }
+  };
+  const remember = () => {
+    try {
+      sessionStorage.setItem('xp_wa_bubble', '1');
+    } catch {
+      // Sin almacenamiento: puede volver a salir en otra página.
+    }
+  };
+  if (bubble && !seen()) {
+    window.setTimeout(() => {
+      const panelOpen = document.querySelector('#assistant-panel:not([hidden])');
+      if (panelOpen) return;
+      bubble.hidden = false;
+      remember();
+    }, 6000);
+    dock?.querySelector('[data-wa-close]')?.addEventListener('click', () => {
+      bubble.hidden = true;
+    });
+  }
+</script>
 
 <style>
-  .wa-float {
+  .wa-dock {
     position: fixed;
     z-index: var(--z-float);
     right: max(16px, env(safe-area-inset-right));
     bottom: max(16px, env(safe-area-inset-bottom));
-    display: grid;
-    width: 56px;
-    height: 56px;
-    place-items: center;
-    border: 1px solid var(--color-cyan-a42);
+  }
+
+  .wa-float {
+    position: relative;
+    display: inline-flex;
+    min-height: 58px;
+    align-items: center;
+    gap: 10px;
+    padding: 0 20px 0 15px;
     border-radius: var(--radius-full);
-    color: var(--color-on-cyan);
-    background: var(--color-cyan);
-    box-shadow: var(--glow-cyan);
-    transition: transform 0.18s ease;
+    color: var(--color-on-whatsapp);
+    background: var(--color-whatsapp);
+    box-shadow: var(--glow-whatsapp);
+    transition:
+      transform 0.18s ease,
+      background-color 0.18s ease;
+    animation: wa-bounce 6s ease-in-out 3s infinite;
   }
 
   .wa-float:hover,
   .wa-float:focus-visible {
-    transform: translateY(-3px);
+    background: var(--color-whatsapp-strong);
+    transform: translateY(-3px) scale(1.03);
+  }
+
+  .wa-label {
+    display: grid;
+    line-height: 1.15;
+    text-align: left;
+  }
+
+  .wa-label strong {
+    font-family: var(--font-heading);
+    font-size: 15px;
+  }
+
+  .wa-label small {
+    font-size: 11px;
+    font-weight: 600;
+    opacity: 0.8;
+  }
+
+  /* Onda verde que se expande. */
+  .wa-ring {
+    position: absolute;
+    inset: 0;
+    border: 2px solid var(--color-whatsapp);
+    border-radius: inherit;
+    animation: wa-ring 2.2s ease-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes wa-ring {
+    from {
+      opacity: 0.8;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.35);
+    }
+  }
+
+  @keyframes wa-bounce {
+    0%,
+    88%,
+    100% {
+      transform: translateY(0);
+    }
+    92% {
+      transform: translateY(-6px);
+    }
+    96% {
+      transform: translateY(0);
+    }
+  }
+
+  /* Burbuja encima del lanzador de Tommy (que va sobre este botón): no tapa nada. */
+  .wa-bubble {
+    position: absolute;
+    right: 0;
+    bottom: 146px;
+    display: grid;
+    width: min(280px, calc(100vw - 32px));
+    gap: 10px;
+    padding: 16px 16px 14px;
+    border: 1px solid var(--color-whatsapp-a42);
+    color: var(--color-text-soft);
+    background: var(--color-surface);
+    box-shadow: var(--glow-whatsapp);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    animation: wa-pop 0.35s ease-out both;
+  }
+
+  .wa-bubble[hidden] {
+    display: none;
+  }
+
+  .wa-bubble::after {
+    position: absolute;
+    right: 26px;
+    bottom: -7px;
+    width: 12px;
+    height: 12px;
+    border-right: 1px solid var(--color-whatsapp-a42);
+    border-bottom: 1px solid var(--color-whatsapp-a42);
+    background: var(--color-surface);
+    content: '';
+    transform: rotate(45deg);
+  }
+
+  .wa-bubble p {
+    margin: 0;
+    padding-right: 18px;
+  }
+
+  .wa-bubble strong {
+    display: block;
+    margin-bottom: 2px;
+    color: var(--color-text);
+    font-family: var(--font-heading);
+    font-size: 15px;
+  }
+
+  .wa-bubble b {
+    color: var(--color-whatsapp);
+  }
+
+  .wa-bubble a {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: var(--radius-sm);
+    color: var(--color-on-whatsapp);
+    background: var(--color-whatsapp);
+    font-weight: 700;
+  }
+
+  .wa-bubble a:hover,
+  .wa-bubble a:focus-visible {
+    background: var(--color-whatsapp-strong);
+  }
+
+  .wa-bubble-close {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: 0;
+    color: var(--color-muted);
+    background: transparent;
+    font-size: 20px;
+    cursor: pointer;
+  }
+
+  .wa-bubble-close:hover,
+  .wa-bubble-close:focus-visible {
+    color: var(--color-text);
+  }
+
+  @keyframes wa-pop {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.96);
+    }
+  }
+
+  @media (max-width: 559px) {
+    .wa-float {
+      width: 58px;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .wa-label {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wa-float,
+    .wa-ring,
+    .wa-bubble {
+      animation: none;
+    }
+
+    .wa-ring {
+      display: none;
+    }
   }
 
   @media print {
-    .wa-float {
+    .wa-dock {
       display: none;
     }
   }

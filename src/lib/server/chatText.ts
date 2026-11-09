@@ -1,8 +1,9 @@
 /**
  * Limpieza en streaming de la respuesta del modelo antes de mostrarla en el chat.
  * El chat pinta texto plano: quita markdown (negritas, títulos), fórmulas LaTeX y
- * cualquier línea donde el modelo "escriba" la herramienta en vez de llamarla.
- * Si detecta la herramienta escrita como texto, lo avisa para abrir el formulario igual.
+ * cualquier línea donde el modelo "escriba" una herramienta en vez de llamarla.
+ * Avisa qué herramientas vio escritas (y la búsqueda de música, si la hay) para
+ * ejecutarlas igual.
  */
 
 export interface TextCleaner {
@@ -10,16 +11,23 @@ export interface TextCleaner {
   push(chunk: string): string;
   /** Vacía lo pendiente al terminar. */
   flush(): string;
-  /** `true` si el modelo escribió la herramienta como texto. */
-  readonly sawTool: boolean;
+  /** Herramientas que el modelo escribió como texto. */
+  readonly sawTools: ReadonlySet<string>;
+  /** Búsqueda escrita en la herramienta de música (`poner_musica(busqueda="…")`). */
+  readonly writtenQuery: string | null;
 }
 
-export function createTextCleaner(toolName: string): TextCleaner {
-  // Nombre de la herramienta tolerando escapes de LaTeX/markdown (mostrar\_formulario...).
-  const toolPattern = new RegExp(toolName.split('_').join('\\\\?_'), 'i');
+/** Nombre tolerando escapes de LaTeX/markdown (mostrar\_formulario...). */
+const toPattern = (name: string) => new RegExp(name.split('_').join('\\\\?_'), 'i');
+
+export function createTextCleaner(toolNames: string[]): TextCleaner {
+  const patterns = toolNames.map((name) => ({ name, re: toPattern(name) }));
+  // Primera palabra de cada herramienta: mientras llega, la línea se retiene.
+  const riskyWords = new RegExp(`[$\\\\]|${toolNames.map((n) => n.split('_')[0]).join('|')}`, 'i');
+  const sawTools = new Set<string>();
+  let writtenQuery: string | null = null;
   let pending = '';
   let lineStart = true;
-  let sawTool = false;
 
   /** Limpia un trozo sin saltos de línea que no corta ningún token a medias. */
   const clean = (segment: string, startsLine: boolean): string => {
@@ -33,7 +41,17 @@ export function createTextCleaner(toolName: string): TextCleaner {
     return out;
   };
 
-  /** Procesa líneas completas; descarta las que mencionan la herramienta. */
+  /** Si la línea menciona una herramienta, la registra y devuelve `true` (se descarta). */
+  const takeTool = (line: string): boolean => {
+    const hit = patterns.find((p) => p.re.test(line));
+    if (!hit) return false;
+    sawTools.add(hit.name);
+    const q = /busqueda\\?\s*[:=]\s*\\?["“']([^"”'\\]{2,80})/i.exec(line)?.[1];
+    if (q && !writtenQuery) writtenQuery = q.trim();
+    return true;
+  };
+
+  /** Procesa líneas completas; descarta las que mencionan una herramienta. */
   const takeLines = (final: boolean): string => {
     let out = '';
     for (;;) {
@@ -41,8 +59,7 @@ export function createTextCleaner(toolName: string): TextCleaner {
       if (nl === -1) break;
       const line = pending.slice(0, nl);
       pending = pending.slice(nl + 1);
-      if (toolPattern.test(line)) {
-        sawTool = true;
+      if (takeTool(line)) {
         lineStart = true;
         continue;
       }
@@ -53,15 +70,13 @@ export function createTextCleaner(toolName: string): TextCleaner {
     }
     if (!pending) return out;
 
-    // Línea incompleta: si puede contener la herramienta o una fórmula abierta, se espera.
-    const risky = /[$\\]|mostrar/i.test(pending);
     if (final) {
-      if (toolPattern.test(pending)) sawTool = true;
-      else out += clean(pending, lineStart);
+      if (!takeTool(pending)) out += clean(pending, lineStart);
       pending = '';
       return out;
     }
-    if (risky) return out;
+    // Línea incompleta: si puede contener una herramienta o una fórmula abierta, se espera.
+    if (riskyWords.test(pending)) return out;
     // Emitir hasta el último espacio: los pares ** nunca quedan partidos por un espacio.
     const cut = pending.lastIndexOf(' ');
     if (cut <= 0) return out;
@@ -80,8 +95,11 @@ export function createTextCleaner(toolName: string): TextCleaner {
     flush() {
       return takeLines(true).replace(/\n{3,}/g, '\n\n');
     },
-    get sawTool() {
-      return sawTool;
+    get sawTools() {
+      return sawTools;
+    },
+    get writtenQuery() {
+      return writtenQuery;
     },
   };
 }

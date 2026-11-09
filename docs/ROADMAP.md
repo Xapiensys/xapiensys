@@ -75,6 +75,11 @@ Objetivo: la demo en vivo que vende.
 - [x] Isla `ChatDemo.tsx`: streaming, sugerencias, mini-formulario de lead, modo guiado de respaldo.
 - [x] (2026-11-09) Gemini activo en producción. Respuestas en texto plano (`chatText.ts`) y formulario de contacto fiable aunque el modelo no llame la herramienta. Probadas 6 preguntas (comercial, precios, contacto, fuera de tema, cambio de instrucciones).
 - [x] (2026-11-09) Asistente IA flotante en todas las páginas (`AssistantDock`, el chat se descarga al abrirlo) + botón "Pregúntale a la IA" en el hero y en los héroes de página.
+- [x] (2026-11-09) El asistente se llama **Tommy** (avatar original generado en Higgsfield: `src/assets/marca/tommy*.webp`). Herramienta `poner_musica` en el chat.
+- [x] (2026-11-09) **Radio Tommy** (`MusicPlayer`): reproductor flotante, en silencio por defecto, búsqueda libre + sugerencias vía `/api/music` (fragmentos oficiales de 30 s de iTunes) y ecualizador con el audio real.
+- [x] (2026-11-09) **Simulador de página web** en `/simulador` (`SiteSimulator` + `/api/simulate`, Gemini con salida JSON y plantilla de respaldo por rubro).
+- [x] (2026-11-09) WhatsApp verde en todo el sitio (flotante con burbuja, menú, héroes, CTA) + franja de oferta real (`PromoBar`).
+- [ ] 🧑 Definir una promo de lanzamiento real (descuento, cupos o fecha) para `PromoBar` — hoy solo muestra el diagnóstico gratuito.
 - [ ] Set de 20 preguntas de prueba (comerciales, fuera de tema, intentos de cambiar instrucciones) y revisar respuestas.
 
 > Verificado con un servidor que simula la API de Anthropic: streaming SSE, historial de 10 turnos, señal de formulario (herramienta `mostrar_formulario_contacto`), lead con `source: "chat"` vinculado a la sesión, y los límites (12 mensajes/sesión, 5 sesiones/IP/día, tope mensual, sin LLM → modo guiado). Pendiente con API key real: latencia del primer token y el set de 20 preguntas.

@@ -16,6 +16,7 @@ export const chatSuggestions = [
   '¿Qué servicios ofrecen?',
   '¿Cuánto cuesta una web con chatbot?',
   'Quiero automatizar mi atención por WhatsApp',
+  'Pon música para trabajar',
 ];
 
 let cached: GuidedTopic[] | null = null;

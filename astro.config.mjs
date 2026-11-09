@@ -63,7 +63,9 @@ export default defineConfig({
     csp: {
       directives: [
         "default-src 'self'",
-        "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com",
+        "img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com https://*.mzstatic.com",
+        // Radio Tommy: fragmentos de audio oficiales de iTunes/Apple Music.
+        "media-src 'self' https://*.itunes.apple.com https://*.mzstatic.com",
         "font-src 'self'",
         "connect-src 'self' https://challenges.cloudflare.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
         'frame-src https://challenges.cloudflare.com',

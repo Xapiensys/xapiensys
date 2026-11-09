@@ -1,0 +1,118 @@
+---
+import Button from '../ui/Button.astro';
+import SectionLabel from '../ui/SectionLabel.astro';
+import ProjectImage from '../ui/ProjectImage.astro';
+import { serviceVisuals } from '@/lib/visuals';
+
+interface Props {
+  index?: string;
+}
+const { index = '04' } = Astro.props;
+const visual = serviceVisuals['paginas-web']!;
+---
+
+<section class="section-shell section-pad teaser" aria-labelledby="teaser-title">
+  <div class="copy">
+    <SectionLabel index={index}>SIMULADOR GRATIS</SectionLabel>
+    <h2 id="teaser-title" class="display-h2">
+      Mira tu web
+      <br />
+      <span class="accent-cyan">antes de pagar.</span>
+    </h2>
+    <p>
+      Escribe el nombre de tu negocio, elige tu rubro y un estilo: la IA arma una vista previa de tu
+      página en segundos, en escritorio y celular.
+    </p>
+    <ol>
+      <li>
+        <span class="mono">01</span>Tu nombre y rubro
+      </li>
+      <li>
+        <span class="mono">02</span>Eliges el estilo
+      </li>
+      <li>
+        <span class="mono">03</span>La IA escribe tu web
+      </li>
+    </ol>
+    <Button
+      href="/simulador"
+      icon="arrow-right"
+      track="cta_demo_click"
+      trackLocation="home_simulator"
+    >
+      Probar el simulador
+    </Button>
+  </div>
+  <figure class="visual">
+    <ProjectImage src={visual.src} alt={visual.alt} sizes="(min-width: 900px) 560px, 100vw" />
+    <figcaption class="mono">VISTA PREVIA EN SEGUNDOS</figcaption>
+  </figure>
+</section>
+
+<style>
+  .teaser {
+    display: grid;
+    align-items: center;
+    gap: 40px;
+  }
+
+  .copy > p {
+    max-width: 460px;
+    margin: 20px 0;
+    color: var(--color-text-dim);
+    line-height: 1.75;
+  }
+
+  ol {
+    display: grid;
+    gap: 8px;
+    margin: 0 0 26px;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-text-soft);
+  }
+
+  li .mono {
+    color: var(--color-cyan);
+    font-size: var(--text-mono);
+  }
+
+  .visual {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border-strong);
+    aspect-ratio: 16 / 10;
+    box-shadow: var(--glow-cyan);
+  }
+
+  .visual :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  figcaption {
+    position: absolute;
+    right: 14px;
+    bottom: 12px;
+    padding: 5px 9px;
+    color: var(--color-text);
+    background: var(--color-bg-a78);
+    font-size: var(--text-mono);
+  }
+
+  @media (min-width: 900px) {
+    .teaser {
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: clamp(48px, 7vw, 100px);
+    }
+  }
+</style>

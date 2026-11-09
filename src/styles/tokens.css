@@ -20,6 +20,41 @@
   --color-muted: #8a94a8;
   --color-danger: #ff8a8a;
 
+  /* WhatsApp: verde oficial para que el canal de contacto se reconozca al instante. */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-strong: #1ebe5b;
+  --color-on-whatsapp: #04140a;
+  --color-whatsapp-a18: rgb(37 211 102 / 0.18);
+  --color-whatsapp-a42: rgb(37 211 102 / 0.42);
+  --glow-whatsapp: 0 0 34px rgb(37 211 102 / 0.38);
+
+  /* Simulador: paletas de ejemplo para las webs de clientes (no son de la marca). */
+  --sim-ejecutivo-bg: #0b0e17;
+  --sim-ejecutivo-surface: #151a28;
+  --sim-ejecutivo-text: #eef2f8;
+  --sim-ejecutivo-muted: #9aa5b8;
+  --sim-ejecutivo-accent: #00d4ff;
+  --sim-ejecutivo-accent-2: #7c5cff;
+  --sim-fresco-bg: #f6f9fc;
+  --sim-fresco-surface: #ffffff;
+  --sim-fresco-text: #13213a;
+  --sim-fresco-muted: #5b6b84;
+  --sim-fresco-accent: #0f7bff;
+  --sim-fresco-accent-2: #22c3a6;
+  --sim-vibrante-bg: #1b0b33;
+  --sim-vibrante-surface: #2b1452;
+  --sim-vibrante-text: #fff5fb;
+  --sim-vibrante-muted: #d6c2ec;
+  --sim-vibrante-accent: #ff4fa3;
+  --sim-vibrante-accent-2: #ffcf3f;
+  --sim-elegante-bg: #f4eee4;
+  --sim-elegante-surface: #fffaf2;
+  --sim-elegante-text: #221b13;
+  --sim-elegante-muted: #6f6253;
+  --sim-elegante-accent: #9a7547;
+  --sim-elegante-accent-2: #2f4a3c;
+  --sim-ink: #0b0d12;
+
   /* Transparencias derivadas */
   --color-border: rgb(255 255 255 / 0.08);
   --color-border-strong: rgb(255 255 255 / 0.14);

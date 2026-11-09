@@ -11,11 +11,12 @@ import './styles/dock.css';
 interface Props {
   suggestions: string[];
   guided: GuidedTopic[];
+  avatarSrc?: string;
 }
 
 type ChatProps = Props & { idPrefix: string; variant: 'dock' };
 
-export default function AssistantDock({ suggestions, guided }: Props) {
+export default function AssistantDock({ suggestions, guided, avatarSrc }: Props) {
   const [open, setOpen] = useState(false);
   const [Chat, setChat] = useState<ComponentType<ChatProps> | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -79,21 +80,26 @@ export default function AssistantDock({ suggestions, guided }: Props) {
         class={`dock-launcher${open ? ' is-hidden' : ''}`}
         aria-expanded={open}
         aria-controls="assistant-panel"
-        aria-label="Pregúntale a la IA: abre el asistente"
+        aria-label="Habla con Tommy, el asistente con IA"
         onPointerEnter={load}
         onFocus={load}
         onClick={() => show('float')}
       >
         <span class="dock-core" aria-hidden="true">
           <i />
-          <svg viewBox="0 0 24 24">
-            <path d="M4 5.5h16v10.5H10l-6 4.5V5.5Z" />
-            <path d="M8.5 10.75h.01M12 10.75h.01M15.5 10.75h.01" />
-          </svg>
+          {avatarSrc ? (
+            <img src={avatarSrc} alt="" width={48} height={48} />
+          ) : (
+            <svg viewBox="0 0 24 24">
+              <path d="M4 5.5h16v10.5H10l-6 4.5V5.5Z" />
+              <path d="M8.5 10.75h.01M12 10.75h.01M15.5 10.75h.01" />
+            </svg>
+          )}
+          <b class="dock-online" />
         </span>
         <span class="dock-text">
-          <strong>Pregúntale a la IA</strong>
-          <small>Responde en segundos</small>
+          <strong>Habla con Tommy</strong>
+          <small>IA · responde en segundos</small>
         </span>
       </button>
 
@@ -103,7 +109,7 @@ export default function AssistantDock({ suggestions, guided }: Props) {
         class={`dock-panel${open ? ' is-open' : ''}`}
         role="dialog"
         aria-modal="false"
-        aria-label="Asistente con IA de Xapiensys"
+        aria-label="Tommy, asistente con IA de Xapiensys"
         hidden={!open}
       >
         <button type="button" class="dock-close" aria-label="Cerrar asistente" onClick={hide}>
@@ -112,13 +118,19 @@ export default function AssistantDock({ suggestions, guided }: Props) {
           </svg>
         </button>
         {Chat ? (
-          <Chat suggestions={suggestions} guided={guided} idPrefix="dock" variant="dock" />
+          <Chat
+            suggestions={suggestions}
+            guided={guided}
+            idPrefix="dock"
+            variant="dock"
+            {...(avatarSrc ? { avatarSrc } : {})}
+          />
         ) : (
           <div class="dock-loading" aria-busy="true">
             <span class="dock-core" aria-hidden="true">
               <i />
             </span>
-            Conectando con el asistente…
+            Conectando con Tommy…
           </div>
         )}
       </div>

@@ -25,6 +25,7 @@ export async function getOgPages(): Promise<OgPage[]> {
     { slug: 'proyectos', title: 'Laboratorio de demos propias', label: 'Proyectos' },
     { slug: 'empresa', title: 'Ingeniería digital con base en Lima', label: 'Empresa' },
     { slug: 'cotizar', title: 'Cotiza tu proyecto en 1 minuto', label: 'Cotizador' },
+    { slug: 'simulador', title: 'Simula tu página web gratis con IA', label: 'Simulador' },
     { slug: 'contacto', title: 'Conversemos sobre tu proyecto', label: 'Contacto' },
     {
       slug: 'diagnostico',

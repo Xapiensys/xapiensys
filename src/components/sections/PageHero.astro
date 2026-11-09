@@ -46,7 +46,8 @@ const {
       <div class="actions">
         <Button
           href={buildWhatsAppUrl({ intent: waIntent, ...(waTopic ? { topic: waTopic } : {}) })}
-          icon="arrow-up-right"
+          variant="whatsapp"
+          icon="whatsapp"
           track="cta_whatsapp_click"
           trackLocation={trackLocation}
         >
@@ -64,7 +65,7 @@ const {
         {askAi && (
           <button type="button" class="ask-ai" data-open-assistant={trackLocation}>
             <span aria-hidden="true"></span>
-            Pregúntale a la IA
+            Habla con Tommy (IA)
           </button>
         )}
       </div>

@@ -13,7 +13,8 @@ export type WhatsAppIntent =
   | 'cubo3d'
   | 'chatbot'
   | 'automatizacion'
-  | 'sistema';
+  | 'sistema'
+  | 'simulador';
 
 const baseMessages: Record<WhatsAppIntent, string> = {
   general: 'Hola Xapiensys, quiero conversar sobre una solución digital.',
@@ -29,6 +30,7 @@ const baseMessages: Record<WhatsAppIntent, string> = {
   chatbot: 'Hola, quisiera implementar un chatbot con inteligencia artificial.',
   automatizacion: 'Hola, quiero automatizar procesos de mi empresa.',
   sistema: 'Hola, necesito un sistema a medida para mi empresa.',
+  simulador: 'Hola Xapiensys, probé el simulador y quiero esta web para mi negocio:',
 };
 
 /** Mensaje de WhatsApp preconfigurado por servicio (clave = id de la colección `servicios`). */

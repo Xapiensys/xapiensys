@@ -26,9 +26,12 @@ interface Props {
   idPrefix?: string;
   /** `dock`: versión compacta dentro del asistente flotante. */
   variant?: 'section' | 'dock';
+  /** Avatar de Tommy ya optimizado (URL). */
+  avatarSrc?: string;
 }
 
-const GREETING = 'Hola, soy el asistente de Xapiensys. ¿Qué te gustaría mejorar en tu negocio?';
+const GREETING =
+  'Hola, soy Tommy, el asistente con IA de Xapiensys. Rastreo lo que frena a tu negocio. ¿Qué te gustaría mejorar? (Y si quieres, también te pongo música).';
 const LIMIT_TEXT =
   'Por ahora sigo en modo guiado: elige una opción o escríbenos por WhatsApp y te responde una persona del equipo.';
 
@@ -57,6 +60,7 @@ export default function ChatDemo({
   guided,
   idPrefix = 'chat',
   variant = 'section',
+  avatarSrc,
 }: Props) {
   const [messages, setMessages] = useState<Message[]>([msg('agent', GREETING)]);
   const [input, setInput] = useState('');
@@ -143,10 +147,15 @@ export default function ChatDemo({
             type: string;
             text?: string;
             reason?: string;
+            query?: string;
           };
           if (event.type === 'text' && event.text)
             update((r) => ({ ...r, text: r.text + event.text }));
           else if (event.type === 'lead_form') showLeadForm();
+          else if (event.type === 'music' && event.query)
+            window.dispatchEvent(
+              new CustomEvent('tommy:music', { detail: { query: event.query } }),
+            );
           else if (event.type === 'limit') {
             limited = true;
             goGuided(event.reason ?? 'limit');
@@ -220,13 +229,17 @@ export default function ChatDemo({
       <div class="chat-header">
         <div class="chat-core" aria-hidden="true">
           <span />
-          <svg viewBox="0 0 24 24">
-            <path d="M5 5 19 19M19 5 5 19" />
-          </svg>
+          {avatarSrc ? (
+            <img src={avatarSrc} alt="" width={40} height={40} />
+          ) : (
+            <svg viewBox="0 0 24 24">
+              <path d="M5 5 19 19M19 5 5 19" />
+            </svg>
+          )}
         </div>
         <div class="chat-id">
           <strong>
-            X<span class="chat-slash">/</span>CORE
+            TOMMY<span class="chat-slash">.</span>IA
           </strong>
           <span class="mono">
             {mode === 'ai' ? (busy ? 'PROCESANDO…' : 'ASISTENTE IA · LISTO') : 'MODO GUIADO'}
@@ -241,9 +254,9 @@ export default function ChatDemo({
         {messages.map((m) => (
           <div class={`chat-msg ${m.role}`} key={m.id} aria-busy={m.streaming ? 'true' : undefined}>
             <span class="chat-msg-label mono" aria-hidden="true">
-              {m.role === 'agent' ? 'X/CORE ›' : 'TÚ ›'}
+              {m.role === 'agent' ? 'TOMMY ›' : 'TÚ ›'}
             </span>
-            <span class="visually-hidden">{m.role === 'agent' ? 'Asistente:' : 'Tú:'}</span>
+            <span class="visually-hidden">{m.role === 'agent' ? 'Tommy:' : 'Tú:'}</span>
             {m.text && <span class="chat-text">{m.text}</span>}
             {m.streaming && m.text && <span class="chat-caret" aria-hidden="true" />}
             {!m.text &&
@@ -326,7 +339,7 @@ export default function ChatDemo({
         {leadForm === 'done' && leadCode && (
           <div class="chat-msg agent">
             <span class="chat-msg-label mono" aria-hidden="true">
-              X/CORE ›
+              TOMMY ›
             </span>
             Listo, {contact.name.split(' ')[0]}. Tu código es {leadCode}. Te escribimos pronto, o
             adelántate:
@@ -400,8 +413,8 @@ export default function ChatDemo({
         </button>
       </form>
       <p class="chat-note">
-        Asistente con IA de Xapiensys. Las conversaciones se guardan para mejorar el servicio.{' '}
-        <a href="/privacidad">Privacidad</a>
+        Tommy es un asistente con IA de Xapiensys. Las conversaciones se guardan para mejorar el
+        servicio. <a href="/privacidad">Privacidad</a>
       </p>
     </div>
   );

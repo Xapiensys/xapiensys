@@ -51,9 +51,22 @@ export function bootFx(): void {
 
   if (reduced) return;
 
-  // Aparición al entrar en pantalla (se marca por JS: sin JS todo queda visible)
+  // Aparición al entrar en pantalla (se marca por JS: sin JS todo queda visible).
+  // Cascada por grupo: los hermanos aparecen uno tras otro; imágenes con zoom.
   const targets = document.querySelectorAll<HTMLElement>(
-    'main .section-heading, main .card, main details, main .chat-window, main ol > li',
+    [
+      'main .section-heading',
+      'main .card',
+      'main details',
+      'main .chat',
+      'main ol > li',
+      'main .metrics > div',
+      'main .chips > li',
+      'main figure',
+      'main .visual',
+      'main table tr',
+      'main .final .inner',
+    ].join(', '),
   );
   const io = new IntersectionObserver(
     (entries) => {
@@ -65,13 +78,73 @@ export function bootFx(): void {
     },
     { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
   );
-  targets.forEach((el, i) => {
+  targets.forEach((el) => {
     // Lo que ya está a la vista al cargar no se oculta (evita parpadeo y no afecta al LCP).
     if (el.getBoundingClientRect().top < innerHeight) return;
-    el.setAttribute('data-reveal', '');
-    el.style.setProperty('--reveal-delay', `${(i % 4) * 0.08}s`);
+    const siblings = el.parentElement ? [...el.parentElement.children] : [el];
+    const order = Math.max(0, siblings.indexOf(el));
+    el.setAttribute('data-reveal', el.matches('figure, .visual') ? 'zoom' : '');
+    el.style.setProperty('--reveal-delay', `${Math.min(order, 6) * 0.07}s`);
     io.observe(el);
   });
+
+  // Contadores: las métricas medidas suben desde 0 al entrar en pantalla.
+  const counters = document.querySelectorAll<HTMLElement>('main .metrics dd');
+  const co = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        co.unobserve(e.target);
+        const el = e.target as HTMLElement;
+        const final = el.textContent ?? '';
+        const match = /^([\d.]+)(.*)$/.exec(final.trim());
+        if (!match) continue;
+        const target = Number(match[1]);
+        const decimals = (match[1]!.split('.')[1] ?? '').length;
+        const suffix = match[2] ?? '';
+        const start = performance.now();
+        const dur = 1100;
+        const step = (now: number) => {
+          const p = Math.min(1, (now - start) / dur);
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = `${(target * eased).toFixed(decimals)}${suffix}`;
+          if (p < 1) requestAnimationFrame(step);
+          else el.textContent = final;
+        };
+        requestAnimationFrame(step);
+      }
+    },
+    { threshold: 0.6 },
+  );
+  counters.forEach((c) => co.observe(c));
+
+  // Parallax suave de las imágenes grandes (héroes de página y CTA final).
+  const layers = [
+    ...document.querySelectorAll<HTMLElement>('.page-hero .visual img, .final .visual img'),
+  ];
+  if (layers.length) {
+    let ticking = false;
+    const move = () => {
+      for (const img of layers) {
+        const r = img.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight) continue;
+        const offset = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
+        img.style.transform = `scale(1.08) translateY(${(-offset * 18).toFixed(1)}px)`;
+      }
+      ticking = false;
+    };
+    addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(move);
+        }
+      },
+      { passive: true },
+    );
+    move();
+  }
 
   if (!fine) return;
 

@@ -7,6 +7,10 @@ import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import WhatsAppFloat from '@/components/layout/WhatsAppFloat.astro';
 import AssistantDock from '@/components/islands/AssistantDock';
+import MusicPlayer from '@/components/islands/MusicPlayer';
+import PromoBar from '@/components/layout/PromoBar.astro';
+import { getImage } from 'astro:assets';
+import tommyAvatar from '@/assets/marca/tommy-avatar.webp';
 import { chatSuggestions, getGuidedTopics } from '@/lib/chatGuided';
 import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
 import { site } from '@/lib/site';
@@ -22,6 +26,7 @@ interface Props extends SeoProps {
 
 const { breadcrumbs, service, creativeWork, waIntent, waTopic, ...seo } = Astro.props;
 const guided = await getGuidedTopics();
+const avatar = await getImage({ src: tommyAvatar, width: 96, height: 96, format: 'webp' });
 ---
 
 <!doctype html>
@@ -65,6 +70,7 @@ const guided = await getGuidedTopics();
     <canvas id="bg" aria-hidden="true"></canvas>
     <div class="scroll-progress" aria-hidden="true"></div>
     <div class="cursor-glow" aria-hidden="true"></div>
+    <PromoBar />
     <Header />
     {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
     <main id="contenido">
@@ -72,7 +78,13 @@ const guided = await getGuidedTopics();
     </main>
     <Footer />
     <WhatsAppFloat intent={waIntent} topic={waTopic} />
-    <AssistantDock client:idle suggestions={chatSuggestions} guided={guided} />
+    <AssistantDock
+      client:idle
+      suggestions={chatSuggestions}
+      guided={guided}
+      avatarSrc={avatar.src}
+    />
+    <MusicPlayer client:idle />
 
     <script>
       import { captureAttribution, scheduleGa4, track, type AnalyticsEvent } from '@/lib/analytics';

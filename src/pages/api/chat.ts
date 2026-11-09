@@ -14,6 +14,8 @@ const bodySchema = z.object({
 });
 
 const LEAD_FORM_TEXT = 'Te dejo un formulario corto para que el equipo te contacte.';
+const musicText = (q: string) =>
+  `Listo, pongo «${q}» en el reproductor. ¿Te ayudo con algo de tu negocio mientras suena?`;
 const REFUSED_TEXT = 'Prefiero no responder eso. ¿Te cuento cómo podemos ayudar a tu negocio?';
 
 type Outgoing =
@@ -66,6 +68,7 @@ export const POST: APIRoute = async ({ request }) => {
       };
       let text = '';
       let leadForm = false;
+      let music: string | null = null;
       let tokensIn = 0;
       let tokensOut = 0;
       try {
@@ -82,7 +85,12 @@ export const POST: APIRoute = async ({ request }) => {
           }
           if (event.type === 'text') text += event.text;
           if (event.type === 'lead_form') leadForm = true;
+          if (event.type === 'music') music = event.query;
           push(event);
+        }
+        if (music && !text.trim()) {
+          text = musicText(music);
+          push({ type: 'text', text });
         }
         if (leadForm && !text.trim()) {
           text = LEAD_FORM_TEXT;

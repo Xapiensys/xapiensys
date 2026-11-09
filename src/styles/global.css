@@ -287,6 +287,71 @@ html.js [data-reveal].is-in {
   transform: none;
 }
 
+/* Imágenes: aparecen con un zoom suave en vez de subir. */
+html.js [data-reveal='zoom'] {
+  transform: scale(0.94);
+  filter: blur(6px);
+  transition:
+    opacity 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1),
+    filter 0.9s ease;
+  transition-delay: var(--reveal-delay, 0s);
+}
+
+html.js [data-reveal='zoom'].is-in {
+  filter: none;
+  transform: none;
+}
+
+/* Imágenes de tarjetas: acercamiento al pasar el cursor. */
+main .card-media :is(img, picture) {
+  transition: transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+main .card:hover .card-media img,
+main .card:focus-within .card-media img {
+  transform: scale(1.06);
+}
+
+/* Textos de acento con un brillo que se desplaza lentamente. */
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .accent-cyan {
+    background: linear-gradient(
+      90deg,
+      var(--color-cyan),
+      var(--color-cyan-bright),
+      var(--color-violet-soft),
+      var(--color-cyan)
+    );
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: accent-flow 9s ease-in-out infinite alternate;
+  }
+
+  .accent-violet {
+    background: linear-gradient(
+      90deg,
+      var(--color-violet-soft),
+      var(--color-violet-pale),
+      var(--color-cyan-bright),
+      var(--color-violet-soft)
+    );
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: accent-flow 9s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes accent-flow {
+  to {
+    background-position: 100% center;
+  }
+}
+
 main .card {
   overflow: hidden;
 }
@@ -323,6 +388,7 @@ header nav a[data-active]:not(.button) {
 @media (prefers-reduced-motion: reduce) {
   html.js [data-reveal] {
     opacity: 1;
+    filter: none;
     transform: none;
   }
 }

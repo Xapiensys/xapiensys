@@ -57,18 +57,17 @@ const facts = [
           data-open-assistant="hero"
         >
           <span class="hero-ai-dot" aria-hidden="true"></span>
-          Pregúntale a la IA
+          Habla con Tommy (IA)
         </Button>
-        <a
-          class="hero-wa"
+        <Button
           href={buildWhatsAppUrl({ intent: 'general' })}
-          target="_blank"
-          rel="noopener noreferrer"
-          data-track="cta_whatsapp_click"
-          data-track-location="hero"
+          variant="whatsapp"
+          icon="whatsapp"
+          track="cta_whatsapp_click"
+          trackLocation="hero"
         >
-          o escríbenos por WhatsApp ↗
-        </a>
+          WhatsApp
+        </Button>
       </div>
       <ul class="hero-trust" aria-label="Cómo trabajamos">
         <li>Propuesta por escrito</li>
@@ -200,15 +199,6 @@ const facts = [
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-3);
-  }
-
-  .hero-wa {
-    display: inline-flex;
-    min-height: 44px;
-    align-items: center;
-    color: var(--color-text-soft);
-    text-decoration: underline;
-    text-underline-offset: 4px;
   }
 
   .hero-trust {

@@ -11,6 +11,7 @@ export type ChatTurn = { role: 'user' | 'assistant'; content: string };
 export type ChatEvent =
   | { type: 'text'; text: string }
   | { type: 'lead_form' }
+  | { type: 'music'; query: string }
   | { type: 'usage'; tokensIn: number; tokensOut: number }
   | { type: 'refused' };
 
@@ -21,6 +22,31 @@ export interface ChatProvider {
 
 /** Herramienta que el modelo usa para pedir los datos de contacto (el cliente muestra el mini-formulario). */
 export const LEAD_TOOL_NAME = 'mostrar_formulario_contacto';
+/** Herramienta para poner música en el reproductor de la página. */
+export const MUSIC_TOOL_NAME = 'poner_musica';
+const MUSIC_TOOL_DESCRIPTION =
+  'Pone música en el reproductor de la página. Úsala cuando la persona pida escuchar una canción, un artista, un género o un ambiente (por ejemplo "pon algo de salsa" o "pon a Peggy Gou").';
+const MUSIC_TOOL_PARAMS = {
+  type: 'object',
+  properties: {
+    busqueda: {
+      type: 'string',
+      description: 'Lo que hay que buscar: artista, canción o género, en pocas palabras.',
+    },
+  },
+  required: ['busqueda'],
+} as const;
+
+/** Limpia y acota la búsqueda de música que llega del modelo. */
+export function cleanMusicQuery(raw: unknown): string | null {
+  if (typeof raw !== 'string') return null;
+  const q = raw
+    .replace(/[\u0000-\u001f<>]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80);
+  return q.length >= 2 ? q : null;
+}
 
 // Modelos rápidos y económicos (ARCHITECTURE §7.3). Se pueden cambiar con LLM_MODEL.
 const DEFAULT_MODELS = {
@@ -56,6 +82,15 @@ function anthropicProvider(apiKey: string, model: string): ChatProvider {
               description: LEAD_TOOL_DESCRIPTION,
               input_schema: { ...LEAD_TOOL_PARAMS, required: [], additionalProperties: false },
             },
+            {
+              name: MUSIC_TOOL_NAME,
+              description: MUSIC_TOOL_DESCRIPTION,
+              input_schema: {
+                ...MUSIC_TOOL_PARAMS,
+                required: ['busqueda'],
+                additionalProperties: false,
+              },
+            },
           ],
           tool_choice: { type: 'auto' },
           messages: history,
@@ -74,6 +109,11 @@ function anthropicProvider(apiKey: string, model: string): ChatProvider {
         }
       }
       const final = await stream.finalMessage();
+      for (const block of final.content) {
+        if (block.type !== 'tool_use' || block.name !== MUSIC_TOOL_NAME) continue;
+        const query = cleanMusicQuery((block.input as { busqueda?: unknown }).busqueda);
+        if (query) yield { type: 'music', query };
+      }
       if (final.stop_reason === 'refusal') yield { type: 'refused' };
       yield {
         type: 'usage',
@@ -90,7 +130,13 @@ function anthropicProvider(apiKey: string, model: string): ChatProvider {
 /** Gemini por REST (SSE), sin SDK: menos peso en la función. */
 type GeminiChunk = {
   candidates?: {
-    content?: { parts?: { text?: string; thought?: boolean; functionCall?: { name: string } }[] };
+    content?: {
+      parts?: {
+        text?: string;
+        thought?: boolean;
+        functionCall?: { name: string; args?: Record<string, unknown> };
+      }[];
+    };
     finishReason?: string;
   }[];
   promptFeedback?: { blockReason?: string };
@@ -126,6 +172,11 @@ function geminiProvider(apiKey: string, model: string): ChatProvider {
                   name: LEAD_TOOL_NAME,
                   description: LEAD_TOOL_DESCRIPTION,
                   parameters: LEAD_TOOL_PARAMS,
+                },
+                {
+                  name: MUSIC_TOOL_NAME,
+                  description: MUSIC_TOOL_DESCRIPTION,
+                  parameters: MUSIC_TOOL_PARAMS,
                 },
               ],
             },
@@ -166,6 +217,10 @@ function geminiProvider(apiKey: string, model: string): ChatProvider {
                 leadShown = true;
                 yield { type: 'lead_form' };
               }
+              if (part.functionCall?.name === MUSIC_TOOL_NAME) {
+                const query = cleanMusicQuery(part.functionCall.args?.['busqueda']);
+                if (query) yield { type: 'music', query };
+              }
             }
             if (cand.finishReason && GEMINI_BLOCKED.has(cand.finishReason)) refused = true;
           }
@@ -189,8 +244,9 @@ function withCleanText(inner: ChatProvider): ChatProvider {
   return {
     model: inner.model,
     async *stream(system, history, signal) {
-      const cleaner = createTextCleaner(LEAD_TOOL_NAME);
+      const cleaner = createTextCleaner([LEAD_TOOL_NAME, MUSIC_TOOL_NAME]);
       let leadShown = false;
+      let musicSent = false;
       let said = '';
       for await (const event of inner.stream(system, history, signal)) {
         if (event.type === 'text') {
@@ -200,14 +256,20 @@ function withCleanText(inner: ChatProvider): ChatProvider {
           continue;
         }
         if (event.type === 'lead_form') leadShown = true;
+        if (event.type === 'music') musicSent = true;
         if (event.type === 'usage') {
           const rest = cleaner.flush();
           said += rest;
           if (rest) yield { type: 'text', text: rest };
           // Si el modelo escribió la herramienta o promete el formulario sin llamarla, se abre igual.
-          if ((cleaner.sawTool || PROMISES_FORM.test(said)) && !leadShown) {
+          if ((cleaner.sawTools.has(LEAD_TOOL_NAME) || PROMISES_FORM.test(said)) && !leadShown) {
             leadShown = true;
             yield { type: 'lead_form' };
+          }
+          const written = cleanMusicQuery(cleaner.writtenQuery);
+          if (written && !musicSent) {
+            musicSent = true;
+            yield { type: 'music', query: written };
           }
         }
         yield event;

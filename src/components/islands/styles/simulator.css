@@ -1,0 +1,761 @@
+/* Simulador de página web: formulario + navegador simulado con 4 temas. */
+.sim {
+  display: grid;
+  gap: 28px;
+}
+
+@media (min-width: 1040px) {
+  .sim {
+    grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
+    align-items: start;
+    gap: 40px;
+  }
+
+  .sim-form {
+    position: sticky;
+    top: calc(var(--header-height) + 24px);
+  }
+}
+
+/* Formulario */
+.sim-form {
+  display: grid;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid var(--glass-border);
+  background: var(--color-surface);
+}
+
+.sim-step {
+  margin: 6px 0 0;
+  color: var(--color-cyan);
+  font-size: var(--text-mono);
+}
+
+.sim-field {
+  display: grid;
+  gap: 6px;
+  color: var(--color-text-soft);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.sim-field small {
+  color: var(--color-muted);
+  font-weight: 400;
+}
+
+.sim-field input,
+.sim-field select,
+.sim-field textarea {
+  width: 100%;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+  background: var(--color-bg-a78);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.sim-field textarea {
+  resize: vertical;
+}
+
+.sim-field :is(input, select, textarea):focus-visible {
+  border-color: var(--color-cyan-a42);
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 2px;
+}
+
+.sim-styles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.sim-style {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-soft);
+  background: transparent;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.2s,
+    transform 0.2s;
+}
+
+.sim-style:hover,
+.sim-style:focus-visible,
+.sim-style.is-on {
+  border-color: var(--color-cyan);
+  color: var(--color-text);
+}
+
+.sim-style.is-on {
+  box-shadow: inset 0 0 0 1px var(--color-cyan);
+}
+
+.sim-style span {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.sw-ejecutivo span {
+  background: conic-gradient(
+    var(--sim-ejecutivo-accent),
+    var(--sim-ejecutivo-accent-2),
+    var(--sim-ejecutivo-bg)
+  );
+}
+
+.sw-fresco span {
+  background: conic-gradient(
+    var(--sim-fresco-accent),
+    var(--sim-fresco-accent-2),
+    var(--sim-fresco-bg)
+  );
+}
+
+.sw-vibrante span {
+  background: conic-gradient(
+    var(--sim-vibrante-accent),
+    var(--sim-vibrante-accent-2),
+    var(--sim-vibrante-bg)
+  );
+}
+
+.sw-elegante span {
+  background: conic-gradient(
+    var(--sim-elegante-accent),
+    var(--sim-elegante-accent-2),
+    var(--sim-elegante-bg)
+  );
+}
+
+.sim-generate {
+  position: relative;
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+  overflow: hidden;
+  border: 0;
+  color: var(--color-on-cyan);
+  background: linear-gradient(
+    110deg,
+    var(--color-cyan),
+    var(--color-cyan-bright),
+    var(--color-violet-soft)
+  );
+  background-size: 200% auto;
+  box-shadow: var(--glow-cyan);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    background-position 0.6s ease,
+    transform 0.2s ease;
+}
+
+.sim-generate:hover:not(:disabled),
+.sim-generate:focus-visible {
+  background-position: 100% center;
+  transform: translateY(-2px);
+}
+
+.sim-generate:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.sim-status {
+  min-height: 20px;
+  margin: 0;
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+/* Vista previa */
+.sim-preview {
+  display: grid;
+  min-width: 0;
+  gap: 14px;
+}
+
+.sim-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  color: var(--color-muted);
+  font-size: var(--text-mono);
+}
+
+.sim-devices {
+  display: inline-flex;
+  border: 1px solid var(--color-border-strong);
+}
+
+.sim-devices button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 0;
+  color: var(--color-text-dim);
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.sim-devices button[aria-pressed='true'] {
+  color: var(--color-on-cyan);
+  background: var(--color-cyan);
+}
+
+.sim-browser {
+  overflow: hidden;
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface-strong);
+  box-shadow:
+    var(--glow-violet),
+    0 30px 80px var(--color-bg-a78);
+  transition: max-width 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.sim-browser.device-mobile {
+  width: 100%;
+  max-width: 390px;
+  justify-self: center;
+  border-radius: 26px;
+}
+
+.sim-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sim-bar > i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-border-strong);
+}
+
+.sim-url {
+  display: inline-flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  margin-left: 10px;
+  overflow: hidden;
+  padding: 5px 12px;
+  border-radius: var(--radius-full);
+  color: var(--color-text-dim);
+  background: var(--color-bg-a78);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sim-url svg {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+}
+
+/* Sitio simulado: cada tema define sus variables. */
+.sim-site {
+  --s-bg: var(--sim-ejecutivo-bg);
+  --s-surface: var(--sim-ejecutivo-surface);
+  --s-text: var(--sim-ejecutivo-text);
+  --s-muted: var(--sim-ejecutivo-muted);
+  --s-accent: var(--sim-ejecutivo-accent);
+  --s-accent-2: var(--sim-ejecutivo-accent-2);
+  display: grid;
+  gap: 0;
+  color: var(--s-text);
+  background: var(--s-bg);
+  font-family: var(--font-body);
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+.theme-fresco {
+  --s-bg: var(--sim-fresco-bg);
+  --s-surface: var(--sim-fresco-surface);
+  --s-text: var(--sim-fresco-text);
+  --s-muted: var(--sim-fresco-muted);
+  --s-accent: var(--sim-fresco-accent);
+  --s-accent-2: var(--sim-fresco-accent-2);
+}
+
+.theme-vibrante {
+  --s-bg: var(--sim-vibrante-bg);
+  --s-surface: var(--sim-vibrante-surface);
+  --s-text: var(--sim-vibrante-text);
+  --s-muted: var(--sim-vibrante-muted);
+  --s-accent: var(--sim-vibrante-accent);
+  --s-accent-2: var(--sim-vibrante-accent-2);
+}
+
+.theme-elegante {
+  --s-bg: var(--sim-elegante-bg);
+  --s-surface: var(--sim-elegante-surface);
+  --s-text: var(--sim-elegante-text);
+  --s-muted: var(--sim-elegante-muted);
+  --s-accent: var(--sim-elegante-accent);
+  --s-accent-2: var(--sim-elegante-accent-2);
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+/* Cada bloque aparece en cascada al generar. */
+.sim-site > * {
+  animation: sim-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.sim-site > :nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.sim-site > :nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+.sim-site > :nth-child(4) {
+  animation-delay: 0.24s;
+}
+
+.sim-site > :nth-child(5) {
+  animation-delay: 0.32s;
+}
+
+@keyframes sim-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.sim-browser.is-loading .sim-site {
+  filter: blur(3px) saturate(0.6);
+  opacity: 0.6;
+  transition:
+    filter 0.3s,
+    opacity 0.3s;
+}
+
+.sim-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-bottom: 1px solid color-mix(in srgb, var(--s-text) 10%, transparent);
+}
+
+.sim-logo {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 9px;
+  color: var(--s-bg);
+  background: linear-gradient(135deg, var(--s-accent), var(--s-accent-2));
+  font-weight: 800;
+}
+
+.sim-nav strong {
+  overflow: hidden;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sim-links {
+  display: flex;
+  gap: 16px;
+  margin-left: auto;
+  color: var(--s-muted);
+  font-size: 12px;
+}
+
+.sim-links i {
+  font-style: normal;
+}
+
+.sim-nav-cta {
+  padding: 7px 12px;
+  border-radius: var(--radius-full);
+  color: var(--s-bg);
+  background: var(--s-accent);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.sim-hero {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 18px;
+  padding: 40px 28px 30px;
+}
+
+.sim-tag {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 4px 10px;
+  border: 1px solid color-mix(in srgb, var(--s-accent) 50%, transparent);
+  border-radius: var(--radius-full);
+  color: var(--s-accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.sim-title {
+  margin: 0 0 12px;
+  font-family: var(--font-heading);
+  font-size: clamp(1.5rem, 2.6vw, 2.35rem);
+  font-weight: 700;
+  line-height: 1.06;
+}
+
+.theme-elegante .sim-title {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+}
+
+.sim-sub {
+  max-width: 440px;
+  margin: 0 0 18px;
+  color: var(--s-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.sim-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sim-btn {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  padding: 0 16px;
+  border-radius: 10px;
+  color: var(--s-bg);
+  background: var(--s-accent);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.sim-btn-wa {
+  color: var(--color-on-whatsapp);
+  background: var(--color-whatsapp);
+}
+
+/* Ilustración generada por código: orbe, anillo y tarjetas flotantes. */
+.sim-art {
+  position: relative;
+  aspect-ratio: 1;
+}
+
+.sim-orb {
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 35% 30%,
+    var(--s-accent-2),
+    color-mix(in srgb, var(--s-accent) 70%, transparent) 55%,
+    transparent 72%
+  );
+  filter: blur(2px);
+  animation: sim-float 7s ease-in-out infinite;
+}
+
+.sim-ring {
+  position: absolute;
+  inset: 4%;
+  border: 1px dashed color-mix(in srgb, var(--s-text) 25%, transparent);
+  border-radius: 50%;
+  animation: sim-spin 24s linear infinite;
+}
+
+.sim-card {
+  position: absolute;
+  display: grid;
+  gap: 5px;
+  padding: 9px;
+  border: 1px solid color-mix(in srgb, var(--s-text) 14%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--s-surface) 88%, transparent);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--sim-ink) 30%, transparent);
+  animation: sim-float 6s ease-in-out infinite;
+}
+
+.sim-card b {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: var(--s-accent);
+}
+
+.sim-card i {
+  display: block;
+  width: 60px;
+  height: 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--s-text) 22%, transparent);
+}
+
+.sim-card i:nth-of-type(2) {
+  width: 42px;
+}
+
+.c1 {
+  top: 8%;
+  left: 2%;
+}
+
+.c2 {
+  right: 0;
+  bottom: 24%;
+  animation-delay: -2s;
+}
+
+.c3 {
+  bottom: 4%;
+  left: 18%;
+  animation-delay: -4s;
+}
+
+@keyframes sim-float {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes sim-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sim-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 22px;
+  margin: 0;
+  padding: 14px 20px;
+  border-block: 1px solid color-mix(in srgb, var(--s-text) 10%, transparent);
+  color: var(--s-muted);
+  font-size: 12px;
+  font-weight: 600;
+  list-style: none;
+}
+
+.sim-highlights li::before {
+  margin-right: 7px;
+  color: var(--s-accent);
+  content: '✓';
+}
+
+.sim-services {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 26px 28px;
+}
+
+.sim-service {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 16px;
+  border: 1px solid color-mix(in srgb, var(--s-text) 10%, transparent);
+  border-radius: 14px;
+  background: var(--s-surface);
+}
+
+.sim-service svg {
+  width: 28px;
+  height: 28px;
+  padding: 5px;
+  border-radius: 8px;
+  fill: none;
+  stroke: var(--s-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  background: color-mix(in srgb, var(--s-accent) 14%, transparent);
+}
+
+.sim-service strong {
+  font-size: 14px;
+}
+
+.sim-service p {
+  margin: 0;
+  color: var(--s-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sim-about {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 28px 26px;
+  padding: 20px;
+  border-radius: 16px;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--s-accent) 22%, var(--s-surface)),
+    var(--s-surface)
+  );
+}
+
+.sim-about p {
+  max-width: 420px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.sim-footer {
+  padding: 14px 20px;
+  border-top: 1px solid color-mix(in srgb, var(--s-text) 10%, transparent);
+  color: var(--s-muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Versión celular del sitio simulado (o vista previa en pantallas angostas). */
+.device-mobile .sim-links,
+.device-mobile .sim-nav-cta {
+  display: none;
+}
+
+.device-mobile .sim-hero,
+.device-mobile .sim-services {
+  grid-template-columns: 1fr;
+}
+
+.device-mobile .sim-art {
+  max-width: 220px;
+  justify-self: center;
+}
+
+@media (max-width: 680px) {
+  .sim-links,
+  .sim-nav-cta {
+    display: none;
+  }
+
+  .sim-hero,
+  .sim-services {
+    grid-template-columns: 1fr;
+    padding-inline: 18px;
+  }
+
+  .sim-art {
+    max-width: 200px;
+    justify-self: center;
+  }
+
+  .sim-about {
+    margin-inline: 18px;
+  }
+}
+
+/* Llamado a la acción bajo la vista previa. */
+.sim-cta {
+  display: grid;
+  gap: 12px;
+  padding: 18px 20px;
+  border: 1px solid var(--color-whatsapp-a42);
+  background: var(--color-surface);
+}
+
+.sim-cta p {
+  margin: 0;
+  color: var(--color-text-dim);
+}
+
+.sim-cta strong {
+  color: var(--color-text);
+}
+
+.sim-cta > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sim-cta-wa,
+.sim-cta-quote {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  padding: 0 18px;
+  font-weight: 700;
+  transition: transform 0.2s;
+}
+
+.sim-cta-wa {
+  color: var(--color-on-whatsapp);
+  background: var(--color-whatsapp);
+  box-shadow: var(--glow-whatsapp);
+}
+
+.sim-cta-quote {
+  border: 1px solid var(--color-border-cta);
+  color: var(--color-text);
+}
+
+.sim-cta-wa:hover,
+.sim-cta-quote:hover,
+.sim-cta-wa:focus-visible,
+.sim-cta-quote:focus-visible {
+  transform: translateY(-2px);
+}
+
+.sim-cta small {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sim-site > *,
+  .sim-orb,
+  .sim-ring,
+  .sim-card {
+    animation: none;
+  }
+}

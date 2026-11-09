@@ -28,7 +28,8 @@ const { index = '10', waIntent = 'consultoria', waTopic } = Astro.props;
       <div class="actions">
         <Button
           href={buildWhatsAppUrl({ intent: waIntent, ...(waTopic ? { topic: waTopic } : {}) })}
-          icon="arrow-up-right"
+          variant="whatsapp"
+          icon="whatsapp"
           track="cta_whatsapp_click"
           trackLocation="final_cta"
         >
