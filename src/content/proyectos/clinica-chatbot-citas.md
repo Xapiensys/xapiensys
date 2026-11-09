@@ -17,4 +17,6 @@ features:
 status: publicada
 url: /demos/clinica
 services: [paginas-web, chatbots-ia]
+cover: ../../assets/proyectos/clinica-chatbot-citas/portada.webp
+coverAlt: Demo de clínica con servicios, especialidades, equipo médico y horarios de atención
 ---

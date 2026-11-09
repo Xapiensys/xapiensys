@@ -6,6 +6,7 @@ import ProcessSteps from '@/components/sections/ProcessSteps.astro';
 import SectorsGrid from '@/components/sections/SectorsGrid.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import { ogPath } from '@/lib/ogPages';
+import { launchVisual } from '@/lib/visuals';
 ---
 
 <BaseLayout
@@ -21,7 +22,8 @@ import { ogPath } from '@/lib/ogPages';
   <PageHero
     label="SERVICIOS"
     title="Servicios de desarrollo web, IA y automatización"
-    lede="Cuatro líneas de trabajo que se combinan según lo que tu negocio necesita: captar clientes, atenderlos mejor y operar con menos trabajo manual."
+    lede="Seis líneas de trabajo que se combinan según lo que tu negocio necesita: captar clientes, atenderlos mejor y operar con menos trabajo manual."
+    image={launchVisual}
   />
   <ServicesGrid index="01" title="Lo que construimos." />
   <ProcessSteps index="02" />

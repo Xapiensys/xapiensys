@@ -74,6 +74,7 @@ Objetivo: la demo en vivo que vende.
 - [x] `POST /api/chat` con SSE y todos los límites de ARCHITECTURE §7.3.
 - [x] Isla `ChatDemo.tsx`: streaming, sugerencias, mini-formulario de lead, modo guiado de respaldo.
 - [x] (2026-11-09) Gemini activo en producción. Respuestas en texto plano (`chatText.ts`) y formulario de contacto fiable aunque el modelo no llame la herramienta. Probadas 6 preguntas (comercial, precios, contacto, fuera de tema, cambio de instrucciones).
+- [x] (2026-11-09) Asistente IA flotante en todas las páginas (`AssistantDock`, el chat se descarga al abrirlo) + botón "Pregúntale a la IA" en el hero y en los héroes de página.
 - [ ] Set de 20 preguntas de prueba (comerciales, fuera de tema, intentos de cambiar instrucciones) y revisar respuestas.
 
 > Verificado con un servidor que simula la API de Anthropic: streaming SSE, historial de 10 turnos, señal de formulario (herramienta `mostrar_formulario_contacto`), lead con `source: "chat"` vinculado a la sesión, y los límites (12 mensajes/sesión, 5 sesiones/IP/día, tope mensual, sin LLM → modo guiado). Pendiente con API key real: latencia del primer token y el set de 20 preguntas.
@@ -118,7 +119,7 @@ Objetivo: páginas que rankean para búsquedas de compra.
 ---
 
 ## F6 — Laboratorio de demos y panel (opcional, después de tener tráfico)
-- [x] (2026-11-06) Demos navegables en `/demos/ferreteria`, `/demos/clinica`, `/demos/constructora` (ver `docs/LANZAMIENTO.md`). Faltan sus métricas medidas. Original: 3 demos propias (Clínica, Constructora, Comercio) como páginas en `/proyectos/[slug]`, cada una etiquetada "Demo" y con métricas técnicas medidas. → Las páginas existen ("En construcción"); faltan las demos navegables, sus capturas (`src/assets/proyectos/`) y sus métricas.
+- [x] (2026-11-06) Demos navegables en `/demos/ferreteria`, `/demos/clinica`, `/demos/constructora` (ver `docs/LANZAMIENTO.md`). Faltan sus métricas medidas. (2026-11-09) Capturas reales como portada en `src/assets/proyectos/<slug>/portada.webp`; imágenes de marca por sector en `src/assets/marca/sector-*.webp` (fuente única: `src/lib/visuals.ts`). Original: 3 demos propias (Clínica, Constructora, Comercio) como páginas en `/proyectos/[slug]`, cada una etiquetada "Demo" y con métricas técnicas medidas. → Las páginas existen ("En construcción"); faltan las demos navegables, sus capturas (`src/assets/proyectos/`) y sus métricas.
 - [x] Panel `/admin` protegido (auth simple o proveedor externo) para ver leads, cambiar estado y notas. → Contraseña `ADMIN_PASSWORD` + cookie firmada, filtros, búsqueda por campaña, conversación del chat, exportación CSV.
 - [ ] 🧑 Configurar `ADMIN_PASSWORD` en Vercel.
 - [ ] Cuando exista el primer cliente con permiso: primer `proyectos` con `type: "caso"`.

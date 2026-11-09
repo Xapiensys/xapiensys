@@ -6,6 +6,8 @@ import SchemaOrg, { type SchemaProps, type Crumb } from '@/components/seo/Schema
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
 import WhatsAppFloat from '@/components/layout/WhatsAppFloat.astro';
+import AssistantDock from '@/components/islands/AssistantDock';
+import { chatSuggestions, getGuidedTopics } from '@/lib/chatGuided';
 import Breadcrumbs from '@/components/layout/Breadcrumbs.astro';
 import { site } from '@/lib/site';
 import type { WhatsAppIntent } from '@/lib/whatsapp';
@@ -19,6 +21,7 @@ interface Props extends SeoProps {
 }
 
 const { breadcrumbs, service, creativeWork, waIntent, waTopic, ...seo } = Astro.props;
+const guided = await getGuidedTopics();
 ---
 
 <!doctype html>
@@ -69,6 +72,7 @@ const { breadcrumbs, service, creativeWork, waIntent, waTopic, ...seo } = Astro.
     </main>
     <Footer />
     <WhatsAppFloat intent={waIntent} topic={waTopic} />
+    <AssistantDock client:idle suggestions={chatSuggestions} guided={guided} />
 
     <script>
       import { captureAttribution, scheduleGa4, track, type AnalyticsEvent } from '@/lib/analytics';

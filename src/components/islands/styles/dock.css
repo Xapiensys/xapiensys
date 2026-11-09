@@ -1,0 +1,211 @@
+/* Asistente flotante: lanzador encima del botón de WhatsApp y panel de cristal. */
+.dock-launcher {
+  position: fixed;
+  z-index: var(--z-float);
+  right: max(16px, env(safe-area-inset-right));
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 68px);
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 18px 8px 8px;
+  border: 1px solid var(--color-cyan-a42);
+  border-radius: var(--radius-full);
+  color: var(--color-text);
+  background: var(--color-surface-a90);
+  box-shadow: var(--glow-cyan);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+  animation: dock-in 0.5s 0.8s ease-out both;
+}
+
+@supports (backdrop-filter: blur(1px)) {
+  .dock-launcher {
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
+}
+
+.dock-launcher:hover,
+.dock-launcher:focus-visible {
+  border-color: var(--color-cyan);
+  transform: translateY(-3px);
+}
+
+.dock-launcher.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+}
+
+@keyframes dock-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.dock-core {
+  position: relative;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--color-on-cyan);
+  background: var(--color-cyan);
+}
+
+.dock-core i {
+  position: absolute;
+  inset: -2px;
+  border: 1px solid var(--color-cyan);
+  border-radius: inherit;
+  animation: dock-pulse 2.6s ease-out infinite;
+}
+
+.dock-core svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@keyframes dock-pulse {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.55);
+  }
+}
+
+.dock-text {
+  display: grid;
+  gap: 1px;
+}
+
+.dock-text strong {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.dock-text small {
+  color: var(--color-muted);
+  font-size: var(--text-xs);
+}
+
+/* Panel */
+.dock-panel {
+  position: fixed;
+  z-index: calc(var(--z-float) + 1);
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  width: min(420px, calc(100vw - 32px));
+  max-height: min(680px, calc(100dvh - 32px));
+  overflow: auto;
+  overscroll-behavior: contain;
+  animation: dock-open 0.28s ease-out both;
+}
+
+.dock-panel[hidden] {
+  display: none;
+}
+
+@keyframes dock-open {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+
+.dock-close {
+  position: absolute;
+  z-index: 3;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text-soft);
+  background: var(--color-bg-a78);
+  cursor: pointer;
+}
+
+.dock-close:hover,
+.dock-close:focus-visible {
+  border-color: var(--color-cyan);
+  color: var(--color-cyan);
+}
+
+.dock-close svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+}
+
+.dock-loading {
+  display: flex;
+  min-height: 220px;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 1px solid var(--glass-border);
+  color: var(--color-text-dim);
+  background: var(--color-surface);
+  font-size: var(--text-sm);
+}
+
+/* Celular: el lanzador es solo el núcleo y el panel ocupa la pantalla. */
+@media (max-width: 559px) {
+  .dock-launcher {
+    padding: 8px;
+  }
+
+  .dock-text {
+    display: none;
+  }
+
+  .dock-panel {
+    inset: 0;
+    width: 100%;
+    max-height: none;
+    height: 100dvh;
+    background: var(--color-bg);
+  }
+
+  .dock-panel .chat {
+    min-height: 100%;
+    max-width: none;
+    border: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock-launcher,
+  .dock-core i,
+  .dock-panel {
+    animation: none;
+  }
+}
+
+@media print {
+  .dock-launcher,
+  .dock-panel {
+    display: none;
+  }
+}

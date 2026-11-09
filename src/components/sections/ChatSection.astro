@@ -1,46 +1,13 @@
 ---
-import { getCollection } from 'astro:content';
 import SectionLabel from '../ui/SectionLabel.astro';
-import ChatDemo, { type GuidedTopic } from '../islands/ChatDemo';
-import { buildWhatsAppUrl } from '@/lib/whatsapp';
-import { formatSoles } from '@/lib/quoteOptions';
+import ChatDemo from '../islands/ChatDemo';
+import { chatSuggestions, getGuidedTopics } from '@/lib/chatGuided';
 
 interface Props {
   index?: string;
 }
 const { index = '03' } = Astro.props;
-
-const servicios = (await getCollection('servicios')).sort((a, b) => a.data.order - b.data.order);
-
-// Modo guiado: respuestas fijas tomadas del contenido (no del modelo).
-const guided: GuidedTopic[] = [
-  {
-    label: 'Ver servicios',
-    answer: servicios.map((s) => `• ${s.data.title}: ${s.data.summary}`).join('\n'),
-    links: servicios.map((s) => ({ label: s.data.title, href: `/servicios/${s.id}` })),
-  },
-  {
-    label: '¿Cuánto cuesta?',
-    answer: servicios
-      .map(
-        (s) =>
-          `• ${s.data.title}: ${s.data.priceFrom ? `desde ${formatSoles(s.data.priceFrom)}` : 'requiere diagnóstico'}`,
-      )
-      .join('\n'),
-    links: [{ label: 'Calcular mi rango', href: '/cotizar' }],
-  },
-  {
-    label: 'Hablar con el equipo',
-    answer: 'Te atiende una persona del equipo por WhatsApp.',
-    links: [{ label: 'Abrir WhatsApp', href: buildWhatsAppUrl({ intent: 'chat' }) }],
-  },
-];
-
-const suggestions = [
-  '¿Qué servicios ofrecen?',
-  '¿Cuánto cuesta una web con chatbot?',
-  'Quiero automatizar mi atención por WhatsApp',
-];
+const guided = await getGuidedTopics();
 ---
 
 <section class="section-shell section-pad chat-section" id="demo" aria-labelledby="demo-title">
@@ -59,7 +26,7 @@ const suggestions = [
       <i aria-hidden="true"></i> IA REAL · CON LÍMITES DE USO
     </span>
   </div>
-  <ChatDemo client:visible suggestions={suggestions} guided={guided} />
+  <ChatDemo client:visible suggestions={chatSuggestions} guided={guided} />
 </section>
 
 <style>

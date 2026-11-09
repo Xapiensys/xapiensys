@@ -1,4 +1,5 @@
 ---
+import { sectorVisuals } from '@/lib/visuals';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import DemoBanner from '@/components/demo/DemoBanner.astro';
 import DemoCTA from '@/components/demo/DemoCTA.astro';
@@ -123,6 +124,7 @@ const money = (n: number) => `S/ ${n.toFixed(2)}`;
     label="DEMO · TIENDA VIRTUAL"
     title="Ferretería virtual"
     lede="Catálogo con filtros, ficha de producto y carrito. El pedido de prueba se envía a Xapiensys por WhatsApp para que veas el flujo completo."
+    image={sectorVisuals.comercios}
   />
 
   <section class="section-shell shop" aria-label="Catálogo de la ferretería demo" data-shop>

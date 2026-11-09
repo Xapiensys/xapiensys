@@ -2,7 +2,9 @@
 import Button from '../ui/Button.astro';
 import BookingLink from '../ui/BookingLink.astro';
 import SectionLabel from '../ui/SectionLabel.astro';
+import ProjectImage from '../ui/ProjectImage.astro';
 import { site } from '@/lib/site';
+import { launchVisual } from '@/lib/visuals';
 import { buildWhatsAppUrl, type WhatsAppIntent } from '@/lib/whatsapp';
 
 interface Props {
@@ -15,40 +17,49 @@ const { index = '10', waIntent = 'consultoria', waTopic } = Astro.props;
 
 <section class="section-shell final" id="contacto" aria-labelledby="final-title">
   <div class="inner">
-    <SectionLabel index={index}>CONVERSEMOS</SectionLabel>
-    <h2 id="final-title" class="display-h2">
-      El próximo paso
-      <br />
-      <span class="accent-cyan">empieza aquí.</span>
-    </h2>
-    <p>Cuéntanos qué quieres mejorar o calcula un rango de inversión en un minuto.</p>
-    <div class="actions">
-      <Button
-        href={buildWhatsAppUrl({ intent: waIntent, ...(waTopic ? { topic: waTopic } : {}) })}
-        icon="arrow-up-right"
-        track="cta_whatsapp_click"
-        trackLocation="final_cta"
-      >
-        Hablemos por WhatsApp
-      </Button>
-      <Button
-        href="/cotizar"
-        variant="secondary"
-        icon="arrow-right"
-        track="cta_quote_click"
-        trackLocation="final_cta"
-      >
-        Cotiza tu proyecto
-      </Button>
-      <BookingLink location="final_cta" variant="ghost" />
+    <div class="text">
+      <SectionLabel index={index}>CONVERSEMOS</SectionLabel>
+      <h2 id="final-title" class="display-h2">
+        El próximo paso
+        <br />
+        <span class="accent-cyan">empieza aquí.</span>
+      </h2>
+      <p>Cuéntanos qué quieres mejorar o calcula un rango de inversión en un minuto.</p>
+      <div class="actions">
+        <Button
+          href={buildWhatsAppUrl({ intent: waIntent, ...(waTopic ? { topic: waTopic } : {}) })}
+          icon="arrow-up-right"
+          track="cta_whatsapp_click"
+          trackLocation="final_cta"
+        >
+          Hablemos por WhatsApp
+        </Button>
+        <Button
+          href="/cotizar"
+          variant="secondary"
+          icon="arrow-right"
+          track="cta_quote_click"
+          trackLocation="final_cta"
+        >
+          Cotiza tu proyecto
+        </Button>
+        <BookingLink location="final_cta" variant="ghost" />
+      </div>
+      <p class="extra">
+        ¿Quieres saber qué mejorar primero?{' '}
+        <a href="/diagnostico" data-track="cta_diagnostic_click" data-track-location="final_cta">
+          Pide tu Diagnóstico Digital Gratuito de 15 minutos
+        </a>{' '}
+        · <a href={`mailto:${site.email}`}>{site.email}</a>
+      </p>
     </div>
-    <p class="extra">
-      ¿Quieres saber qué mejorar primero?
-      <a href="/diagnostico" data-track="cta_diagnostic_click" data-track-location="final_cta">
-        Pide tu Diagnóstico Digital Gratuito de 15 minutos
-      </a>
-      · <a href={`mailto:${site.email}`}>{site.email}</a>
-    </p>
+    <figure class="visual">
+      <ProjectImage
+        src={launchVisual.src}
+        alt={launchVisual.alt}
+        sizes="(min-width: 980px) 520px, 100vw"
+      />
+    </figure>
   </div>
 </section>
 
@@ -85,6 +96,39 @@ const { index = '10', waIntent = 'consultoria', waTopic } = Astro.props;
     top: -86px;
     right: -56px;
     width: 242px;
+  }
+
+  .text {
+    position: relative;
+    z-index: var(--z-base);
+  }
+
+  .visual {
+    margin: 36px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    aspect-ratio: 16 / 10;
+    background: var(--color-surface-strong);
+  }
+
+  .visual :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (min-width: 980px) {
+    .inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
+      align-items: center;
+      gap: clamp(32px, 4vw, 64px);
+    }
+
+    .visual {
+      margin: 0;
+    }
   }
 
   h2 {

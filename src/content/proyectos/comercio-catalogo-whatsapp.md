@@ -17,4 +17,6 @@ features:
 status: publicada
 url: /demos/ferreteria
 services: [paginas-web, tiendas-virtuales]
+cover: ../../assets/proyectos/comercio-catalogo-whatsapp/portada.webp
+coverAlt: Catálogo de la demo de ferretería con filtros por categoría, precios y carrito de pedido por WhatsApp
 ---

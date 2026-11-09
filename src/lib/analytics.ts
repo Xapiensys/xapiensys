@@ -12,6 +12,7 @@ export type AnalyticsEvent =
   | 'quote_step'
   | 'quote_complete'
   | 'lead_submit'
+  | 'assistant_open'
   | 'chat_open'
   | 'chat_message'
   | 'chat_lead_form_shown'

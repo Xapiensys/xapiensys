@@ -17,4 +17,6 @@ features:
 status: publicada
 url: /demos/constructora
 services: [paginas-web, automatizacion]
+cover: ../../assets/proyectos/constructora-cotizador-obra/portada.webp
+coverAlt: Demo de constructora con servicios, proyectos de ejemplo y formulario de cotización de obra
 ---

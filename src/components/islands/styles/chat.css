@@ -286,6 +286,73 @@
   }
 }
 
+/* Estado inicial: lo que puede hacer el asistente (evita un panel vacío). */
+.chat-intro {
+  display: grid;
+  gap: 10px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  animation: chat-in 0.5s 0.15s ease-out both;
+}
+
+.chat-intro li {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: 2px 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-dim);
+  background: var(--color-fill-faint);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.chat-intro .mono {
+  grid-row: span 2;
+  color: var(--color-cyan);
+  font-size: var(--text-mono);
+  line-height: 2;
+}
+
+.chat-intro strong {
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-size: 14px;
+}
+
+/* Variante dentro del asistente flotante. */
+.chat.chat--dock {
+  max-width: none;
+  justify-self: stretch;
+  padding: 18px;
+}
+
+.chat--dock .chat-header {
+  padding-right: 46px;
+}
+
+.chat--dock .chat-online {
+  display: none;
+}
+
+.chat--dock .chat-messages {
+  height: min(360px, 46dvh);
+  min-height: 220px;
+}
+
+@media (max-width: 559px) {
+  .chat--dock {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat--dock .chat-messages {
+    height: auto;
+    flex: 1 1 auto;
+  }
+}
+
 .chat-links {
   display: flex;
   flex-wrap: wrap;

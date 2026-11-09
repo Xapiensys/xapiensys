@@ -51,7 +51,7 @@ const { index = '06', steps = defaultSteps, title } = Astro.props;
       Un proceso colaborativo que pone primero el problema, define el rumbo y mejora con evidencia.
     </p>
   </div>
-  <ol class="grid" style={`--cols:${steps.length}`}>
+  <ol class={`grid cols-${steps.length}`}>
     {steps.map((s, i) => (
       <li>
         <span class="num mono">{String(i + 1).padStart(2, '0')}</span>
@@ -116,8 +116,17 @@ const { index = '06', steps = defaultSteps, title } = Astro.props;
   }
 
   @media (min-width: 1100px) {
+    /* Clases en vez de estilo en línea: la CSP bloquea style="…". */
     .grid {
-      grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid.cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.cols-5 {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
     li {

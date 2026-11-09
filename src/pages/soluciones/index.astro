@@ -5,6 +5,7 @@ import SectorsGrid from '@/components/sections/SectorsGrid.astro';
 import ServicesGrid from '@/components/sections/ServicesGrid.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import { ogPath } from '@/lib/ogPages';
+import { sectorVisuals } from '@/lib/visuals';
 ---
 
 <BaseLayout
@@ -21,6 +22,7 @@ import { ogPath } from '@/lib/ogPages';
     label="SOLUCIONES"
     title="Soluciones digitales por sector"
     lede="Partimos de los problemas concretos de tu rubro y combinamos los servicios que los resuelven."
+    image={sectorVisuals.comercios}
   />
   <SectorsGrid index="01" title="Elige tu sector" />
   <ServicesGrid index="02" />

@@ -9,6 +9,7 @@ import DemoShowcase from '@/components/sections/DemoShowcase.astro';
 import FAQ from '@/components/sections/FAQ.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import { ogPath } from '@/lib/ogPages';
+import { sectorVisuals } from '@/lib/visuals';
 
 export const getStaticPaths = (async () =>
   (await getCollection('soluciones')).map((entry) => ({
@@ -48,6 +49,7 @@ const topic = d.title.toLowerCase();
     lede={d.lede}
     waIntent="sector"
     waTopic={topic}
+    image={sectorVisuals[entry.id]}
   />
   <ProblemGrid
     index={idx()}

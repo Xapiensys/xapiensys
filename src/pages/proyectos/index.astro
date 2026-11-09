@@ -4,6 +4,7 @@ import PageHero from '@/components/sections/PageHero.astro';
 import DemoShowcase from '@/components/sections/DemoShowcase.astro';
 import FinalCTA from '@/components/sections/FinalCTA.astro';
 import { ogPath } from '@/lib/ogPages';
+import ferreteria from '@/assets/proyectos/comercio-catalogo-whatsapp/portada.webp';
 ---
 
 <BaseLayout
@@ -20,6 +21,10 @@ import { ogPath } from '@/lib/ogPages';
     label="LABORATORIO"
     title="Proyectos y demos propias"
     lede="Hoy mostramos demos navegables que construimos nosotros, claramente etiquetadas como ejemplos. Cuando un cliente nos autorice a publicar su caso, aparecerá aquí con métricas reales."
+    image={{
+      src: ferreteria,
+      alt: 'Catálogo de la demo de ferretería con filtros, precios y carrito de pedido por WhatsApp',
+    }}
   />
   <DemoShowcase index="01" />
   <FinalCTA index="02" />

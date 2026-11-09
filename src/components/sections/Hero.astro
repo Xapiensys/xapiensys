@@ -50,13 +50,14 @@ const facts = [
           Solicitar cotización
         </Button>
         <Button
-          href="/proyectos"
+          href="#demo"
           variant="secondary"
-          icon="arrow-right"
-          track="cta_demo_click"
-          trackLocation="hero"
+          icon="arrow-up-right"
+          class="hero-ai"
+          data-open-assistant="hero"
         >
-          Ver demostraciones
+          <span class="hero-ai-dot" aria-hidden="true"></span>
+          Pregúntale a la IA
         </Button>
         <a
           class="hero-wa"
@@ -72,7 +73,11 @@ const facts = [
       <ul class="hero-trust" aria-label="Cómo trabajamos">
         <li>Propuesta por escrito</li>
         <li>Rango de inversión al instante</li>
-        <li>Demos que puedes probar</li>
+        <li>
+          <a href="/proyectos" data-track="cta_demo_click" data-track-location="hero">
+            Demos que puedes probar
+          </a>
+        </li>
       </ul>
       <p class="hero-diag">
         ¿No sabes por dónde empezar?
@@ -221,6 +226,44 @@ const facts = [
     display: inline-flex;
     align-items: center;
     gap: 8px;
+  }
+
+  .hero-trust a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--color-cyan-a42);
+    text-underline-offset: 4px;
+  }
+
+  .hero-trust a:hover {
+    color: var(--color-cyan);
+  }
+
+  /* Botón de la IA: borde cian vivo y punto que late. */
+  .hero-actions :global(.hero-ai) {
+    border-color: var(--color-cyan-a42);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .hero-ai-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-cyan);
+    box-shadow: 0 0 0 0 var(--color-cyan-a42);
+    animation: hero-ai-pulse 2s ease-out infinite;
+  }
+
+  @keyframes hero-ai-pulse {
+    to {
+      box-shadow: 0 0 0 9px transparent;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-ai-dot {
+      animation: none;
+    }
   }
 
   .hero-trust li::before {

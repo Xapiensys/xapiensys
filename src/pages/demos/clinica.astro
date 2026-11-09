@@ -1,4 +1,5 @@
 ---
+import { sectorVisuals } from '@/lib/visuals';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import DemoBanner from '@/components/demo/DemoBanner.astro';
 import DemoCTA from '@/components/demo/DemoCTA.astro';
@@ -62,6 +63,7 @@ const hours = [
     label="DEMO · CLÍNICA DIGITAL"
     title="Clínica Demo Salud"
     lede="Una web pensada para que el paciente entienda qué ofreces y pida su cita en menos de un minuto."
+    image={sectorVisuals.clinicas}
   />
 
   <section class="section-shell block" aria-labelledby="srv">

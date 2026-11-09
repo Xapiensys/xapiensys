@@ -4,6 +4,7 @@ import { track, getAttribution } from '@/lib/analytics';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
 import { PUBLIC_BOOKING_URL } from 'astro:env/client';
 import { ContactFields, emptyContact, type ContactValues } from './ContactFields';
+import type { GuidedTopic } from '@/lib/chatGuided';
 import './styles/forms.css';
 import './styles/chat.css';
 
@@ -16,15 +17,15 @@ type Message = {
   streaming?: boolean;
 };
 
-export interface GuidedTopic {
-  label: string;
-  answer: string;
-  links: Link[];
-}
+export type { GuidedTopic };
 
 interface Props {
   suggestions: string[];
   guided: GuidedTopic[];
+  /** Prefijo de ids: permite tener el chat de la home y el flotante a la vez. */
+  idPrefix?: string;
+  /** `dock`: versión compacta dentro del asistente flotante. */
+  variant?: 'section' | 'dock';
 }
 
 const GREETING = 'Hola, soy el asistente de Xapiensys. ¿Qué te gustaría mejorar en tu negocio?';
@@ -51,7 +52,12 @@ function getSessionId(): string {
   }
 }
 
-export default function ChatDemo({ suggestions, guided }: Props) {
+export default function ChatDemo({
+  suggestions,
+  guided,
+  idPrefix = 'chat',
+  variant = 'section',
+}: Props) {
   const [messages, setMessages] = useState<Message[]>([msg('agent', GREETING)]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -209,7 +215,7 @@ export default function ChatDemo({ suggestions, guided }: Props) {
   const chips = mode === 'guided' ? guided.map((g) => g.label) : suggestions;
 
   return (
-    <div class="chat" data-state={busy ? 'busy' : mode} onFocusIn={open}>
+    <div class={`chat chat--${variant}`} data-state={busy ? 'busy' : mode} onFocusIn={open}>
       <div class="chat-scan" aria-hidden="true" />
       <div class="chat-header">
         <div class="chat-core" aria-hidden="true">
@@ -269,11 +275,31 @@ export default function ChatDemo({ suggestions, guided }: Props) {
           </div>
         ))}
 
+        {messages.length === 1 && mode === 'ai' && (
+          <ul class="chat-intro" aria-label="Qué puede hacer el asistente">
+            <li>
+              <span class="mono">01</span>
+              <strong>Te orienta</strong>
+              Qué servicio resuelve tu problema, según tu rubro.
+            </li>
+            <li>
+              <span class="mono">02</span>
+              <strong>Te da precios</strong>
+              Rangos de inversión en soles, sin compromiso.
+            </li>
+            <li>
+              <span class="mono">03</span>
+              <strong>Te conecta</strong>
+              Deja tus datos y el equipo te escribe por WhatsApp.
+            </li>
+          </ul>
+        )}
+
         {leadForm !== 'hidden' && leadForm !== 'done' && (
           <form class="chat-lead" onSubmit={submitLead}>
             <p class="chat-lead-title">Déjanos tus datos y te escribimos por WhatsApp</p>
             <ContactFields
-              idPrefix="chat"
+              idPrefix={idPrefix}
               values={contact}
               onChange={setContact}
               showEmail={false}
@@ -345,14 +371,14 @@ export default function ChatDemo({ suggestions, guided }: Props) {
           void send(input);
         }}
       >
-        <label class="visually-hidden" for="chat-input">
+        <label class="visually-hidden" for={`${idPrefix}-input`}>
           Escribe tu mensaje
         </label>
         <span class="chat-prompt mono" aria-hidden="true">
           &gt;_
         </span>
         <input
-          id="chat-input"
+          id={`${idPrefix}-input`}
           type="text"
           maxLength={500}
           placeholder={

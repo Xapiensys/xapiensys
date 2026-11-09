@@ -13,7 +13,7 @@ const { index = '08' } = Astro.props;
     <ProjectImage
       src={globe}
       alt="Globo holográfico centrado en Sudamérica con Lima, Perú, conectada a ciudades de Latinoamérica"
-      sizes="(min-width: 900px) 460px, 100vw"
+      sizes="(min-width: 900px) 640px, 100vw"
       class="globe"
     />
     <svg viewBox="0 0 260 260" aria-hidden="true">
@@ -64,8 +64,8 @@ const { index = '08' } = Astro.props;
   .visual {
     position: relative;
     display: grid;
-    width: min(100%, 300px);
-    aspect-ratio: 16 / 9;
+    width: 100%;
+    aspect-ratio: 16 / 10;
     place-items: center;
     justify-self: center;
   }
@@ -143,12 +143,12 @@ const { index = '08' } = Astro.props;
 
   @media (min-width: 900px) {
     .coverage {
-      grid-template-columns: minmax(280px, 0.75fr) minmax(0, 1.25fr);
-      gap: clamp(54px, 10vw, 130px);
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+      gap: clamp(40px, 6vw, 96px);
     }
 
     .visual {
-      width: min(100%, 520px);
+      width: 100%;
     }
   }
 </style>
