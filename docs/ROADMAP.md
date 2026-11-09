@@ -73,6 +73,7 @@ Objetivo: la demo en vivo que vende.
 - [x] `lib/server/llm.ts` (streaming) y `chatPrompt.ts` (base de conocimiento desde `src/content`).
 - [x] `POST /api/chat` con SSE y todos los límites de ARCHITECTURE §7.3.
 - [x] Isla `ChatDemo.tsx`: streaming, sugerencias, mini-formulario de lead, modo guiado de respaldo.
+- [x] (2026-11-09) Gemini activo en producción. Respuestas en texto plano (`chatText.ts`) y formulario de contacto fiable aunque el modelo no llame la herramienta. Probadas 6 preguntas (comercial, precios, contacto, fuera de tema, cambio de instrucciones).
 - [ ] Set de 20 preguntas de prueba (comerciales, fuera de tema, intentos de cambiar instrucciones) y revisar respuestas.
 
 > Verificado con un servidor que simula la API de Anthropic: streaming SSE, historial de 10 turnos, señal de formulario (herramienta `mostrar_formulario_contacto`), lead con `source: "chat"` vinculado a la sesión, y los límites (12 mensajes/sesión, 5 sesiones/IP/día, tope mensual, sin LLM → modo guiado). Pendiente con API key real: latencia del primer token y el set de 20 preguntas.
