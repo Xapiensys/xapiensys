@@ -4,6 +4,7 @@
  */
 import Anthropic from '@anthropic-ai/sdk';
 import { LLM_API_KEY, LLM_MODEL, LLM_PROVIDER } from 'astro:env/server';
+import { createTextCleaner } from './chatText';
 
 export type ChatTurn = { role: 'user' | 'assistant'; content: string };
 
@@ -180,6 +181,41 @@ function geminiProvider(apiKey: string, model: string): ChatProvider {
   };
 }
 
+/** Frases con las que el modelo remite al formulario ("deja tus datos en el formulario…"). */
+const PROMISES_FORM = /\bformulario\b|\bdeja(?:r|nos)? tus datos\b|\bdéjanos tus datos\b/i;
+
+/** Pasa el texto por el limpiador: texto plano y, si el modelo escribe la herramienta, abre el formulario. */
+function withCleanText(inner: ChatProvider): ChatProvider {
+  return {
+    model: inner.model,
+    async *stream(system, history, signal) {
+      const cleaner = createTextCleaner(LEAD_TOOL_NAME);
+      let leadShown = false;
+      let said = '';
+      for await (const event of inner.stream(system, history, signal)) {
+        if (event.type === 'text') {
+          const text = cleaner.push(event.text);
+          said += text;
+          if (text) yield { type: 'text', text };
+          continue;
+        }
+        if (event.type === 'lead_form') leadShown = true;
+        if (event.type === 'usage') {
+          const rest = cleaner.flush();
+          said += rest;
+          if (rest) yield { type: 'text', text: rest };
+          // Si el modelo escribió la herramienta o promete el formulario sin llamarla, se abre igual.
+          if ((cleaner.sawTool || PROMISES_FORM.test(said)) && !leadShown) {
+            leadShown = true;
+            yield { type: 'lead_form' };
+          }
+        }
+        yield event;
+      }
+    },
+  };
+}
+
 let provider: ChatProvider | null | undefined;
 
 /** `null` si el chat no está configurado: el front pasa a modo guiado. */
@@ -188,8 +224,12 @@ export function getProvider(): ChatProvider | null {
   const name = LLM_PROVIDER ?? 'anthropic';
   const model = LLM_MODEL || DEFAULT_MODELS[name];
   if (!LLM_API_KEY) provider = null;
-  else if (name === 'gemini') provider = geminiProvider(LLM_API_KEY, model);
-  else provider = anthropicProvider(LLM_API_KEY, model);
+  else
+    provider = withCleanText(
+      name === 'gemini'
+        ? geminiProvider(LLM_API_KEY, model)
+        : anthropicProvider(LLM_API_KEY, model),
+    );
   return provider;
 }
 
