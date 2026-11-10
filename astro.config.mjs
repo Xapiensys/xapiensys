@@ -3,6 +3,23 @@ import { defineConfig, envField } from 'astro/config';
 import vercel from '@astrojs/vercel';
 import preact from '@astrojs/preact';
 import sitemap from '@astrojs/sitemap';
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+
+/**
+ * La CSP de Astro no incluye los <script is:inline>: se calcula su hash desde el código
+ * fuente (Astro los publica tal cual). Si editas uno, el hash se actualiza solo al compilar.
+ */
+const INLINE_SCRIPT_FILES = [
+  'src/layouts/BaseLayout.astro',
+  'src/components/layout/IntroLoader.astro',
+];
+const inlineScriptHashes = INLINE_SCRIPT_FILES.flatMap((file) => {
+  const src = readFileSync(new URL(`./${file}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
+  return [...src.matchAll(/<script is:inline>([\s\S]*?)<\/script>/g)].map(
+    (m) => `sha256-${createHash('sha256').update(m[1] ?? '').digest('base64')}`,
+  );
+});
 
 export default defineConfig({
   site: 'https://xapiensys.com',
@@ -84,6 +101,7 @@ export default defineConfig({
           'https://www.youtube.com',
           'https://s.ytimg.com',
         ],
+        hashes: /** @type {`sha256-${string}`[]} */ (inlineScriptHashes),
       },
     },
   },
