@@ -14,7 +14,9 @@ export async function rateLimit(key: string, limit: number, windowMs: number): P
   const now = Date.now();
   if (db) {
     try {
-      const windowStart = new Date(now - windowMs);
+      // ISO + cast explícito: un Date crudo dentro de sql`` se envía como texto que
+      // Postgres no entiende ("Mon Nov 09 2026 … (Coordinated Universal Time)").
+      const windowStart = sql`${new Date(now - windowMs).toISOString()}::timestamptz`;
       const rows = await db
         .insert(schema.rateLimits)
         .values({ key, windowStart: new Date(now), count: 1 })

@@ -66,7 +66,16 @@ async function searchYouTube(q: string, key: string): Promise<MusicTrack[]> {
     key,
   }).toString();
   const res = await fetch(api, { signal: AbortSignal.timeout(6000) });
-  if (!res.ok) throw new Error(`youtube ${res.status}`);
+  if (!res.ok) {
+    // El motivo (sin la clave) ayuda a diagnosticar: accessNotConfigured, keyInvalid,
+    // quotaExceeded, API_KEY_HTTP_REFERRER_BLOCKED…
+    const body = (await res.json().catch(() => null)) as {
+      error?: { errors?: { reason?: string }[]; details?: { reason?: string }[] };
+    } | null;
+    const reason =
+      body?.error?.details?.[0]?.reason ?? body?.error?.errors?.[0]?.reason ?? 'desconocido';
+    throw new Error(`youtube ${res.status} ${reason}`);
+  }
   const data = (await res.json()) as { items?: YtItem[] };
   return (data.items ?? [])
     .filter((i) => i.id?.videoId && i.snippet?.title && i.snippet.liveBroadcastContent === 'none')
