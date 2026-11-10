@@ -32,9 +32,9 @@ steps:
     text: Construimos el sitio, lo optimizamos y lo revisamos contigo en ciclos cortos.
   - title: Lanzamiento y mejora
     text: Publicamos, configuramos la medición y revisamos resultados para mejorar.
-priceFrom: 1500
-priceNote: Rango orientativo para una web profesional de hasta 5 secciones. El precio final depende del alcance.
-maintenance: Mantenimiento opcional desde S/ 150 al mes (hosting, dominio, actualizaciones y soporte).
+priceFrom: null
+priceNote: "Cada web se cotiza según lo que necesitas: secciones, contenido e integraciones. Hay opciones para cada presupuesto; te enviamos la propuesta por escrito."
+maintenance: "Mantenimiento opcional (hosting, dominio, actualizaciones y soporte), cotizado según tu web."
 sectors: [clinicas, constructoras, comercios]
 demo: comercio-catalogo-whatsapp
 ---

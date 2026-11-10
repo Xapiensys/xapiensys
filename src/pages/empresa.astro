@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
+import { pageVisuals } from '@/lib/visuals';
 import ProblemGrid from '@/components/sections/ProblemGrid.astro';
 import ProcessSteps from '@/components/sections/ProcessSteps.astro';
 import TechProof from '@/components/sections/TechProof.astro';
@@ -40,6 +41,7 @@ const principles = [
     label="EMPRESA"
     title="Ingeniería digital con base en Lima"
     lede="Somos una agencia de ingeniería de software para pymes y empresas de Perú y Latinoamérica: páginas web, chatbots con IA, automatización y sistemas a medida."
+    image={pageVisuals.empresa}
   />
 
   <section class="section-shell section-pad about" aria-labelledby="about-title">
@@ -74,7 +76,7 @@ const principles = [
       </p>
       <h3>Cómo trabajamos y nuestro compromiso con la calidad</h3>
       <p>
-        Empezamos por entender tu negocio, te presentamos alcance, plazos e inversión por escrito y
+        Empezamos por entender tu negocio, te presentamos alcance, plazos y cotización por escrito y
         construimos en ciclos cortos que puedes revisar. Cuidamos la velocidad, la accesibilidad y
         la seguridad de lo que entregamos, y te decimos con franqueza cuando algo no conviene.
       </p>

@@ -63,7 +63,7 @@ const idx = () => String(n++).padStart(2, '0');
   <ProcessSteps index={idx()} steps={d.steps} title="Cómo funciona" />
   <Investment
     index={idx()}
-    priceFrom={d.priceFrom}
+    waIntent={serviceIntent(entry.id)}
     note={d.priceNote}
     maintenance={d.maintenance}
   />

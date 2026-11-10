@@ -1,3 +1,5 @@
+import { onLeave } from '@/lib/pageLifecycle';
+
 /**
  * Cargador de la escena 3D (va en el bundle inicial, debe ser mínimo).
  * Solo importa `Scene3D` (Three.js) si el dispositivo es apto y DESPUÉS del contenido:
@@ -23,17 +25,22 @@ export function pickQuality(): SceneQuality | null {
 }
 
 /** Modelo 3D del hero: solo en escritorio apto; si falla, queda el póster del HTML. */
-function bootHeroModel(): void {
+function bootHeroModel(signal: AbortSignal): void {
   const stage = document.getElementById('hero-stage');
   const canvas = document.getElementById('hero3d');
   if (!stage || !(canvas instanceof HTMLCanvasElement)) return;
   if (!matchMedia('(min-width: 900px) and (pointer: fine)').matches) return;
   void import('./HeroModel')
-    .then(({ mountHeroModel }) => mountHeroModel(canvas, stage, '/3d'))
+    .then(async ({ mountHeroModel }) => {
+      if (signal.aborted) return;
+      const destroy = await mountHeroModel(canvas, stage, '/3d');
+      if (typeof destroy === 'function') onLeave(signal, destroy);
+    })
     .catch(() => {});
 }
 
-export function bootScene(): void {
+/** Monta la escena de la página actual; `signal` la desmonta al navegar. */
+export function bootScene(signal: AbortSignal): void {
   const canvas = document.getElementById('bg');
   if (!(canvas instanceof HTMLCanvasElement)) return;
   const quality = pickQuality();
@@ -41,13 +48,15 @@ export function bootScene(): void {
 
   let started = false;
   const start = () => {
-    if (started) return;
+    if (started || signal.aborted) return;
     started = true;
-    bootHeroModel();
+    bootHeroModel(signal);
     void import('./Scene3D')
       .then(({ mountScene }) => {
+        if (signal.aborted) return;
         const anchor = document.querySelector<HTMLElement>('[data-scene-anchor]');
-        mountScene(canvas, { quality, anchor });
+        const scene = mountScene(canvas, { quality, anchor });
+        if (scene) onLeave(signal, scene.destroy);
       })
       .catch(() => {
         // Sin 3D la página sigue completa: el fondo CSS y el SVG del hero quedan visibles.
@@ -61,7 +70,7 @@ export function bootScene(): void {
         ? requestIdleCallback(start, { timeout: 2000 })
         : setTimeout(start, 200);
     if (document.readyState === 'complete') idle();
-    else addEventListener('load', idle, { once: true });
+    else addEventListener('load', idle, { once: true, signal });
   } else {
     const events = ['scroll', 'pointerdown', 'touchstart', 'keydown'] as const;
     const onFirst = () => {
@@ -69,6 +78,6 @@ export function bootScene(): void {
       if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1500 });
       else setTimeout(start, 100);
     };
-    events.forEach((e) => addEventListener(e, onFirst, { passive: true, once: true }));
+    events.forEach((e) => addEventListener(e, onFirst, { passive: true, once: true, signal }));
   }
 }

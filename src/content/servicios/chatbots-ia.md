@@ -32,9 +32,9 @@ steps:
     text: Conectamos el asistente a tu web o WhatsApp y lo probamos con casos reales.
   - title: Ajuste continuo
     text: Revisamos conversaciones y afinamos respuestas con evidencia.
-priceFrom: 2500
-priceNote: Rango orientativo para web + chatbot con IA. Si ya tienes web, cotizamos solo el asistente.
-maintenance: Mantenimiento desde S/ 250 al mes, incluye el consumo de IA dentro de un tope acordado.
+priceFrom: null
+priceNote: "Se cotiza según los canales (web, WhatsApp), la información del negocio y las integraciones. Si ya tienes web, cotizamos solo el asistente."
+maintenance: "Mantenimiento recomendado: incluye el consumo de IA dentro de un tope acordado. Se cotiza contigo."
 sectors: [clinicas, comercios]
 demo: clinica-chatbot-citas
 ---

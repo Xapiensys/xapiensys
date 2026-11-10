@@ -22,7 +22,7 @@ const href = buildWhatsAppUrl({ intent, ...(topic ? { topic } : {}) });
     </button>
     <p>
       <strong>¿Hablamos hoy?</strong>
-      Diagnóstico digital <b>gratis</b> de 15 min y tu rango de precio al instante.
+      Diagnóstico digital <b>gratis</b> de 15 min y una cotización a tu medida.
     </p>
     <a
       href={href}
@@ -54,34 +54,38 @@ const href = buildWhatsAppUrl({ intent, ...(topic ? { topic } : {}) });
 </div>
 
 <script>
-  // La burbuja aparece a los 6 s, una vez por sesión, y nunca tapa un panel abierto.
-  const dock = document.querySelector<HTMLElement>('[data-wa-dock]');
-  const bubble = dock?.querySelector<HTMLElement>('[data-wa-bubble]');
-  const seen = () => {
-    try {
-      return sessionStorage.getItem('xp_wa_bubble') === '1';
-    } catch {
-      return false;
+  import { onPageLoad } from '@/lib/pageLifecycle';
+
+  onPageLoad((_signal) => {
+    // La burbuja aparece a los 6 s, una vez por sesión, y nunca tapa un panel abierto.
+    const dock = document.querySelector<HTMLElement>('[data-wa-dock]');
+    const bubble = dock?.querySelector<HTMLElement>('[data-wa-bubble]');
+    const seen = () => {
+      try {
+        return sessionStorage.getItem('xp_wa_bubble') === '1';
+      } catch {
+        return false;
+      }
+    };
+    const remember = () => {
+      try {
+        sessionStorage.setItem('xp_wa_bubble', '1');
+      } catch {
+        // Sin almacenamiento: puede volver a salir en otra página.
+      }
+    };
+    if (bubble && !seen()) {
+      window.setTimeout(() => {
+        const panelOpen = document.querySelector('#assistant-panel:not([hidden])');
+        if (panelOpen) return;
+        bubble.hidden = false;
+        remember();
+      }, 6000);
+      dock?.querySelector('[data-wa-close]')?.addEventListener('click', () => {
+        bubble.hidden = true;
+      });
     }
-  };
-  const remember = () => {
-    try {
-      sessionStorage.setItem('xp_wa_bubble', '1');
-    } catch {
-      // Sin almacenamiento: puede volver a salir en otra página.
-    }
-  };
-  if (bubble && !seen()) {
-    window.setTimeout(() => {
-      const panelOpen = document.querySelector('#assistant-panel:not([hidden])');
-      if (panelOpen) return;
-      bubble.hidden = false;
-      remember();
-    }, 6000);
-    dock?.querySelector('[data-wa-close]')?.addEventListener('click', () => {
-      bubble.hidden = true;
-    });
-  }
+  });
 </script>
 
 <style>

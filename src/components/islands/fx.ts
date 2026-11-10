@@ -3,7 +3,11 @@
  * inclinación de tarjetas, botones magnéticos, luz bajo el cursor y enlace activo del menú.
  * Todo se apaga con `prefers-reduced-motion`; el contenido nunca depende de esto para verse.
  */
-export function bootFx(): void {
+import { onLeave } from '@/lib/pageLifecycle';
+import { play } from '@/lib/sfx';
+
+/** Efectos de la página actual; `signal` los apaga al navegar a otra página. */
+export function bootFx(signal: AbortSignal): void {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
 
@@ -24,7 +28,7 @@ export function bootFx(): void {
           requestAnimationFrame(update);
         }
       },
-      { passive: true },
+      { passive: true, signal },
     );
     update();
   }
@@ -47,6 +51,7 @@ export function bootFx(): void {
       { rootMargin: '-45% 0px -50% 0px' },
     );
     sections.forEach((s) => so.observe(s));
+    onLeave(signal, () => so.disconnect());
   }
 
   if (reduced) return;
@@ -74,6 +79,8 @@ export function bootFx(): void {
         if (!e.isIntersecting) continue;
         e.target.classList.add('is-in');
         io.unobserve(e.target);
+        // Nota tenue cuando aparece el título de una sección.
+        if (e.target.matches('.section-heading')) play('reveal');
       }
     },
     { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
@@ -87,6 +94,7 @@ export function bootFx(): void {
     el.style.setProperty('--reveal-delay', `${Math.min(order, 6) * 0.07}s`);
     io.observe(el);
   });
+  onLeave(signal, () => io.disconnect());
 
   // Contadores: las métricas medidas suben desde 0 al entrar en pantalla.
   const counters = document.querySelectorAll<HTMLElement>('main .metrics dd');
@@ -117,6 +125,7 @@ export function bootFx(): void {
     { threshold: 0.6 },
   );
   counters.forEach((c) => co.observe(c));
+  onLeave(signal, () => co.disconnect());
 
   // Parallax suave de las imágenes grandes (héroes de página y CTA final).
   const layers = [
@@ -141,7 +150,7 @@ export function bootFx(): void {
           requestAnimationFrame(move);
         }
       },
-      { passive: true },
+      { passive: true, signal },
     );
     move();
   }
@@ -166,15 +175,17 @@ export function bootFx(): void {
           glow.classList.add('is-on');
         }
       },
-      { passive: true },
+      { passive: true, signal },
     );
+    let raf = 0;
     const tick = () => {
       gx += (tx - gx) * 0.12;
       gy += (ty - gy) * 0.12;
       glow.style.transform = `translate(${gx}px, ${gy}px)`;
-      requestAnimationFrame(tick);
+      raf = requestAnimationFrame(tick);
     };
     tick();
+    onLeave(signal, () => cancelAnimationFrame(raf));
   }
 
   // Tarjetas: inclinación suave y brillo bajo el cursor

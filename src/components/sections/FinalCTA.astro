@@ -24,7 +24,7 @@ const { index = '10', waIntent = 'consultoria', waTopic } = Astro.props;
         <br />
         <span class="accent-cyan">empieza aquí.</span>
       </h2>
-      <p>Cuéntanos qué quieres mejorar o calcula un rango de inversión en un minuto.</p>
+      <p>Cuéntanos qué quieres mejorar y te enviamos una cotización a tu medida, sin compromiso.</p>
       <div class="actions">
         <Button
           href={buildWhatsAppUrl({ intent: waIntent, ...(waTopic ? { topic: waTopic } : {}) })}

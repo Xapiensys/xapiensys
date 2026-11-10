@@ -66,7 +66,15 @@ export const POST: APIRoute = async ({ request }) => {
     }
   }
 
-  const response: QuoteResult = { ok: true, leadCode, ...result };
+  // Sin montos para el visitante: cada proyecto se cotiza a medida (el estimado queda
+  // solo para el equipo, en la BD y en el aviso interno).
+  const response: QuoteResult = {
+    ok: true,
+    leadCode,
+    ...result,
+    range: { min: 0, max: 0 },
+    maintenance: { min: 0, max: 0 },
+  };
   return json(response);
 };
 

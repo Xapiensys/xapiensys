@@ -22,6 +22,10 @@ import secEntregables from '@/assets/marca/seccion-entregables.webp';
 import secDiagnostico from '@/assets/marca/seccion-diagnostico.webp';
 import secVelocidad from '@/assets/marca/seccion-velocidad.webp';
 import secContacto from '@/assets/marca/seccion-contacto.webp';
+import pagEmpresa from '@/assets/marca/pagina-empresa.webp';
+import pagGracias from '@/assets/marca/pagina-gracias.webp';
+import pagPerdido from '@/assets/marca/pagina-perdido.webp';
+import pagPrivacidad from '@/assets/marca/pagina-privacidad.webp';
 
 export interface Visual {
   src: ImageMetadata;
@@ -112,5 +116,25 @@ export const sectionVisuals = {
   diagnostico: {
     src: secDiagnostico,
     alt: 'Lupa que escanea una página web y muestra indicadores de rendimiento',
+  },
+} satisfies Record<string, Visual>;
+
+/** Imágenes de páginas institucionales. */
+export const pageVisuals = {
+  empresa: {
+    src: pagEmpresa,
+    alt: 'Estudio de ingeniería digital frente a la costa de Lima al anochecer, con pantallas y paneles de datos',
+  },
+  gracias: {
+    src: pagGracias,
+    alt: 'Marca de verificación luminosa con un mensaje enviado en el celular y un cohete despegando',
+  },
+  perdido: {
+    src: pagPerdido,
+    alt: 'Ventana de navegador flotando en el espacio con una brújula y un camino de luz de regreso a casa',
+  },
+  privacidad: {
+    src: pagPrivacidad,
+    alt: 'Escudo con candado que protege documentos y perfiles de usuario',
   },
 } satisfies Record<string, Visual>;

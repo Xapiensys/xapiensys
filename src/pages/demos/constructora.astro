@@ -169,37 +169,43 @@ const types = ['Remodelación', 'Vivienda nueva', 'Local comercial', 'Ampliació
 <script>
   import { buildWhatsAppUrl } from '@/lib/whatsapp';
   import { track } from '@/lib/analytics';
+  import { onPageLoad } from '@/lib/pageLifecycle';
 
-  const form = document.querySelector<HTMLFormElement>('[data-form]')!;
-  const err = form.querySelector<HTMLElement>('[data-err]')!;
-  const ok = form.querySelector<HTMLElement>('[data-ok]')!;
-  const link = form.querySelector<HTMLAnchorElement>('[data-link]')!;
+  onPageLoad(
+    (_signal) => {
+      const form = document.querySelector<HTMLFormElement>('[data-form]')!;
+      const err = form.querySelector<HTMLElement>('[data-err]')!;
+      const ok = form.querySelector<HTMLElement>('[data-ok]')!;
+      const link = form.querySelector<HTMLAnchorElement>('[data-link]')!;
 
-  form.addEventListener('submit', (ev) => {
-    ev.preventDefault();
-    ok.hidden = true;
-    const v = Object.fromEntries(new FormData(form)) as Record<string, string>;
-    const m = Number(v.m);
-    let msg = '';
-    if (!v.n || v.n.trim().length < 2) msg = 'Escribe tu nombre.';
-    else if (!/^\+?[\d\s()-]{7,20}$/.test(v.t ?? ''))
-      msg = 'Escribe un celular válido (solo números).';
-    else if (!v.k) msg = 'Elige el tipo de obra.';
-    else if (!Number.isFinite(m) || m < 5 || m > 100000)
-      msg = 'Indica un metraje entre 5 y 100 000 m².';
-    else if (!v.a) msg = 'Elige el nivel de acabados.';
-    err.hidden = !msg;
-    err.textContent = msg;
-    if (msg) return;
-    const url = buildWhatsAppUrl({
-      intent: 'demo',
-      topic: `la constructora digital. SOLICITUD DE COTIZACIÓN DE PRUEBA: ${(v.n ?? '').trim()}, cel. ${(v.t ?? '').trim()}, ${v.k}, ${m} m², acabados ${v.a}`,
-    });
-    link.href = url;
-    ok.hidden = false;
-    track('demo_interaction', { demo: 'constructora', action: 'quote_request' });
-    window.open(url, '_blank', 'noopener');
-  });
+      form.addEventListener('submit', (ev) => {
+        ev.preventDefault();
+        ok.hidden = true;
+        const v = Object.fromEntries(new FormData(form)) as Record<string, string>;
+        const m = Number(v.m);
+        let msg = '';
+        if (!v.n || v.n.trim().length < 2) msg = 'Escribe tu nombre.';
+        else if (!/^\+?[\d\s()-]{7,20}$/.test(v.t ?? ''))
+          msg = 'Escribe un celular válido (solo números).';
+        else if (!v.k) msg = 'Elige el tipo de obra.';
+        else if (!Number.isFinite(m) || m < 5 || m > 100000)
+          msg = 'Indica un metraje entre 5 y 100 000 m².';
+        else if (!v.a) msg = 'Elige el nivel de acabados.';
+        err.hidden = !msg;
+        err.textContent = msg;
+        if (msg) return;
+        const url = buildWhatsAppUrl({
+          intent: 'demo',
+          topic: `la constructora digital. SOLICITUD DE COTIZACIÓN DE PRUEBA: ${(v.n ?? '').trim()}, cel. ${(v.t ?? '').trim()}, ${v.k}, ${m} m², acabados ${v.a}`,
+        });
+        link.href = url;
+        ok.hidden = false;
+        track('demo_interaction', { demo: 'constructora', action: 'quote_request' });
+        window.open(url, '_blank', 'noopener');
+      });
+    },
+    { path: '/demos/constructora' },
+  );
 </script>
 
 <style>

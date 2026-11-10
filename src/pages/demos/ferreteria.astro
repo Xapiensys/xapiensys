@@ -249,140 +249,146 @@ const money = (n: number) => `S/ ${n.toFixed(2)}`;
 <script>
   import { buildWhatsAppUrl } from '@/lib/whatsapp';
   import { track } from '@/lib/analytics';
+  import { onPageLoad } from '@/lib/pageLifecycle';
 
-  const root = document.querySelector<HTMLElement>('[data-shop]')!;
-  const items = [...root.querySelectorAll<HTMLElement>('.product')];
-  const grid = root.querySelector<HTMLElement>('[data-grid]')!;
-  const q = root.querySelector<HTMLInputElement>('[data-q]')!;
-  const sort = root.querySelector<HTMLSelectElement>('[data-sort]')!;
-  const chips = [...root.querySelectorAll<HTMLButtonElement>('.chip')];
-  const count = root.querySelector<HTMLElement>('[data-count]')!;
-  const lines = root.querySelector<HTMLElement>('[data-lines]')!;
-  const empty = root.querySelector<HTMLElement>('[data-empty]')!;
-  const totalRow = root.querySelector<HTMLElement>('[data-totalrow]')!;
-  const totalEl = root.querySelector<HTMLElement>('[data-total]')!;
-  const send = root.querySelector<HTMLAnchorElement>('[data-send]')!;
-  const clear = root.querySelector<HTMLButtonElement>('[data-clear]')!;
-  const dialog = document.querySelector<HTMLDialogElement>('[data-dialog]')!;
-  const cart = new Map<string, number>();
-  let cat = '';
-  let current: HTMLElement | null = null;
-  const money = (n: number) => `S/ ${n.toFixed(2)}`;
+  onPageLoad(
+    (_signal) => {
+      const root = document.querySelector<HTMLElement>('[data-shop]')!;
+      const items = [...root.querySelectorAll<HTMLElement>('.product')];
+      const grid = root.querySelector<HTMLElement>('[data-grid]')!;
+      const q = root.querySelector<HTMLInputElement>('[data-q]')!;
+      const sort = root.querySelector<HTMLSelectElement>('[data-sort]')!;
+      const chips = [...root.querySelectorAll<HTMLButtonElement>('.chip')];
+      const count = root.querySelector<HTMLElement>('[data-count]')!;
+      const lines = root.querySelector<HTMLElement>('[data-lines]')!;
+      const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+      const totalRow = root.querySelector<HTMLElement>('[data-totalrow]')!;
+      const totalEl = root.querySelector<HTMLElement>('[data-total]')!;
+      const send = root.querySelector<HTMLAnchorElement>('[data-send]')!;
+      const clear = root.querySelector<HTMLButtonElement>('[data-clear]')!;
+      const dialog = document.querySelector<HTMLDialogElement>('[data-dialog]')!;
+      const cart = new Map<string, number>();
+      let cat = '';
+      let current: HTMLElement | null = null;
+      const money = (n: number) => `S/ ${n.toFixed(2)}`;
 
-  function apply() {
-    const term = q.value.trim().toLowerCase();
-    let shown = items.filter(
-      (el) =>
-        (!cat || el.dataset.cat === cat) &&
-        (!term || el.dataset.name!.toLowerCase().includes(term)),
-    );
-    const by = sort.value;
-    shown = shown.sort((a, b) =>
-      by === 'name'
-        ? a.dataset.name!.localeCompare(b.dataset.name!, 'es')
-        : (Number(a.dataset.price) - Number(b.dataset.price)) * (by === 'asc' ? 1 : -1),
-    );
-    items.forEach((el) => (el.hidden = !shown.includes(el)));
-    shown.forEach((el) => grid.append(el));
-    count.textContent = shown.length ? `${shown.length} PRODUCTOS` : 'SIN RESULTADOS';
-  }
+      function apply() {
+        const term = q.value.trim().toLowerCase();
+        let shown = items.filter(
+          (el) =>
+            (!cat || el.dataset.cat === cat) &&
+            (!term || el.dataset.name!.toLowerCase().includes(term)),
+        );
+        const by = sort.value;
+        shown = shown.sort((a, b) =>
+          by === 'name'
+            ? a.dataset.name!.localeCompare(b.dataset.name!, 'es')
+            : (Number(a.dataset.price) - Number(b.dataset.price)) * (by === 'asc' ? 1 : -1),
+        );
+        items.forEach((el) => (el.hidden = !shown.includes(el)));
+        shown.forEach((el) => grid.append(el));
+        count.textContent = shown.length ? `${shown.length} PRODUCTOS` : 'SIN RESULTADOS';
+      }
 
-  function renderCart() {
-    lines.replaceChildren();
-    let total = 0;
-    let n = 0;
-    const parts: string[] = [];
-    for (const [id, qty] of cart) {
-      const el = items.find((i) => i.dataset.id === id)!;
-      const name = el.dataset.name!;
-      const price = Number(el.dataset.price);
-      total += price * qty;
-      n += qty;
-      parts.push(`${qty} × ${name}`);
-      const li = document.createElement('li');
-      const label = document.createElement('span');
-      label.textContent = `${name} — ${money(price * qty)}`;
-      const ctr = document.createElement('span');
-      ctr.className = 'qty';
-      const minus = document.createElement('button');
-      minus.type = 'button';
-      minus.textContent = '−';
-      minus.setAttribute('aria-label', `Quitar una unidad de ${name}`);
-      minus.addEventListener('click', () => change(id, -1));
-      const num = document.createElement('span');
-      num.textContent = String(qty);
-      const plus = document.createElement('button');
-      plus.type = 'button';
-      plus.textContent = '+';
-      plus.setAttribute('aria-label', `Agregar una unidad de ${name}`);
-      plus.addEventListener('click', () => change(id, 1));
-      ctr.append(minus, num, plus);
-      li.append(label, ctr);
-      lines.append(li);
-    }
-    const has = n > 0;
-    empty.hidden = has;
-    totalRow.hidden = !has;
-    clear.hidden = !has;
-    totalEl.textContent = money(total);
-    send.setAttribute('aria-disabled', String(!has));
-    send.href = has
-      ? buildWhatsAppUrl({
-          intent: 'demo',
-          topic: `la ferretería virtual y quiero enviar este PEDIDO DE PRUEBA: ${parts.join('; ')}. Total referencial ${money(total)}`,
-        })
-      : '#';
-  }
+      function renderCart() {
+        lines.replaceChildren();
+        let total = 0;
+        let n = 0;
+        const parts: string[] = [];
+        for (const [id, qty] of cart) {
+          const el = items.find((i) => i.dataset.id === id)!;
+          const name = el.dataset.name!;
+          const price = Number(el.dataset.price);
+          total += price * qty;
+          n += qty;
+          parts.push(`${qty} × ${name}`);
+          const li = document.createElement('li');
+          const label = document.createElement('span');
+          label.textContent = `${name} — ${money(price * qty)}`;
+          const ctr = document.createElement('span');
+          ctr.className = 'qty';
+          const minus = document.createElement('button');
+          minus.type = 'button';
+          minus.textContent = '−';
+          minus.setAttribute('aria-label', `Quitar una unidad de ${name}`);
+          minus.addEventListener('click', () => change(id, -1));
+          const num = document.createElement('span');
+          num.textContent = String(qty);
+          const plus = document.createElement('button');
+          plus.type = 'button';
+          plus.textContent = '+';
+          plus.setAttribute('aria-label', `Agregar una unidad de ${name}`);
+          plus.addEventListener('click', () => change(id, 1));
+          ctr.append(minus, num, plus);
+          li.append(label, ctr);
+          lines.append(li);
+        }
+        const has = n > 0;
+        empty.hidden = has;
+        totalRow.hidden = !has;
+        clear.hidden = !has;
+        totalEl.textContent = money(total);
+        send.setAttribute('aria-disabled', String(!has));
+        send.href = has
+          ? buildWhatsAppUrl({
+              intent: 'demo',
+              topic: `la ferretería virtual y quiero enviar este PEDIDO DE PRUEBA: ${parts.join('; ')}. Total referencial ${money(total)}`,
+            })
+          : '#';
+      }
 
-  function change(id: string, delta: number) {
-    const next = (cart.get(id) ?? 0) + delta;
-    if (next <= 0) cart.delete(id);
-    else cart.set(id, next);
-    renderCart();
-  }
+      function change(id: string, delta: number) {
+        const next = (cart.get(id) ?? 0) + delta;
+        if (next <= 0) cart.delete(id);
+        else cart.set(id, next);
+        renderCart();
+      }
 
-  chips.forEach((c) =>
-    c.addEventListener('click', () => {
-      cat = c.dataset.cat ?? '';
-      chips.forEach((x) => x.setAttribute('aria-pressed', String(x === c)));
-      apply();
-      track('demo_interaction', { demo: 'ferreteria', action: 'filter' });
-    }),
+      chips.forEach((c) =>
+        c.addEventListener('click', () => {
+          cat = c.dataset.cat ?? '';
+          chips.forEach((x) => x.setAttribute('aria-pressed', String(x === c)));
+          apply();
+          track('demo_interaction', { demo: 'ferreteria', action: 'filter' });
+        }),
+      );
+      q.addEventListener('input', apply);
+      sort.addEventListener('change', apply);
+      items.forEach((el) => {
+        el.querySelector('[data-add]')!.addEventListener('click', () => {
+          change(el.dataset.id!, 1);
+          track('demo_interaction', { demo: 'ferreteria', action: 'add_to_cart' });
+        });
+        el.querySelectorAll('[data-open]').forEach((b) =>
+          b.addEventListener('click', () => {
+            current = el;
+            dialog.querySelector('[data-d-cat]')!.textContent =
+              `${el.dataset.cat!.toUpperCase()} · ${el.dataset.id}`;
+            dialog.querySelector('[data-d-title]')!.textContent = el.dataset.name!;
+            dialog.querySelector('[data-d-desc]')!.textContent = el.dataset.desc!;
+            dialog.querySelector('[data-d-price]')!.textContent =
+              `${money(Number(el.dataset.price))} (precio de ejemplo)`;
+            dialog.showModal();
+            track('demo_interaction', { demo: 'ferreteria', action: 'view_product' });
+          }),
+        );
+      });
+      dialog.querySelector('[data-d-add]')!.addEventListener('click', () => {
+        if (current) change(current.dataset.id!, 1);
+        dialog.close();
+      });
+      clear.addEventListener('click', () => {
+        cart.clear();
+        renderCart();
+      });
+      send.addEventListener('click', (e) => {
+        if (send.getAttribute('aria-disabled') === 'true') e.preventDefault();
+        else track('cta_whatsapp_click', { location: 'demo_ferreteria_pedido' });
+      });
+      renderCart();
+    },
+    { path: '/demos/ferreteria' },
   );
-  q.addEventListener('input', apply);
-  sort.addEventListener('change', apply);
-  items.forEach((el) => {
-    el.querySelector('[data-add]')!.addEventListener('click', () => {
-      change(el.dataset.id!, 1);
-      track('demo_interaction', { demo: 'ferreteria', action: 'add_to_cart' });
-    });
-    el.querySelectorAll('[data-open]').forEach((b) =>
-      b.addEventListener('click', () => {
-        current = el;
-        dialog.querySelector('[data-d-cat]')!.textContent =
-          `${el.dataset.cat!.toUpperCase()} · ${el.dataset.id}`;
-        dialog.querySelector('[data-d-title]')!.textContent = el.dataset.name!;
-        dialog.querySelector('[data-d-desc]')!.textContent = el.dataset.desc!;
-        dialog.querySelector('[data-d-price]')!.textContent =
-          `${money(Number(el.dataset.price))} (precio de ejemplo)`;
-        dialog.showModal();
-        track('demo_interaction', { demo: 'ferreteria', action: 'view_product' });
-      }),
-    );
-  });
-  dialog.querySelector('[data-d-add]')!.addEventListener('click', () => {
-    if (current) change(current.dataset.id!, 1);
-    dialog.close();
-  });
-  clear.addEventListener('click', () => {
-    cart.clear();
-    renderCart();
-  });
-  send.addEventListener('click', (e) => {
-    if (send.getAttribute('aria-disabled') === 'true') e.preventDefault();
-    else track('cta_whatsapp_click', { location: 'demo_ferreteria_pedido' });
-  });
-  renderCart();
 </script>
 
 <style>

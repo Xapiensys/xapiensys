@@ -121,8 +121,12 @@ const isDemo = d.type === 'demo';
 
 <script>
   import { track } from '@/lib/analytics';
-  const el = document.querySelector<HTMLElement>('[data-demo]');
-  if (el?.dataset.demo) track('demo_view', { slug: el.dataset.demo });
+  import { onPageLoad } from '@/lib/pageLifecycle';
+
+  onPageLoad((_signal) => {
+    const el = document.querySelector<HTMLElement>('[data-demo]');
+    if (el?.dataset.demo) track('demo_view', { slug: el.dataset.demo });
+  });
 </script>
 
 <style>

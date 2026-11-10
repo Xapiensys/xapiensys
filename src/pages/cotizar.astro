@@ -9,7 +9,7 @@ import { ogPath } from '@/lib/ogPages';
 
 <BaseLayout
   title="Cotiza tu página web, chatbot o automatización | Xapiensys"
-  description="Responde 5 preguntas y obtén un rango de inversión orientativo para tu web, chatbot con IA o automatización. Sin compromiso, en 1 minuto."
+  description="Cuéntanos qué necesitas en 5 preguntas y te enviamos una cotización a tu medida para tu web, chatbot con IA o automatización. Sin compromiso."
   path="/cotizar"
   ogImage={ogPath('cotizar')}
   breadcrumbs={[
@@ -21,7 +21,7 @@ import { ogPath } from '@/lib/ogPages';
   <PageHero
     label="COTIZADOR"
     title="Cotiza tu proyecto en 1 minuto"
-    lede="Cinco preguntas, un rango de inversión orientativo y un código para continuar la conversación por WhatsApp."
+    lede="Cinco preguntas y te enviamos una propuesta a tu medida por escrito, sin compromiso. Tu código te permite seguir la conversación por WhatsApp."
     ctas={false}
     image={sectionVisuals.precios}
   />
@@ -30,13 +30,13 @@ import { ogPath } from '@/lib/ogPages';
       <Quoter client:load variant="page" />
       <noscript>
         <p>
-          El cotizador necesita JavaScript. <a href="/contacto">Escríbenos aquí</a> y te enviamos un
-          rango.
+          El cotizador necesita JavaScript. <a href="/contacto">Escríbenos aquí</a> y te enviamos tu
+          cotización.
         </p>
       </noscript>
     </div>
   </section>
-  <FAQ page="paginas-web" index="01" title="Dudas sobre precios" />
+  <FAQ page="paginas-web" index="01" title="Dudas sobre la cotización" />
 </BaseLayout>
 
 <style>

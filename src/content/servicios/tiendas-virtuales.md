@@ -33,8 +33,8 @@ steps:
   - title: Lanzamiento y mejora
     text: Publicamos, medimos pedidos y ajustamos lo que frene las ventas.
 priceFrom: null
-priceNote: Se cotiza según el número de productos, las integraciones y los medios de pago. Te enviamos el monto por escrito tras un breve diagnóstico.
-maintenance: Mantenimiento opcional; el monto depende del alcance de la tienda.
+priceNote: "Se cotiza según el número de productos, las integraciones y los medios de pago. Te enviamos la propuesta por escrito tras un breve diagnóstico."
+maintenance: "Mantenimiento opcional; se cotiza según el alcance de la tienda."
 sectors: [comercios]
 demo: comercio-catalogo-whatsapp
 ---

@@ -84,6 +84,9 @@ Objetivo: la demo en vivo que vende.
 - [x] (2026-11-10) `YOUTUBE_API_KEY` cargada: canciones completas con el reproductor de YouTube, probado en producción (búsqueda, Tommy, adelantar, siguiente, minimizar).
 - [x] (2026-11-09) Simulador v2: foto real por rubro (`src/assets/simulador/`), color de marca, secciones «Cómo funciona» y franja final, animación de construcción, pantalla completa y vista celular con container queries.
 - [x] (2026-11-09) Imágenes en todas las secciones de texto (`SectionVisual` + `sectionVisuals` en `lib/visuals.ts`).
+- [x] (2026-11-10) Sin precios públicos: todo «cotización a tu medida» (servicios, FAQ, cotizador, chat, CTA, JSON-LD). El estimado interno queda solo para el equipo.
+- [x] (2026-11-10) Navegación sin recarga (`ClientRouter`): la música y Tommy siguen entre páginas; scripts migrados a `onPageLoad` (`src/lib/pageLifecycle.ts`).
+- [x] (2026-11-10) Pantalla de carga una vez por sesión (`IntroLoader`), barra de progreso y transición entre páginas; sonidos sutiles de interfaz con interruptor (`src/lib/sfx.ts`).
 - [ ] 🧑 Definir una promo de lanzamiento real (descuento, cupos o fecha) para `PromoBar` — hoy solo muestra el diagnóstico gratuito.
 - [ ] Set de 20 preguntas de prueba (comerciales, fuera de tema, intentos de cambiar instrucciones) y revisar respuestas.
 

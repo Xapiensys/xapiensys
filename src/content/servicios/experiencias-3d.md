@@ -33,7 +33,7 @@ steps:
   - title: Revisión y entrega
     text: Probamos en distintos dispositivos y publicamos.
 priceFrom: null
-priceNote: Se cotiza según la complejidad de la escena y si se integra a una web existente. Te enviamos el monto por escrito tras un breve diagnóstico.
-maintenance: Mantenimiento opcional; el monto depende del alcance.
+priceNote: "Se cotiza según la complejidad de la escena y si se integra a una web existente. Te enviamos la propuesta por escrito tras un breve diagnóstico."
+maintenance: "Mantenimiento opcional, según el alcance."
 sectors: [comercios, constructoras]
 ---

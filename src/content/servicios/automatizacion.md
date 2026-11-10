@@ -31,8 +31,8 @@ steps:
     text: Construimos y probamos el flujo con datos reales antes de activarlo.
   - title: Seguimiento
     text: Monitoreamos que funcione y ajustamos cuando tu operación cambia.
-priceFrom: 1800
-priceNote: Desde S/ 1,800 por flujo automatizado. Procesos complejos requieren diagnóstico previo.
-maintenance: Mantenimiento opcional desde S/ 200 al mes (monitoreo, ajustes y soporte).
+priceFrom: null
+priceNote: "Cada flujo se cotiza según los pasos, las herramientas que conecta y el volumen. Te enviamos la propuesta por escrito tras un breve diagnóstico."
+maintenance: "Mantenimiento opcional (monitoreo, ajustes y soporte), cotizado según el flujo."
 sectors: [constructoras, comercios]
 ---

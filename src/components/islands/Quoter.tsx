@@ -7,7 +7,6 @@ import {
   chatbotChannelOptions,
   automationScopeOptions,
   timelineOptions,
-  formatSoles,
   type QuoteScope,
   type QuoteResult,
   type Need,
@@ -148,7 +147,7 @@ export default function Quoter({ variant = 'embedded' }: Props) {
       const data = (await res.json()) as QuoteResult;
       setResult(data);
       setStatus('idle');
-      track('quote_complete', { range: `${data.range.min}-${data.range.max}` });
+      track('quote_complete', { diagnosis: data.diagnosis });
       track('lead_submit', { source: 'quote' });
       requestAnimationFrame(() => headingRef.current?.focus());
     } catch {
@@ -169,24 +168,14 @@ export default function Quoter({ variant = 'embedded' }: Props) {
       <div class={`q q-${variant}`}>
         <p class="q-kicker mono">RESULTADO · {result.leadCode}</p>
         <Heading class="q-title" tabIndex={-1} ref={headingRef}>
-          {result.diagnosis ? 'Tu proyecto requiere un diagnóstico' : 'Tu inversión estimada'}
+          Recibimos tu solicitud
         </Heading>
-        <p class="q-range">
-          {result.range.max > 0
-            ? `${formatSoles(result.range.min)} – ${formatSoles(result.range.max)}`
-            : 'A cotizar tras un diagnóstico'}
-        </p>
+        <p class="q-range">Cotización a tu medida</p>
         <p class="q-note">
           {result.diagnosis
-            ? 'Estimación orientativa, no es una cotización definitiva. Para darte un monto preciso necesitamos una conversación corta.'
-            : 'Estimación orientativa, no es una cotización definitiva. Confirmamos el monto exacto por escrito antes de empezar.'}
+            ? 'Tu proyecto merece una conversación corta para entenderlo bien. Te escribimos por WhatsApp y te enviamos la propuesta por escrito, sin compromiso.'
+            : 'Te enviamos una propuesta a tu medida por escrito, sin compromiso. Escríbenos por WhatsApp y la tienes más rápido.'}
         </p>
-        {result.maintenance.max > 0 && (
-          <p class="q-maint">
-            Mantenimiento sugerido: {formatSoles(result.maintenance.min)} –{' '}
-            {formatSoles(result.maintenance.max)} / mes
-          </p>
-        )}
         <ul class="q-includes">
           {result.includes.map((i) => (
             <li key={i}>{i}</li>
@@ -347,7 +336,7 @@ export default function Quoter({ variant = 'embedded' }: Props) {
           <a href={fallbackWa} target="_blank" rel="noopener noreferrer">
             Escríbenos por WhatsApp
           </a>{' '}
-          y te respondemos con un rango.
+          y te enviamos tu cotización.
         </p>
       )}
       {status === 'limited' && (

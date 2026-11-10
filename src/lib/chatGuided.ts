@@ -4,7 +4,6 @@
  */
 import { getCollection } from 'astro:content';
 import { buildWhatsAppUrl } from './whatsapp';
-import { formatSoles } from './quoteOptions';
 
 export interface GuidedTopic {
   label: string;
@@ -14,7 +13,7 @@ export interface GuidedTopic {
 
 export const chatSuggestions = [
   '¿Qué servicios ofrecen?',
-  '¿Cuánto cuesta una web con chatbot?',
+  'Quiero cotizar una web con chatbot',
   'Quiero automatizar mi atención por WhatsApp',
   'Pon música para trabajar',
 ];
@@ -31,14 +30,13 @@ export async function getGuidedTopics(): Promise<GuidedTopic[]> {
       links: servicios.map((s) => ({ label: s.data.title, href: `/servicios/${s.id}` })),
     },
     {
-      label: '¿Cuánto cuesta?',
-      answer: servicios
-        .map(
-          (s) =>
-            `• ${s.data.title}: ${s.data.priceFrom ? `desde ${formatSoles(s.data.priceFrom)}` : 'requiere diagnóstico'}`,
-        )
-        .join('\n'),
-      links: [{ label: 'Calcular mi rango', href: '/cotizar' }],
+      label: 'Quiero cotizar',
+      answer:
+        'Cada proyecto se cotiza a tu medida: cuéntanos qué necesitas por WhatsApp o en el cotizador y te enviamos una propuesta por escrito, sin compromiso.',
+      links: [
+        { label: 'Cotizar por WhatsApp', href: buildWhatsAppUrl({ intent: 'cotizacion' }) },
+        { label: 'Usar el cotizador', href: '/cotizar' },
+      ],
     },
     {
       label: 'Hablar con el equipo',

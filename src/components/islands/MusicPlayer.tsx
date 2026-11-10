@@ -218,6 +218,9 @@ export default function MusicPlayer() {
       return;
     }
     root.setAttribute('data-music-playing', '');
+    // Al navegar, <html> llega sin el atributo: se repone mientras siga sonando.
+    const restore = () => root.setAttribute('data-music-playing', '');
+    document.addEventListener('astro:after-swap', restore);
     const analyser = isYouTube ? null : analyserRef.current;
     const data = analyser ? new Uint8Array(analyser.frequencyBinCount) : null;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -244,7 +247,10 @@ export default function MusicPlayer() {
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(rafRef.current);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      document.removeEventListener('astro:after-swap', restore);
+    };
   }, [playing, isYouTube]);
 
   const stopAll = () => {
@@ -370,7 +376,9 @@ export default function MusicPlayer() {
       if (q) void search(q, 'tommy');
     };
     const onClick = (e: MouseEvent) => {
-      const el = (e.target as Element | null)?.closest<HTMLElement>('a[data-music], button[data-music]');
+      const el = (e.target as Element | null)?.closest<HTMLElement>(
+        'a[data-music], button[data-music]',
+      );
       if (!el?.dataset.music) return;
       e.preventDefault();
       setView('open');

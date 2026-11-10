@@ -415,7 +415,7 @@ export default function SiteSimulator({ images }: Props) {
               data-track="cta_quote_click"
               data-track-location="simulator"
             >
-              Ver precio en 1 minuto
+              Solicitar cotización
             </a>
           </div>
           <small>

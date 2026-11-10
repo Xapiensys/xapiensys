@@ -32,8 +32,8 @@ steps:
     text: Entregamos partes funcionales que tu equipo puede usar y validar desde temprano.
   - title: Puesta en marcha
     text: Migramos datos, capacitamos y acompañamos los primeros meses de uso.
-priceFrom: 3500
-priceNote: Desde S/ 3,500. Requiere diagnóstico para estimar con precisión.
-maintenance: Mantenimiento y soporte según el alcance del sistema.
+priceFrom: null
+priceNote: "Se cotiza tras un diagnóstico para entender tu proceso y estimar con precisión. Te enviamos la propuesta por escrito."
+maintenance: "Mantenimiento y soporte según el alcance del sistema."
 sectors: [constructoras, clinicas]
 ---

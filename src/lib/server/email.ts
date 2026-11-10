@@ -116,7 +116,7 @@ export async function sendLeadConfirmation(lead: LeadEmail): Promise<boolean> {
     ? `<p>Si prefieres, <a href="${esc(PUBLIC_BOOKING_URL)}">agenda una llamada</a> en el horario que te acomode.</p>`
     : '';
   const estimate = lead.estimate
-    ? `<p>El rango orientativo de tu cotización fue <strong>S/ ${lead.estimate.min.toLocaleString('en-US')} – ${lead.estimate.max.toLocaleString('en-US')}</strong>. Lo confirmamos por escrito antes de empezar.</p>`
+    ? '<p>Con lo que nos contaste preparamos una propuesta a tu medida y te la enviamos por escrito, sin compromiso.</p>'
     : '';
   const html = `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#111">
 <p>Hola ${first}:</p>

@@ -336,8 +336,8 @@ export default function ChatDemo({
             </li>
             <li>
               <span class="mono">02</span>
-              <strong>Te da precios</strong>
-              Rangos de inversión en soles, sin compromiso.
+              <strong>Te cotiza</strong>
+              Arma contigo lo que necesitas para una propuesta a medida.
             </li>
             <li>
               <span class="mono">03</span>

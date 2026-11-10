@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHero from '@/components/sections/PageHero.astro';
+import { pageVisuals } from '@/lib/visuals';
 import Button from '@/components/ui/Button.astro';
 ---
 
@@ -15,6 +16,7 @@ import Button from '@/components/ui/Button.astro';
     title="Esta página no existe"
     lede="Puede que el enlace haya cambiado. Estos caminos sí funcionan:"
     ctas={false}
+    image={pageVisuals.perdido}
   >
     <div class="actions">
       <Button href="/">Ir al inicio</Button>

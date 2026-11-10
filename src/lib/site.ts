@@ -25,7 +25,8 @@ export const site = {
     countryName: 'Perú',
   },
   areaServed: ['Lima', 'Perú', 'Latinoamérica'],
-  priceRange: 'S/ 1,500 – S/ 3,500+',
+  // Sin montos públicos: cada proyecto se cotiza a medida.
+  priceRange: 'A cotizar',
   knowsAbout: [
     'Desarrollo web',
     'Chatbots con inteligencia artificial',

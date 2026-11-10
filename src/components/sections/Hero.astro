@@ -7,18 +7,15 @@ import SectionLabel from '../ui/SectionLabel.astro';
 import poster from '@/assets/marca/x-poster.webp';
 import heroBg from '@/assets/marca/hero-bg.webp';
 import { buildWhatsAppUrl } from '@/lib/whatsapp';
-import { formatSoles } from '@/lib/quoteOptions';
 
 // Datos reales tomados del contenido (nada de cifras escritas a mano).
 const servicios = (await getCollection('servicios')).sort((a, b) => a.data.order - b.data.order);
 const demos = (await getCollection('proyectos')).filter((p) => p.data.status === 'publicada');
-const prices = servicios.map((s) => s.data.priceFrom).filter((p): p is number => p != null);
-const from = prices.length ? Math.min(...prices) : null;
 
 const facts = [
   { value: String(servicios.length), label: 'Servicios digitales' },
   { value: String(demos.length), label: 'Demos navegables' },
-  ...(from ? [{ value: formatSoles(from), label: 'Proyectos desde' }] : []),
+  { value: 'A tu medida', label: 'Cotización gratis' },
   { value: 'Lima · LATAM', label: 'Equipo remoto' },
 ];
 ---
@@ -71,7 +68,7 @@ const facts = [
       </div>
       <ul class="hero-trust" aria-label="Cómo trabajamos">
         <li>Propuesta por escrito</li>
-        <li>Rango de inversión al instante</li>
+        <li>Cotización a tu medida</li>
         <li>
           <a href="/proyectos" data-track="cta_demo_click" data-track-location="hero">
             Demos que puedes probar

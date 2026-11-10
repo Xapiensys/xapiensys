@@ -115,71 +115,74 @@ const isDiag = variant === 'diagnostico';
 <script>
   import { getAttribution, track } from '@/lib/analytics';
   import { mountTurnstile, resetTurnstile } from '@/lib/turnstileClient';
+  import { onPageLoad } from '@/lib/pageLifecycle';
 
-  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
-  if (form) {
-    let token: string | undefined;
-    const slot = form.querySelector<HTMLElement>('[data-turnstile]');
-    if (slot) mountTurnstile(slot, (t) => (token = t));
-    const errorEl = form.querySelector<HTMLElement>('[data-error]');
-    const button = form.querySelector<HTMLButtonElement>('button[type=submit]');
-    const params = new URLSearchParams(location.search);
-    // Vuelta desde un envío sin JS que falló.
-    if (params.has('error')) errorEl?.removeAttribute('hidden');
-    // Enlaces de prospección: ?empresa=Clínica%20Sol&sector=clinicas prellenan el formulario.
-    const company = form.querySelector<HTMLInputElement>('[name=company]');
-    const empresa = params.get('empresa');
-    if (company && empresa && !company.value) company.value = empresa.slice(0, 120);
-    const sectorSelect = form.querySelector<HTMLSelectElement>('[name=sector]');
-    const sectorAlias: Record<string, string> = {
-      clinicas: 'salud',
-      constructoras: 'construccion',
-      comercios: 'comercio',
-    };
-    const sector = params.get('sector');
-    if (sectorSelect && sector) {
-      const value = sectorAlias[sector] ?? sector;
-      if ([...sectorSelect.options].some((o) => o.value === value)) sectorSelect.value = value;
-    }
-
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      if (!form.reportValidity()) return;
-      const fd = new FormData(form);
-      const get = (k: string) => String(fd.get(k) ?? '');
-      if (button) button.disabled = true;
-      errorEl?.setAttribute('hidden', '');
-      try {
-        const res = await fetch('/api/lead', {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({
-            source: get('source') === 'diagnostico' ? 'diagnostico' : 'form',
-            name: get('name'),
-            siteUrl: get('siteUrl') || undefined,
-            sector: get('sector') || undefined,
-            company: get('company'),
-            phone: get('phone'),
-            email: get('email'),
-            needs: fd.getAll('needs'),
-            message: get('message'),
-            consent: fd.get('consent') === 'on',
-            website: get('website'),
-            turnstileToken: token,
-            utm: getAttribution(),
-          }),
-        });
-        if (!res.ok) throw new Error(String(res.status));
-        const data = (await res.json()) as { leadCode: string };
-        track('lead_submit', { source: get('source') || 'form' });
-        location.href = `/gracias?codigo=${encodeURIComponent(data.leadCode)}`;
-      } catch {
-        errorEl?.removeAttribute('hidden');
-        resetTurnstile();
-        if (button) button.disabled = false;
+  onPageLoad((_signal) => {
+    const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+    if (form) {
+      let token: string | undefined;
+      const slot = form.querySelector<HTMLElement>('[data-turnstile]');
+      if (slot) mountTurnstile(slot, (t) => (token = t));
+      const errorEl = form.querySelector<HTMLElement>('[data-error]');
+      const button = form.querySelector<HTMLButtonElement>('button[type=submit]');
+      const params = new URLSearchParams(location.search);
+      // Vuelta desde un envío sin JS que falló.
+      if (params.has('error')) errorEl?.removeAttribute('hidden');
+      // Enlaces de prospección: ?empresa=Clínica%20Sol&sector=clinicas prellenan el formulario.
+      const company = form.querySelector<HTMLInputElement>('[name=company]');
+      const empresa = params.get('empresa');
+      if (company && empresa && !company.value) company.value = empresa.slice(0, 120);
+      const sectorSelect = form.querySelector<HTMLSelectElement>('[name=sector]');
+      const sectorAlias: Record<string, string> = {
+        clinicas: 'salud',
+        constructoras: 'construccion',
+        comercios: 'comercio',
+      };
+      const sector = params.get('sector');
+      if (sectorSelect && sector) {
+        const value = sectorAlias[sector] ?? sector;
+        if ([...sectorSelect.options].some((o) => o.value === value)) sectorSelect.value = value;
       }
-    });
-  }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        const fd = new FormData(form);
+        const get = (k: string) => String(fd.get(k) ?? '');
+        if (button) button.disabled = true;
+        errorEl?.setAttribute('hidden', '');
+        try {
+          const res = await fetch('/api/lead', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+              source: get('source') === 'diagnostico' ? 'diagnostico' : 'form',
+              name: get('name'),
+              siteUrl: get('siteUrl') || undefined,
+              sector: get('sector') || undefined,
+              company: get('company'),
+              phone: get('phone'),
+              email: get('email'),
+              needs: fd.getAll('needs'),
+              message: get('message'),
+              consent: fd.get('consent') === 'on',
+              website: get('website'),
+              turnstileToken: token,
+              utm: getAttribution(),
+            }),
+          });
+          if (!res.ok) throw new Error(String(res.status));
+          const data = (await res.json()) as { leadCode: string };
+          track('lead_submit', { source: get('source') || 'form' });
+          location.href = `/gracias?codigo=${encodeURIComponent(data.leadCode)}`;
+        } catch {
+          errorEl?.removeAttribute('hidden');
+          resetTurnstile();
+          if (button) button.disabled = false;
+        }
+      });
+    }
+  });
 </script>
 
 <style>

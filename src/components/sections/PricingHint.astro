@@ -4,7 +4,7 @@ import { sectionVisuals } from '@/lib/visuals';
 import { getCollection } from 'astro:content';
 import SectionLabel from '../ui/SectionLabel.astro';
 import Quoter from '../islands/Quoter';
-import { formatSoles } from '@/lib/quoteOptions';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
 
 interface Props {
   index?: string;
@@ -15,37 +15,41 @@ const servicios = (await getCollection('servicios')).sort((a, b) => a.data.order
 
 <section class="section-shell section-pad pricing" id="cotizador" aria-labelledby="pricing-title">
   <div class="copy">
-    <SectionLabel index={index}>INVERSIÓN ORIENTATIVA</SectionLabel>
+    <SectionLabel index={index}>COTIZACIÓN A MEDIDA</SectionLabel>
     <h2 id="pricing-title" class="display-h2">
-      Rangos claros.
+      Tu proyecto,
       <br />
-      <span class="accent-violet">Sin sorpresas.</span>
+      <span class="accent-violet">tu presupuesto.</span>
     </h2>
     <p>
-      Precios de referencia en soles. Responde 5 preguntas y te mostramos un rango para tu caso; el
-      monto final lo confirmamos por escrito.
+      Cada negocio necesita algo distinto, así que cotizamos a tu medida: desde lo esencial para
+      empezar hasta sistemas completos. Cuéntanos qué necesitas y te enviamos una propuesta por
+      escrito, sin compromiso.
     </p>
     <ul class="ranges">
       {servicios.map((s) => (
         <li>
           <a href={`/servicios/${s.id}`}>{s.data.title}</a>
-          <span>
-            {s.data.priceFrom ? `desde ${formatSoles(s.data.priceFrom)}` : 'requiere diagnóstico'}
-          </span>
+          <a
+            class="quote-link"
+            href={buildWhatsAppUrl({ intent: 'servicio', topic: s.data.title })}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-track="cta_whatsapp_click"
+            data-track-location="pricing_list"
+          >
+            Cotizar <span aria-hidden="true">↗</span>
+          </a>
         </li>
       ))}
-      <li>
-        <span>Mantenimiento mensual</span>
-        <span>S/ 150 – 400 / mes</span>
-      </li>
     </ul>
   </div>
   <div class="tool">
     <Quoter client:visible variant="embedded" />
     <noscript>
       <p>
-        El cotizador necesita JavaScript. <a href="/contacto">Escríbenos aquí</a> y te enviamos un
-        rango.
+        El cotizador necesita JavaScript. <a href="/contacto">Escríbenos aquí</a> y te enviamos tu
+        cotización.
       </p>
     </noscript>
     <SectionVisual image={sectionVisuals.precios} shape="side" />
@@ -88,11 +92,23 @@ const servicios = (await getCollection('servicios')).sort((a, b) => a.data.order
     color: var(--color-cyan);
   }
 
-  .ranges li > span:last-child {
-    color: var(--color-cyan);
-    font-family: var(--font-mono);
+  .ranges .quote-link {
+    flex: 0 0 auto;
+    padding: 6px 12px;
+    border: 1px solid var(--color-whatsapp-a42);
+    border-radius: var(--radius-full);
+    color: var(--color-whatsapp);
     font-size: 12px;
-    text-align: right;
+    font-weight: 700;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  .ranges .quote-link:hover,
+  .ranges .quote-link:focus-visible {
+    color: var(--color-on-whatsapp);
+    background: var(--color-whatsapp);
   }
 
   .tool {

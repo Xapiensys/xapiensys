@@ -3,36 +3,60 @@ import SectionVisual from '../ui/SectionVisual.astro';
 import { sectionVisuals } from '@/lib/visuals';
 import Button from '../ui/Button.astro';
 import SectionLabel from '../ui/SectionLabel.astro';
-import { formatSoles } from '@/lib/quoteOptions';
+import { buildWhatsAppUrl, type WhatsAppIntent } from '@/lib/whatsapp';
 
 interface Props {
   index: string;
-  priceFrom: number | null;
   note: string;
   maintenance: string;
+  /** Mensaje de WhatsApp del servicio. */
+  waIntent?: WhatsAppIntent;
 }
-const { index, priceFrom, note, maintenance } = Astro.props;
+const { index, note, maintenance, waIntent = 'cotizacion' } = Astro.props;
 ---
 
 <section class="section-shell section-pad" id="inversion" aria-labelledby="inversion-title">
   <div class="box">
     <div>
-      <SectionLabel index={index}>INVERSIÓN ORIENTATIVA</SectionLabel>
+      <SectionLabel index={index}>INVERSIÓN</SectionLabel>
       <h2 id="inversion-title" class="visually-hidden">
-        Inversión orientativa
+        Cotización a tu medida
       </h2>
-      <p class="price">{priceFrom ? `Desde ${formatSoles(priceFrom)}` : 'Requiere diagnóstico'}</p>
+      <p class="price">Cotización a tu medida</p>
       <p class="note">{note}</p>
       <p class="maint">{maintenance}</p>
     </div>
-    <Button href="/cotizar" icon="arrow-right" track="cta_quote_click" trackLocation="investment">
-      Calcula tu rango en 1 minuto
-    </Button>
+    <div class="actions">
+      <Button
+        href={buildWhatsAppUrl({ intent: waIntent })}
+        variant="whatsapp"
+        icon="whatsapp"
+        track="cta_whatsapp_click"
+        trackLocation="investment"
+      >
+        Cotizar por WhatsApp
+      </Button>
+      <Button
+        href="/cotizar"
+        variant="secondary"
+        icon="arrow-right"
+        track="cta_quote_click"
+        trackLocation="investment"
+      >
+        Solicitar cotización
+      </Button>
+    </div>
     <SectionVisual image={sectionVisuals.precios} shape="side" />
   </div>
 </section>
 
 <style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
   .box {
     display: grid;
     gap: var(--space-6);
@@ -76,7 +100,7 @@ const { index, priceFrom, note, maintenance } = Astro.props;
       margin: 0;
     }
 
-    .box > :global(.button) {
+    .actions {
       justify-self: start;
     }
   }

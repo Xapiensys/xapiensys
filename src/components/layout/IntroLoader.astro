@@ -1,0 +1,194 @@
+---
+/**
+ * Pantalla de carga breve ("se está cargando algo poderoso"): el logo X se dibuja con trazos
+ * de luz mientras sube un contador. Solo la primera vez en la sesión (clase `intro` que pone
+ * el script del <head>) y nunca con "reducir movimiento". Dura entre ~0,9 s y 1,6 s y no
+ * bloquea la carga: la página real se pinta debajo desde el primer instante.
+ */
+---
+
+<div class="intro-loader" aria-hidden="true">
+  <div class="intro-core">
+    <svg class="intro-mark" viewBox="490 214 630 482" focusable="false">
+      <g class="blue">
+        <path d="M834 410 689 250H549l199 185-228 225h131l112-113"></path>
+        <circle cx="633" cy="543" r="21"></circle>
+      </g>
+      <g class="violet">
+        <path d="M846 328l72-78h86"></path>
+        <path d="M1034 262 870 435l190 208"></path>
+        <path d="M772 478l180 182h106"></path>
+        <circle cx="1052" cy="244" r="23"></circle>
+        <circle cx="1066" cy="655" r="21"></circle>
+      </g>
+    </svg>
+    <p class="intro-word">XAPIENSYS</p>
+    <div class="intro-line">
+      <i></i>
+    </div>
+    <p class="intro-status mono">
+      <span>INICIALIZANDO SISTEMA</span>
+      <b data-intro-pct>0%</b>
+    </p>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    if (!root.classList.contains('intro')) return;
+    var pct = document.querySelector('[data-intro-pct]');
+    var t0 = performance.now();
+    var MIN = 900;
+    var MAX = 1600;
+    var done = false;
+    var raf = 0;
+    function tick() {
+      var p = Math.min(1, (performance.now() - t0) / MIN);
+      if (pct) pct.textContent = Math.round((1 - Math.pow(1 - p, 3)) * 100) + '%';
+      if (p < 1) raf = requestAnimationFrame(tick);
+    }
+    raf = requestAnimationFrame(tick);
+    function finish() {
+      if (done) return;
+      done = true;
+      var wait = Math.max(0, MIN - (performance.now() - t0));
+      setTimeout(function () {
+        cancelAnimationFrame(raf);
+        if (pct) pct.textContent = '100%';
+        root.classList.add('intro-out');
+        setTimeout(function () {
+          root.classList.remove('intro', 'intro-out');
+        }, 700);
+      }, wait);
+    }
+    if (document.readyState === 'complete') finish();
+    else addEventListener('load', finish, { once: true });
+    setTimeout(finish, MAX);
+  })();
+</script>
+
+<style>
+  .intro-loader {
+    display: none;
+  }
+
+  :global(html.intro) .intro-loader {
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(circle at 50% 45%, var(--color-cyan-a12), transparent 45%), var(--color-bg);
+    transition:
+      clip-path 0.65s cubic-bezier(0.7, 0, 0.2, 1),
+      opacity 0.65s ease;
+    clip-path: inset(0 0 0 0);
+  }
+
+  /* Salida: telón que sube y deja ver la página. */
+  :global(html.intro-out) .intro-loader {
+    clip-path: inset(0 0 100% 0);
+    opacity: 0.6;
+  }
+
+  /* Mientras dura la intro no se puede hacer scroll detrás. */
+  :global(html.intro:not(.intro-out)) {
+    overflow: hidden;
+  }
+
+  .intro-core {
+    display: grid;
+    justify-items: center;
+    gap: 18px;
+  }
+
+  .intro-mark {
+    width: 128px;
+    height: auto;
+    overflow: visible;
+    filter: drop-shadow(0 0 18px var(--color-cyan-a42));
+  }
+
+  .intro-mark path,
+  .intro-mark circle {
+    fill: none;
+    stroke-width: 21;
+    stroke-linecap: round;
+    stroke-miterlimit: 10;
+    stroke-dasharray: 900;
+    stroke-dashoffset: 900;
+    animation: intro-draw 0.85s cubic-bezier(0.6, 0, 0.2, 1) forwards;
+  }
+
+  .intro-mark .blue > * {
+    stroke: var(--color-cyan);
+  }
+
+  .intro-mark .violet > * {
+    stroke: var(--color-violet-soft);
+    animation-delay: 0.12s;
+  }
+
+  @keyframes intro-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .intro-word {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.5em;
+    animation: intro-fade 0.6s 0.35s ease-out both;
+  }
+
+  .intro-line {
+    width: 180px;
+    height: 2px;
+    overflow: hidden;
+    background: var(--color-border-strong);
+  }
+
+  .intro-line i {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-cyan), var(--color-violet-soft));
+    box-shadow: var(--glow-cyan);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: intro-fill 0.9s cubic-bezier(0.3, 0.6, 0.2, 1) forwards;
+  }
+
+  @keyframes intro-fill {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .intro-status {
+    display: flex;
+    min-width: 180px;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 0;
+    color: var(--color-muted);
+    font-size: var(--text-mono);
+    animation: intro-fade 0.5s 0.2s ease-out both;
+  }
+
+  .intro-status b {
+    color: var(--color-cyan);
+    font-weight: 400;
+  }
+
+  @keyframes intro-fade {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+</style>
