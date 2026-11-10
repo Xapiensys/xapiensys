@@ -81,7 +81,7 @@ Objetivo: la demo en vivo que vende.
 - [x] (2026-11-09) WhatsApp verde en todo el sitio (flotante con burbuja, menú, héroes, CTA) + franja de oferta real (`PromoBar`).
 - [x] (2026-11-09) Chat: 40 mensajes por conversación (continúa sola en sesión nueva al llegar al tope), reintentos y modelo de respaldo en Gemini, botón «Reintentar» en vez de pasar a modo guiado ante cortes.
 - [x] (2026-11-09) Radio Tommy v2: barra mini minimizable, avance arrastrable, anterior/siguiente; motor YouTube (canción completa) + iTunes de respaldo.
-- [ ] 🧑 Crear `YOUTUBE_API_KEY` (Google Cloud → YouTube Data API v3) y cargarla en Vercel para canciones completas. Luego probar el motor YouTube en producción.
+- [x] (2026-11-10) `YOUTUBE_API_KEY` cargada: canciones completas con el reproductor de YouTube, probado en producción (búsqueda, Tommy, adelantar, siguiente, minimizar).
 - [x] (2026-11-09) Simulador v2: foto real por rubro (`src/assets/simulador/`), color de marca, secciones «Cómo funciona» y franja final, animación de construcción, pantalla completa y vista celular con container queries.
 - [x] (2026-11-09) Imágenes en todas las secciones de texto (`SectionVisual` + `sectionVisuals` en `lib/visuals.ts`).
 - [ ] 🧑 Definir una promo de lanzamiento real (descuento, cupos o fecha) para `PromoBar` — hoy solo muestra el diagnóstico gratuito.
