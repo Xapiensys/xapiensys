@@ -191,11 +191,28 @@ const facts = [
     line-height: 1.7;
   }
 
+  /* Celular: botones apilados a todo el ancho. Así la carga de fuentes no los hace
+     saltar de fila (evita el desplazamiento de diseño, CLS). */
   .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: var(--space-3);
+  }
+
+  .hero-actions :global(.button) {
+    width: 100%;
+  }
+
+  @media (min-width: 560px) {
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .hero-actions :global(.button) {
+      width: auto;
+    }
   }
 
   .hero-trust {

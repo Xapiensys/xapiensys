@@ -5,6 +5,7 @@ import preact from '@astrojs/preact';
 import sitemap from '@astrojs/sitemap';
 import { readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
+import cspUnion from './integrations/csp-union.mjs';
 
 /**
  * La CSP de Astro no incluye los <script is:inline>: se calcula su hash desde el código
@@ -33,6 +34,8 @@ export default defineConfig({
       filter: (page) => !/^\/(api|gracias|og|admin)(\/|$)/.test(new URL(page).pathname),
       lastmod: new Date(),
     }),
+    // Debe ir al final: unifica la CSP de todas las páginas tras compilar.
+    cspUnion(),
   ],
   markdown: { syntaxHighlight: false },
   prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
