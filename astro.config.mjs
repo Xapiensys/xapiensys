@@ -18,7 +18,10 @@ const INLINE_SCRIPT_FILES = [
 const inlineScriptHashes = INLINE_SCRIPT_FILES.flatMap((file) => {
   const src = readFileSync(new URL(`./${file}`, import.meta.url), 'utf8').replace(/\r\n/g, '\n');
   return [...src.matchAll(/<script is:inline>([\s\S]*?)<\/script>/g)].map(
-    (m) => `sha256-${createHash('sha256').update(m[1] ?? '').digest('base64')}`,
+    (m) =>
+      `sha256-${createHash('sha256')
+        .update(m[1] ?? '')
+        .digest('base64')}`,
   );
 });
 
@@ -79,6 +82,19 @@ export default defineConfig({
       /** Contraseña del panel /admin (larga y única). Sin ella el panel queda desactivado. */
       ADMIN_PASSWORD: envField.string({ context: 'server', access: 'secret', optional: true }),
       IP_HASH_SALT: envField.string({ context: 'server', access: 'secret', optional: true }),
+      /** Respuesta automática de WhatsApp (Cloud API de Meta). Sin ellas, /api/whatsapp queda apagado. */
+      WHATSAPP_TOKEN: envField.string({ context: 'server', access: 'secret', optional: true }),
+      WHATSAPP_PHONE_NUMBER_ID: envField.string({
+        context: 'server',
+        access: 'secret',
+        optional: true,
+      }),
+      WHATSAPP_VERIFY_TOKEN: envField.string({
+        context: 'server',
+        access: 'secret',
+        optional: true,
+      }),
+      WHATSAPP_APP_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
   security: {

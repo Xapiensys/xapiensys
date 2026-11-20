@@ -59,6 +59,9 @@ async function send(payload: Record<string, unknown>, scope: string): Promise<bo
   }
 }
 
+/** Envío genérico (otros avisos del servidor, p. ej. WhatsApp). */
+export const sendRaw = send;
+
 /** Notifica un lead al equipo de Xapiensys. Devuelve `true` si se envió. */
 export async function sendLeadNotification(lead: LeadEmail): Promise<boolean> {
   if (!LEAD_NOTIFY_EMAIL) return false;
