@@ -3,6 +3,7 @@ import { getDb, schema } from './db';
 import { sendLeadConfirmation, sendLeadNotification } from './email';
 import { log } from './http';
 import type { Attribution } from '../analytics';
+import { normalizePhone } from '../phone';
 
 export interface NewLead {
   source: 'form' | 'chat' | 'quote' | 'diagnostico';
@@ -18,6 +19,8 @@ export interface NewLead {
   estimate?: { min: number; max: number } | undefined;
   utm?: Attribution | undefined;
   userAgent?: string | null;
+  /** País del visitante (cabecera `x-vercel-ip-country`) para completar el código telefónico. */
+  country?: string | null;
 }
 
 const randomCode = () =>
@@ -27,7 +30,9 @@ const randomCode = () =>
  * Flujo de ARCHITECTURE §7.2: genera código, guarda en BD y notifica por email.
  * Si la BD falla el email igual sale (y viceversa). Si ambos fallan, lanza error.
  */
-export async function createLead(lead: NewLead): Promise<{ code: string; id: number | null }> {
+export async function createLead(input: NewLead): Promise<{ code: string; id: number | null }> {
+  const { country, ...rest } = input;
+  const lead = { ...rest, phone: normalizePhone(input.phone, country) };
   const db = getDb();
   let code = randomCode();
   let id: number | null = null;

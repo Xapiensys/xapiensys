@@ -3,6 +3,7 @@ import { PUBLIC_BOOKING_URL } from 'astro:env/client';
 import { site } from '../site';
 import { buildWhatsAppUrl } from '../whatsapp';
 import { log } from './http';
+import { waDigits } from '../phone';
 
 export interface LeadEmail {
   leadCode: string;
@@ -28,9 +29,7 @@ const esc = (s: string) =>
 
 /** Enlace para escribirle al cliente por WhatsApp desde el correo de aviso. */
 export const clientWaLink = (phone: string, code: string): string => {
-  const digits = phone.replace(/\D/g, '');
-  const intl = digits.length === 9 ? `51${digits}` : digits; // números peruanos sin prefijo
-  return `https://wa.me/${intl}?text=${encodeURIComponent(`Hola, te escribimos de Xapiensys por tu consulta ${code}.`)}`;
+  return `https://wa.me/${waDigits(phone)}?text=${encodeURIComponent(`Hola, te escribimos de Xapiensys por tu consulta ${code}.`)}`;
 };
 
 const sourceNames: Record<string, string> = {

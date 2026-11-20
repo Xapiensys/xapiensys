@@ -51,6 +51,7 @@ export const POST: APIRoute = async ({ request }) => {
       estimate: result.range,
       utm: input.utm,
       userAgent: summarizeUserAgent(request.headers.get('user-agent')),
+      country: request.headers.get('x-vercel-ip-country'),
     }));
   } catch (error) {
     log('api/quote', error);

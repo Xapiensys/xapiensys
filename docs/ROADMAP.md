@@ -148,6 +148,8 @@ Objetivo: páginas que rankean para búsquedas de compra.
 - [x] Guía de prospección con UTM y plantillas: `docs/PROSPECCION.md`.
 - [x] 🧑 Diagnóstico confirmado: **Diagnóstico Digital Gratuito de 15 minutos** (2026-10-31).
 - [ ] 🧑 Crear el enlace de agenda (Cal.com o Calendly) y cargarlo en `PUBLIC_BOOKING_URL`.
+- [x] Teléfonos internacionales (2026-11-20): se guardan en E.164 (`src/lib/phone.ts`), con el país de `x-vercel-ip-country` si el cliente no escribe el código. "Responder por WhatsApp" del correo y de `/admin` ya funciona con México, Colombia, Chile, etc. Corregido a mano el primer lead extranjero (XP-6365, México).
+- [ ] 🧑 Cargar en Vercel (producción) `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` e `IP_HASH_SALT` (hoy faltan: el anti-bot está apagado).
 
 **Verificado:** Lighthouse móvil 100/100/100/100 en `/`, `/diagnostico`, `/cotizar` y una página de proyecto; flujos de diagnóstico, cotizador, chat y contacto en navegador; panel probado contra Postgres (login, bloqueo tras 5 intentos, CSRF, cambio de estado, CSV).
 

@@ -94,6 +94,7 @@ const handle = async ({ request }: Parameters<APIRoute>[0], isForm: boolean): Pr
       siteUrl: input.siteUrl,
       utm: input.utm,
       userAgent: summarizeUserAgent(request.headers.get('user-agent')),
+      country: request.headers.get('x-vercel-ip-country'),
     });
     if (input.chatSessionId && id) await attachLeadToChat(input.chatSessionId, id);
     return json({ ok: true, leadCode: code });
